@@ -1,0 +1,166 @@
+import { useState, useCallback } from "react";
+import { Button } from "@/components/ui/button";
+import { QuestionCard } from "./QuestionCard";
+import { ResultsView } from "./ResultsView";
+import { scoreAssessment } from "@/lib/assessment-engine";
+import { ArrowLeft, ArrowRight } from "lucide-react";
+import type {
+  AssessmentConfig,
+  AssessmentState,
+  AssessmentResult,
+} from "@/data/assessments/types";
+
+interface AssessmentRunnerProps {
+  config: AssessmentConfig;
+}
+
+/**
+ * THE engine. One component that runs any assessment.
+ * Feed it a config → it renders questions, tracks answers, scores, shows results.
+ */
+export function AssessmentRunner({ config }: AssessmentRunnerProps) {
+  const [state, setState] = useState<AssessmentState>({
+    currentIndex: 0,
+    answers: {},
+    completed: false,
+  });
+  const [started, setStarted] = useState(false);
+  const [result, setResult] = useState<AssessmentResult | null>(null);
+
+  const { questions } = config;
+  const currentQ = questions[state.currentIndex];
+  const isFirst = state.currentIndex === 0;
+  const isLast = state.currentIndex === questions.length - 1;
+  const hasAnswer = currentQ ? state.answers[currentQ.id] !== undefined : false;
+
+  const progress = Math.round(
+    (Object.keys(state.answers).length / questions.length) * 100,
+  );
+
+  const selectAnswer = useCallback(
+    (value: number) => {
+      if (!currentQ) return;
+      setState((prev) => ({
+        ...prev,
+        answers: { ...prev.answers, [currentQ.id]: value },
+      }));
+    },
+    [currentQ],
+  );
+
+  const goNext = useCallback(() => {
+    if (isLast) {
+      // Score and show results
+      const scored = scoreAssessment(config, state.answers);
+      setResult(scored);
+      setState((prev) => ({ ...prev, completed: true }));
+    } else {
+      setState((prev) => ({
+        ...prev,
+        currentIndex: prev.currentIndex + 1,
+      }));
+    }
+  }, [isLast, config, state.answers]);
+
+  const goPrev = useCallback(() => {
+    if (!isFirst) {
+      setState((prev) => ({
+        ...prev,
+        currentIndex: prev.currentIndex - 1,
+      }));
+    }
+  }, [isFirst]);
+
+  const retake = useCallback(() => {
+    setState({ currentIndex: 0, answers: {}, completed: false });
+    setResult(null);
+    setStarted(false);
+  }, []);
+
+  // ── Results screen ──
+  if (result) {
+    return <ResultsView config={config} result={result} onRetake={retake} />;
+  }
+
+  // ── Start screen ──
+  if (!started) {
+    return (
+      <div className="text-center max-w-xl mx-auto">
+        <h2 className="text-2xl md:text-3xl font-semibold mb-3">
+          {config.meta.title}
+        </h2>
+        <p className="text-muted-foreground mb-2">{config.meta.subtitle}</p>
+        <div className="flex items-center justify-center gap-4 text-sm text-muted-foreground mb-6">
+          <span>{config.meta.questionCount} questions</span>
+          <span>·</span>
+          <span>{config.meta.duration}</span>
+          <span>·</span>
+          <span>Free & private</span>
+        </div>
+        <div className="rounded-2xl border border-border bg-card p-6 text-left mb-8">
+          <h3 className="font-semibold mb-2">Before you start</h3>
+          <p className="text-sm text-muted-foreground">{config.instructions}</p>
+        </div>
+        <Button size="lg" className="h-12 px-8" onClick={() => setStarted(true)}>
+          Start Assessment
+          <ArrowRight className="h-4 w-4" />
+        </Button>
+        <p className="text-xs text-muted-foreground mt-4">
+          {config.meta.source}
+        </p>
+      </div>
+    );
+  }
+
+  // ── Question screen ──
+  return (
+    <div className="max-w-xl mx-auto">
+      {/* Progress bar */}
+      <div className="mb-8">
+        <div className="flex items-center justify-between text-xs text-muted-foreground mb-2">
+          <span>Progress</span>
+          <span>{progress}%</span>
+        </div>
+        <div className="h-2 rounded-full bg-border overflow-hidden">
+          <div
+            className="h-full rounded-full bg-primary transition-all duration-500 ease-out"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+      </div>
+
+      {/* Current question */}
+      {currentQ && (
+        <QuestionCard
+          key={currentQ.id}
+          question={currentQ}
+          selectedValue={state.answers[currentQ.id]}
+          onSelect={selectAnswer}
+          questionNumber={state.currentIndex + 1}
+          totalQuestions={questions.length}
+        />
+      )}
+
+      {/* Navigation */}
+      <div className="flex items-center justify-between mt-8 pt-6 border-t border-border">
+        <Button
+          variant="ghost"
+          onClick={goPrev}
+          disabled={isFirst}
+          className="gap-2"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back
+        </Button>
+        <Button
+          onClick={goNext}
+          disabled={!hasAnswer}
+          className="gap-2"
+        >
+          {isLast ? "See Results" : "Next"}
+          <ArrowRight className="h-4 w-4" />
+        </Button>
+      </div>
+    </div>
+  );
+}

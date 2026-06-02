@@ -10,14 +10,14 @@ interface LogoProps {
 }
 
 function LogoMark({ size = "md" }: { size: "sm" | "md" }) {
-  const dim = size === "sm" ? "h-8 w-8" : "h-9 w-9";
+  const dim = size === "sm" ? "h-8 w-8" : "h-11 w-11";
   return (
     <img
       src={SITE.logoPath}
       alt={`${SITE.name} logo`}
       className={`${dim} rounded-full object-cover`}
-      width={size === "sm" ? 32 : 36}
-      height={size === "sm" ? 32 : 36}
+      width={size === "sm" ? 32 : 44}
+      height={size === "sm" ? 32 : 44}
     />
   );
 }
@@ -26,7 +26,7 @@ export function Logo({ size = "md", static: isStatic, className = "" }: LogoProp
   const content = (
     <span className={`inline-flex items-center gap-2 ${className}`}>
       <LogoMark size={size} />
-      <span className="font-semibold text-lg tracking-tight">{SITE.name}</span>
+      <span className="font-semibold text-xl tracking-tight">{SITE.name}</span>
     </span>
   );
 

@@ -1,96 +1,54 @@
 /**
- * Schutte Self-Report Emotional Intelligence Test (SSEIT) — Short Form
- * Based on Schutte et al., 1998.
- *
- * Adapted to a 12-item short form covering 4 EI dimensions:
- * perception, managing own emotions, managing others' emotions, utilisation.
- * Freely available for educational use.
- * Score range: 12–60.
+ * A4. Emotional Intelligence™
+ * Tier: Growth (₹99-299)
+ * Measures emotional awareness, empathy, emotional regulation, and relationship awareness.
  */
 
 import type { AssessmentConfig } from "./types";
-
-const AGREE_5 = [
-  { label: "Strongly disagree", value: 1 },
-  { label: "Disagree", value: 2 },
-  { label: "Neither agree nor disagree", value: 3 },
-  { label: "Agree", value: 4 },
-  { label: "Strongly agree", value: 5 },
-];
+import { LIKERT_5 } from "./types";
 
 export const emotionalIntelligence: AssessmentConfig = {
   slug: "emotional-intelligence",
+  order: 4,
+  type: "standard",
+  tier: "growth",
+  category: "Personal Growth",
+  status: "active",
   meta: {
-    title: "Emotional Intelligence Assessment",
+    title: "Emotional Intelligence™",
     subtitle: "How well do you read and manage emotions?",
     description:
-      "Explore your emotional intelligence across four key dimensions: perception, self-management, social skills, and utilisation. Quick, private, research-backed.",
-    duration: "4–6 minutes",
-    questionCount: 12,
-    icon: "sparkles",
-    source:
-      "Adapted from the Schutte Self-Report Emotional Intelligence Test (SSEIT) by Schutte et al., 1998.",
+      "Explore your emotional awareness, empathy, and regulation. Situational questions, private results, under 2 minutes.",
+    purpose: "Measures emotional awareness, empathy, emotional regulation, and relationship awareness.",
+    duration: "Under 2 minutes",
+    questionCount: 10,
+    icon: "heart",
   },
   instructions:
-    "Read each statement and choose how much you agree or disagree based on how you typically feel and behave. Answer based on what you actually do — not what you think you should do.",
+    "Answer based on how you typically feel and behave — not what you think you should do. There are no right or wrong answers.",
   questions: [
-    // Perception of emotion
-    { id: "ei1", text: "I can tell how people are feeling by looking at their facial expressions.", options: AGREE_5 },
-    { id: "ei2", text: "I am aware of my emotions as I experience them.", options: AGREE_5 },
-    { id: "ei3", text: "I can tell when someone close to me is upset, even if they don't say so.", options: AGREE_5 },
-    // Managing own emotions
-    { id: "ei4", text: "When I am faced with a difficult situation, I can usually find a way to calm myself down.", options: AGREE_5 },
-    { id: "ei5", text: "I have control over my emotions.", options: AGREE_5 },
-    { id: "ei6", text: "When I am in a positive mood, I can come up with new ideas more easily.", options: AGREE_5 },
-    // Managing others' emotions
-    { id: "ei7", text: "I can usually motivate myself to keep going when things get tough.", options: AGREE_5 },
-    { id: "ei8", text: "I compliment others when they have done something well.", options: AGREE_5 },
-    { id: "ei9", text: "I help others feel better when they are down.", options: AGREE_5 },
-    // Utilisation of emotion
-    { id: "ei10", text: "I use good moods to help me keep trying in the face of obstacles.", options: AGREE_5 },
-    { id: "ei11", text: "I arrange events that others enjoy.", options: AGREE_5 },
-    { id: "ei12", text: "I present myself in a way that makes a good impression on others.", options: AGREE_5 },
+    { id: "a4q1", text: "During a disagreement, how often can you identify what you are feeling before responding?", options: [...LIKERT_5], dimension: "awareness" },
+    { id: "a4q2", text: "How easily do you notice when someone may be uncomfortable, even if they do not say so directly?", options: [...LIKERT_5], dimension: "empathy" },
+    { id: "a4q3", text: "When frustrated, how often do you react before fully considering the situation?", options: [...LIKERT_5], reverse: true, dimension: "regulation" },
+    { id: "a4q4", text: "How comfortable are you discussing emotions with people you trust?", options: [...LIKERT_5], dimension: "awareness" },
+    { id: "a4q5", text: "How often do you adjust your communication style based on the person you are speaking with?", options: [...LIKERT_5], dimension: "relationship" },
+    { id: "a4q6", text: "When someone disagrees with you, how easy is it to understand their perspective?", options: [...LIKERT_5], dimension: "empathy" },
+    { id: "a4q7", text: "How often do strong emotions make it difficult to think clearly?", options: [...LIKERT_5], reverse: true, dimension: "regulation" },
+    { id: "a4q8", text: "How frequently do people describe you as a good listener?", options: [...LIKERT_5], dimension: "relationship" },
+    { id: "a4q9", text: "How often do you recognize when stress is affecting your behavior?", options: [...LIKERT_5], dimension: "awareness" },
+    { id: "a4q10", text: "After an emotional situation, how likely are you to reflect on how you handled it?", options: [...LIKERT_5], dimension: "relationship" },
   ],
-  scoring: { method: "sum", min: 12, max: 60 },
-  resultRanges: [
-    {
-      min: 12, max: 28,
-      label: "Developing EI",
-      color: "orange",
-      interpretation:
-        "Your emotional intelligence has room for growth. This is completely normal — EI is a learnable skill, not a fixed trait. The fact that you're here shows awareness, which is step one.",
-      suggestions: [
-        "Start with self-awareness: pause 3 times a day and name what you're feeling",
-        "Practice active listening — focus on understanding, not responding",
-        "Our Emotional Intelligence Fundamentals course builds EI systematically",
-        "Read about the four dimensions of EI — knowing the framework helps",
-      ],
-    },
-    {
-      min: 29, max: 44,
-      label: "Moderate EI",
-      color: "yellow",
-      interpretation:
-        "You have a solid foundation of emotional intelligence. You're reasonably aware of emotions in yourself and others, and you can manage them in most situations. There's room to deepen specific areas.",
-      suggestions: [
-        "Identify which EI dimension feels weakest — focus growth there",
-        "Practice naming nuanced emotions (not just 'good' or 'bad')",
-        "Seek feedback from people you trust: 'How do I come across when I'm stressed?'",
-        "Our EI Workbook offers structured exercises for each dimension",
-      ],
-    },
-    {
-      min: 45, max: 60,
-      label: "High EI",
-      color: "green",
-      interpretation:
-        "You demonstrate strong emotional intelligence. You're attuned to your own emotional states and those of others, and you use emotions constructively. This is a real asset in relationships, work, and leadership.",
-      suggestions: [
-        "Your EI is a strength — use it to mentor and support others",
-        "Watch for emotional labour fatigue: managing others' emotions takes energy",
-        "Continue developing: EI deepens with intentional practice, even at high levels",
-        "Consider how your EI skills translate to leadership and influence",
-      ],
-    },
+  scoring: { method: "sum", min: 10, max: 50 },
+  dimensions: [
+    { id: "awareness", label: "Self-Awareness", questionIds: ["a4q1", "a4q4", "a4q9"] },
+    { id: "empathy", label: "Empathy", questionIds: ["a4q2", "a4q6"] },
+    { id: "regulation", label: "Emotional Regulation", questionIds: ["a4q3", "a4q7"] },
+    { id: "relationship", label: "Relationship Awareness", questionIds: ["a4q5", "a4q8", "a4q10"] },
+  ],
+  archetypes: [
+    { min: 10, max: 19, label: "Emotional Observer", color: "blue", interpretation: "You are beginning to develop emotional awareness. This is a learnable skill — and awareness is step one." },
+    { min: 20, max: 29, label: "Compassionate Connector", color: "yellow", interpretation: "You have a solid foundation of emotional intelligence with room to deepen specific areas." },
+    { min: 30, max: 39, label: "Balanced Communicator", color: "emerald", interpretation: "You demonstrate strong emotional awareness and can navigate emotions effectively in most situations." },
+    { min: 40, max: 50, label: "Emotional Leader", color: "green", interpretation: "You show exceptional emotional intelligence — attuned to yourself and others, and skilled at managing emotional dynamics." },
   ],
 };

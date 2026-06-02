@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { SiteLayout } from "@/components/SiteLayout";
 import { NewsletterForm } from "@/components/NewsletterForm";
+import { YouTubeEmbed } from "@/components/shared/YouTubeEmbed";
 import { SITE } from "@/data/constants";
 import { ASSESSMENT_LIST } from "@/data/assessments";
 import {
@@ -18,7 +19,17 @@ import {
   Timer,
   Flame,
   Heart,
+  Briefcase,
+  Users,
+  MessageCircle,
+  Monitor,
+  Sun,
+  Compass,
+  Shield,
+  Target,
+  Zap,
 } from "lucide-react";
+import type { AssessmentIcon } from "@/data/assessments/types";
 
 export const Route = createFileRoute("/")(
   {
@@ -40,14 +51,24 @@ export const Route = createFileRoute("/")(
   },
 );
 
-const ICON_MAP = {
+const ICON_MAP: Record<AssessmentIcon, React.ComponentType<{ className?: string }>> = {
   flame: Flame,
   brain: Brain,
   heart: Heart,
   "clipboard-check": ClipboardCheck,
   user: User,
   sparkles: Sparkles,
-} as const;
+  briefcase: Briefcase,
+  users: Users,
+  "message-circle": MessageCircle,
+  "book-open": BookOpen,
+  monitor: Monitor,
+  sun: Sun,
+  compass: Compass,
+  shield: Shield,
+  target: Target,
+  zap: Zap,
+};
 
 function Index() {
   return (
@@ -173,11 +194,25 @@ function Index() {
         action={{ to: "/decode-your-mind", label: "Visit the channel" }}
       >
         <div className="grid gap-5 md:grid-cols-3">
+          {/* Video 1 — Real YouTube embed */}
+          <article className="group rounded-2xl border border-border bg-card overflow-hidden hover:shadow-[var(--shadow-soft)] transition-all duration-300 hover:-translate-y-0.5">
+            <YouTubeEmbed
+              videoId="JVTlRoVoZW4"
+              title="Decode Your Mind — Calmtree"
+            />
+            <div className="p-5">
+              <span className="text-xs text-primary font-medium">
+                Decode Your Mind
+              </span>
+              <h3 className="mt-1 font-semibold">The Silent Mind</h3>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Decode Your Mind · by {SITE.founder}
+              </p>
+            </div>
+          </article>
+
+          {/* Video 2 & 3 — Placeholders (replace with real video IDs later) */}
           {[
-            {
-              t: "Why we overthink — and how to stop",
-              cat: "Psychology Concepts",
-            },
             {
               t: "The science of burnout recovery",
               cat: "Mental Wellness",
@@ -202,7 +237,7 @@ function Index() {
                 </span>
                 <h3 className="mt-1 font-semibold">{v.t}</h3>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  Decode Your Mind · 6 min watch
+                  Decode Your Mind · Coming soon
                 </p>
               </div>
             </article>

@@ -8,11 +8,9 @@
  * "payment processing" state. Real entitlement/purchase rows are written by the webhook.
  * After the callback, we invalidate the entitlement cache so the UI re-checks.
  *
- * Props:
- *   productType  — 'assessment_category' | 'ebook'
- *   productRef   — tier name for assessments, ebook UUID for ebooks
- *   label        — button label (e.g. "Unlock for ₹99")
- *   onSuccess    — called after optimistic success (poll for entitlement landing)
+ * Two product shapes (see payments.functions.ts's CreateOrderSchema for why they're
+ * kept separate): assessment_category needs both `tier` (prices it) and
+ * `productCategory` (what it unlocks); ebook just needs its id.
  */
 
 import { useState, useCallback } from "react";
@@ -69,26 +67,24 @@ function loadRazorpayScript(): Promise<boolean> {
   });
 }
 
-interface RazorpayCheckoutButtonProps {
-  productType: "assessment_category" | "ebook";
-  productRef: string;
+type RazorpayCheckoutButtonProps = (
+  | { productType: "assessment_category"; tier: "growth" | "professional"; productCategory: string }
+  | { productType: "ebook"; productRef: string }
+) & {
   label: string;
   onSuccess?: () => void;
   className?: string;
   size?: "default" | "sm" | "lg";
-}
+};
 
-export function RazorpayCheckoutButton({
-  productType,
-  productRef,
-  label,
-  onSuccess,
-  className,
-  size = "default",
-}: RazorpayCheckoutButtonProps) {
+export function RazorpayCheckoutButton(props: RazorpayCheckoutButtonProps) {
+  const { label, onSuccess, className, size = "default" } = props;
   const { user, session } = useAuth();
   const posthog = usePostHog();
   const [loading, setLoading] = useState(false);
+
+  // A stable identifier for analytics, regardless of which product shape this is.
+  const analyticsRef = props.productType === "ebook" ? props.productRef : props.productCategory;
 
   const handleCheckout = useCallback(async () => {
     if (!user || !session?.access_token) {
@@ -100,11 +96,19 @@ export function RazorpayCheckoutButton({
     try {
       // 1. Create order server-side (price looked up there)
       const result = await createRazorpayOrder({
-        data: {
-          accessToken: session.access_token,
-          productType,
-          productRef,
-        },
+        data:
+          props.productType === "ebook"
+            ? {
+                accessToken: session.access_token,
+                productType: "ebook",
+                productRef: props.productRef,
+              }
+            : {
+                accessToken: session.access_token,
+                productType: "assessment_category",
+                tier: props.tier,
+                productCategory: props.productCategory,
+              },
       });
 
       if ("error" in result) {
@@ -128,13 +132,13 @@ export function RazorpayCheckoutButton({
         currency,
         order_id: orderId,
         name: "CalmTree",
-        description: productType === "ebook" ? "Ebook Purchase" : "Assessment Tier Access",
+        description: props.productType === "ebook" ? "Ebook Purchase" : "Assessment Tier Access",
         prefill: { email: user.email },
         theme: { color: "#166534" }, // matches CalmTree primary green
         handler: (response) => {
           posthog.capture("purchase_completed", {
-            product_type: productType,
-            product_ref: productRef,
+            product_type: props.productType,
+            product_ref: analyticsRef,
             currency,
             razorpay_order_id: response.razorpay_order_id,
           });
@@ -151,8 +155,8 @@ export function RazorpayCheckoutButton({
         modal: {
           ondismiss: () => {
             posthog.capture("payment_dismissed", {
-              product_type: productType,
-              product_ref: productRef,
+              product_type: props.productType,
+              product_ref: analyticsRef,
             });
             toast("Payment cancelled.");
           },
@@ -160,15 +164,15 @@ export function RazorpayCheckoutButton({
       });
 
       posthog.capture("checkout_initiated", {
-        product_type: productType,
-        product_ref: productRef,
+        product_type: props.productType,
+        product_ref: analyticsRef,
         currency,
       });
       rzp.open();
     } finally {
       setLoading(false);
     }
-  }, [user, session, productType, productRef, onSuccess, posthog]);
+  }, [user, session, props, analyticsRef, onSuccess, posthog]);
 
   return (
     <Button size={size} className={className} disabled={loading} onClick={handleCheckout}>

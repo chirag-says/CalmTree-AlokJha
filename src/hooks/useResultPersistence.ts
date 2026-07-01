@@ -148,44 +148,44 @@ export function useResultPersistence() {
    * Call this in a useEffect keyed on `user` after OTP verification.
    * Returns silently if there is nothing stashed.
    */
-  const claimStashed = useCallback(
-    async (): Promise<{ claimed: boolean; error?: string }> => {
-      if (!user || !session?.access_token) return { claimed: false };
+  const claimStashed = useCallback(async (): Promise<{ claimed: boolean; error?: string }> => {
+    if (!user || !session?.access_token) return { claimed: false };
 
-      const raw = sessionStorage.getItem(STASH_KEY);
-      if (!raw) return { claimed: false };
+    const raw = sessionStorage.getItem(STASH_KEY);
+    if (!raw) return { claimed: false };
 
-      let payload: StashedPayload;
-      try {
-        payload = JSON.parse(raw) as StashedPayload;
-      } catch {
-        sessionStorage.removeItem(STASH_KEY);
-        return { claimed: false };
-      }
-
-      const response = await saveAssessmentResult({
-        data: {
-          accessToken: session.access_token,
-          assessmentSlug: payload.assessmentSlug,
-          assessmentType: payload.assessmentType,
-          totalScore: payload.totalScore,
-          percentage: payload.percentage,
-          primaryLabel: payload.primaryLabel,
-          secondaryLabel: payload.secondaryLabel,
-          dimensionScores: payload.dimensionScores,
-          answers: payload.answers,
-        },
-      });
-
+    let payload: StashedPayload;
+    try {
+      payload = JSON.parse(raw) as StashedPayload;
+    } catch {
       sessionStorage.removeItem(STASH_KEY);
+      return { claimed: false };
+    }
 
-      if ("error" in response && response.error) {
-        return { claimed: false, error: response.error };
-      }
-      return { claimed: true };
-    },
-    [user, session],
-  );
+    const response = await saveAssessmentResult({
+      data: {
+        accessToken: session.access_token,
+        assessmentSlug: payload.assessmentSlug,
+        assessmentType: payload.assessmentType,
+        totalScore: payload.totalScore,
+        percentage: payload.percentage,
+        primaryLabel: payload.primaryLabel,
+        secondaryLabel: payload.secondaryLabel,
+        dimensionScores: payload.dimensionScores,
+        answers: payload.answers,
+      },
+    });
+
+    if ("error" in response && response.error) {
+      // Leave the stash in place — a transient failure shouldn't permanently
+      // lose the user's answers. The next claimStashed() call (e.g. on retry
+      // or next page load) will try again.
+      return { claimed: false, error: response.error };
+    }
+
+    sessionStorage.removeItem(STASH_KEY);
+    return { claimed: true };
+  }, [user, session]);
 
   return { saveIfAuthed, claimStashed };
 }

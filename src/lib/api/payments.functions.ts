@@ -17,67 +17,54 @@
  */
 
 import { createServerFn } from "@tanstack/react-start";
-import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import crypto from "crypto";
+import { TIER_INFO } from "@/data/assessments";
+import { getAdminClient, requireUser } from "./_shared";
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
-
-function getAdminClient() {
-  const url = process.env.SUPABASE_URL;
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !serviceRoleKey) {
-    throw new Error("[CalmTree] SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY is not set.");
-  }
-  return createClient(url, serviceRoleKey, {
-    auth: { autoRefreshToken: false, persistSession: false },
-  });
+/** Fetch an ebook's price from the DB server-side. Never trust the client. */
+async function getEbookPrice(ebookId: string): Promise<number> {
+  const supabase = getAdminClient();
+  const { data, error } = await supabase
+    .from("ebooks")
+    .select("price_inr")
+    .eq("id", ebookId)
+    .eq("status", "active")
+    .single();
+  if (error || !data) throw new Error("Ebook not found or not active.");
+  return data.price_inr as number;
 }
 
-async function requireUser(accessToken: string): Promise<string> {
-  const supabase = getAdminClient();
-  const { data, error } = await supabase.auth.getUser(accessToken);
-  if (error || !data.user) throw new Error("Unauthorized: invalid or expired access token.");
-  return data.user.id;
-}
-
-/** Fetch price from DB server-side. Never trust the client. */
-async function getProductPrice(
-  productType: "assessment_category" | "ebook",
-  productRef: string,
-): Promise<number> {
-  const supabase = getAdminClient();
-
-  if (productType === "ebook") {
-    const { data, error } = await supabase
-      .from("ebooks")
-      .select("price_inr")
-      .eq("id", productRef)
-      .eq("status", "active")
-      .single();
-    if (error || !data) throw new Error("Ebook not found or not active.");
-    return data.price_inr as number;
-  }
-
-  // assessment_category — tier prices from TIER_INFO equivalent
-  // Prices match TIER_INFO in the frontend: growth=₹99, professional=₹299
-  const CATEGORY_PRICES: Record<string, number> = {
-    growth: 99,
-    professional: 299,
-  };
-  const price = CATEGORY_PRICES[productRef];
-  if (!price) throw new Error(`Unknown assessment category tier: ${productRef}`);
+/** Tier price server-side — reads the same TIER_INFO the frontend displays from. */
+function getTierPrice(tier: "growth" | "professional"): number {
+  const price = TIER_INFO[tier].priceInr;
+  if (!price) throw new Error(`Tier "${tier}" has no purchasable price.`);
   return price;
 }
 
 // ─── Schemas ─────────────────────────────────────────────────────────────────
+//
+// Two distinct product shapes:
+//   - assessment_category: unlocks every assessment in `productCategory` (the real
+//     ProductCategory string, e.g. "Workplace Effectiveness") for the price of `tier`.
+//   - ebook: a single one-time SKU purchase, priced from the ebooks table.
+//
+// Kept as a discriminated union so the webhook can reconstruct exactly what to
+// grant without conflating "which tier sets the price" with "which category to unlock".
 
-const CreateOrderSchema = z.object({
-  accessToken: z.string(),
-  productType: z.enum(["assessment_category", "ebook"]),
-  /** For assessment_category: the tier name (e.g. "growth"). For ebook: the ebook UUID. */
-  productRef: z.string(),
-});
+const CreateOrderSchema = z.discriminatedUnion("productType", [
+  z.object({
+    accessToken: z.string(),
+    productType: z.literal("assessment_category"),
+    tier: z.enum(["growth", "professional"]),
+    productCategory: z.string(),
+  }),
+  z.object({
+    accessToken: z.string(),
+    productType: z.literal("ebook"),
+    productRef: z.string(),
+  }),
+]);
 
 // ─── Server Functions ─────────────────────────────────────────────────────────
 
@@ -105,8 +92,20 @@ export const createRazorpayOrder = createServerFn({ method: "POST" })
     }
 
     let amountInr: number;
+    let notes: Record<string, string>;
     try {
-      amountInr = await getProductPrice(data.productType, data.productRef);
+      if (data.productType === "ebook") {
+        amountInr = await getEbookPrice(data.productRef);
+        notes = { productType: "ebook", productRef: data.productRef, userId };
+      } else {
+        amountInr = getTierPrice(data.tier);
+        notes = {
+          productType: "assessment_category",
+          tier: data.tier,
+          productCategory: data.productCategory,
+          userId,
+        };
+      }
     } catch (e) {
       return { error: e instanceof Error ? e.message : "Could not look up product price." };
     }
@@ -119,11 +118,7 @@ export const createRazorpayOrder = createServerFn({ method: "POST" })
     const body = JSON.stringify({
       amount: amountPaise,
       currency: "INR",
-      notes: {
-        productType: data.productType,
-        productRef: data.productRef,
-        userId,
-      },
+      notes,
     });
 
     let orderId: string;

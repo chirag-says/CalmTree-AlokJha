@@ -1,10 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { z } from "zod";
 import { SiteLayout, PageHeader } from "@/components/SiteLayout";
 import { Button } from "@/components/ui/button";
 import { SITE } from "@/data/constants";
-import { getAssessmentsByTier, TIER_INFO } from "@/data/assessments";
+import { ASSESSMENT_LIST, getAssessmentsByTier, TIER_INFO } from "@/data/assessments";
 import { TierBadge } from "@/components/assessment/TierBadge";
-import type { AssessmentTier, AssessmentIcon } from "@/data/assessments/types";
+import type { AssessmentTier, AssessmentIcon, ProductCategory } from "@/data/assessments/types";
 import type { AnyAssessmentConfig } from "@/data/assessments";
 import {
   Flame,
@@ -37,7 +38,25 @@ import {
   AlertCircle,
 } from "lucide-react";
 
+const CATEGORY_CHIPS: { label: string; value: ProductCategory }[] = [
+  { label: "Self-Awareness", value: "Self-Awareness & Personality" },
+  { label: "Emotional Strength", value: "Emotional Strength & Everyday Mind" },
+  { label: "Relationships", value: "Relationships & Emotional Connection" },
+  { label: "Workplace", value: "Workplace Effectiveness" },
+  { label: "Leadership", value: "Leadership & Teams" },
+  { label: "Founders", value: "Founders & Entrepreneurship" },
+  { label: "Gen Z", value: "Gen Z & Digital Life" },
+  { label: "Career", value: "Career Direction" },
+  { label: "Parenting", value: "Family & Parenting" },
+  { label: "Life Transitions", value: "Life Transitions & Healthy Ageing" },
+];
+
+const searchSchema = z.object({
+  category: z.string().optional(),
+});
+
 export const Route = createFileRoute("/assessments/")({
+  validateSearch: searchSchema,
   head: () => ({
     meta: [
       { title: `Psychology Assessments — ${SITE.name}` },
@@ -143,7 +162,61 @@ function TierSection({ tier }: { tier: AssessmentTier }) {
   );
 }
 
+function CategoryChipRow({ activeCategory }: { activeCategory?: string }) {
+  return (
+    <div className="flex flex-wrap gap-2 mb-12">
+      <Link
+        to="/assessments"
+        search={{}}
+        className={`rounded-full px-4 py-1.5 text-sm font-medium border transition-colors ${
+          !activeCategory
+            ? "bg-primary text-primary-foreground border-primary"
+            : "bg-card border-border text-muted-foreground hover:border-primary/40"
+        }`}
+      >
+        All
+      </Link>
+      {CATEGORY_CHIPS.map((c) => (
+        <Link
+          key={c.value}
+          to="/assessments"
+          search={{ category: c.value }}
+          className={`rounded-full px-4 py-1.5 text-sm font-medium border transition-colors ${
+            activeCategory === c.value
+              ? "bg-primary text-primary-foreground border-primary"
+              : "bg-card border-border text-muted-foreground hover:border-primary/40"
+          }`}
+        >
+          {c.label}
+        </Link>
+      ))}
+    </div>
+  );
+}
+
+function CategoryResults({ category }: { category: string }) {
+  const assessments = ASSESSMENT_LIST.filter((a) => a.meta.productCategory === category);
+
+  if (assessments.length === 0) {
+    return (
+      <p className="text-muted-foreground">
+        No assessments in this category yet — check back soon.
+      </p>
+    );
+  }
+
+  return (
+    <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3 mb-16">
+      {assessments.map((a) => (
+        <AssessmentCard key={a.slug} assessment={a} />
+      ))}
+    </div>
+  );
+}
+
 function Page() {
+  const { category } = Route.useSearch();
+
   return (
     <SiteLayout>
       <PageHeader
@@ -153,9 +226,17 @@ function Page() {
       />
 
       <section className="mx-auto max-w-6xl px-5 py-16">
-        <TierSection tier="discovery" />
-        <TierSection tier="growth" />
-        <TierSection tier="professional" />
+        <CategoryChipRow activeCategory={category} />
+
+        {category ? (
+          <CategoryResults category={category} />
+        ) : (
+          <>
+            <TierSection tier="discovery" />
+            <TierSection tier="growth" />
+            <TierSection tier="professional" />
+          </>
+        )}
 
         <p className="mt-4 text-sm text-muted-foreground max-w-2xl">
           Note: {SITE.name} assessments are for psychology education and self-reflection only. They

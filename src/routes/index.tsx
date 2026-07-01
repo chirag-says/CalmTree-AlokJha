@@ -40,7 +40,18 @@ import {
   AlertCircle,
   Mail,
 } from "lucide-react";
-import type { AssessmentIcon } from "@/data/assessments/types";
+import type { AssessmentIcon, ProductCategory } from "@/data/assessments/types";
+
+// Six of the ten product categories — enough to speak to each of the brief's
+// audience segments without crowding the hero. Full set lives on /assessments.
+const LANDING_CATEGORY_CHIPS: { label: string; value: ProductCategory }[] = [
+  { label: "Self-Development", value: "Self-Awareness & Personality" },
+  { label: "Workplace", value: "Workplace Effectiveness" },
+  { label: "Leadership", value: "Leadership & Teams" },
+  { label: "Founders", value: "Founders & Entrepreneurship" },
+  { label: "Parenting", value: "Family & Parenting" },
+  { label: "Career", value: "Career Direction" },
+];
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -264,6 +275,19 @@ function Index() {
         title="Quick self-checks built on real research."
         action={{ to: "/assessments", label: "See all assessments" }}
       >
+        {/* Explore-by-segment chip row — routes into /assessments?category=... */}
+        <div className="flex flex-wrap gap-2 mb-6">
+          {LANDING_CATEGORY_CHIPS.map((c) => (
+            <Link
+              key={c.value}
+              to="/assessments"
+              search={{ category: c.value }}
+              className="rounded-full px-4 py-1.5 text-sm font-medium border border-border bg-card text-muted-foreground hover:border-primary/40 hover:text-foreground transition-colors"
+            >
+              {c.label}
+            </Link>
+          ))}
+        </div>
         <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-5">
           {ASSESSMENT_LIST.slice(0, 10).map((a) => {
             const Icon = ICON_MAP[a.meta.icon] ?? ClipboardCheck;
@@ -438,9 +462,27 @@ interface EbookCard {
 }
 
 const PLACEHOLDER_EBOOKS: EbookCard[] = [
-  { id: "p1", title: "Burnout Recovery Workbook", subtitle: "Print-ready · PDF", price_inr: 0, cover_image_url: null },
-  { id: "p2", title: "Self-Reflection Journal", subtitle: "Print-ready · PDF", price_inr: 0, cover_image_url: null },
-  { id: "p3", title: "Habit Tracker", subtitle: "Print-ready · PDF", price_inr: 0, cover_image_url: null },
+  {
+    id: "p1",
+    title: "Burnout Recovery Workbook",
+    subtitle: "Print-ready · PDF",
+    price_inr: 0,
+    cover_image_url: null,
+  },
+  {
+    id: "p2",
+    title: "Self-Reflection Journal",
+    subtitle: "Print-ready · PDF",
+    price_inr: 0,
+    cover_image_url: null,
+  },
+  {
+    id: "p3",
+    title: "Habit Tracker",
+    subtitle: "Print-ready · PDF",
+    price_inr: 0,
+    cover_image_url: null,
+  },
 ];
 
 function EbooksSection() {
@@ -502,7 +544,10 @@ function EbooksSection() {
           // Skeleton loading state
           <>
             {[1, 2, 3].map((i) => (
-              <div key={i} className="rounded-2xl border border-border bg-card p-6 h-44 animate-pulse" />
+              <div
+                key={i}
+                className="rounded-2xl border border-border bg-card p-6 h-44 animate-pulse"
+              />
             ))}
           </>
         )}

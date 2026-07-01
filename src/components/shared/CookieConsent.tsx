@@ -51,8 +51,8 @@ export function CookieConsent() {
         <div className="flex-1">
           <p className="text-sm font-medium mb-1">We use cookies</p>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            We use analytics cookies to understand how visitors use CalmTree. No session
-            recording. See our{" "}
+            We use analytics cookies to understand how visitors use CalmTree. No session recording.
+            See our{" "}
             <Link to="/privacy-policy" className="text-primary hover:underline">
               privacy policy
             </Link>

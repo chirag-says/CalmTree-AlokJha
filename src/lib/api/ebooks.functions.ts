@@ -16,38 +16,24 @@
  */
 
 import { createServerFn } from "@tanstack/react-start";
-import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import crypto from "crypto";
-
-// ─── Helpers ─────────────────────────────────────────────────────────────────
-
-function getAdminClient() {
-  const url = process.env.SUPABASE_URL;
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !serviceRoleKey) {
-    throw new Error("[CalmTree] SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY is not set.");
-  }
-  return createClient(url, serviceRoleKey, {
-    auth: { autoRefreshToken: false, persistSession: false },
-  });
-}
-
-async function requireUser(accessToken: string): Promise<string> {
-  const supabase = getAdminClient();
-  const { data, error } = await supabase.auth.getUser(accessToken);
-  if (error || !data.user) throw new Error("Unauthorized: invalid or expired access token.");
-  return data.user.id;
-}
+import { getAdminClient, requireUser } from "./_shared";
 
 /**
- * Generates a short-TTL Cloudinary signed URL for a PDF asset.
- * The signature is computed server-side — CLOUDINARY_API_SECRET never leaves this module.
+ * Generates a Cloudinary signed download URL for a private/authenticated PDF asset,
+ * using Cloudinary's documented `private_download_url` scheme (the same one their
+ * official SDKs implement): sign a sorted `key=value&...` string of the request
+ * params with SHA-1 + the API secret, then call the `/download` API endpoint.
  *
- * @param publicId  — the Cloudinary public_id stored on the ebook row
- * @param ttlSecs   — how long the URL should be valid (default 600s = 10 min)
+ * We don't rely on Cloudinary's own link-expiry features (those need a separate
+ * "auth token" account feature enabled) — the real access control is that this
+ * function is only ever called after re-verifying the purchase row server-side,
+ * fresh on every download click (never cached client-side).
+ *
+ * @param publicId — the Cloudinary public_id stored on the ebook row
  */
-function generateCloudinarySignedUrl(publicId: string, ttlSecs = 600): string {
+function generateCloudinarySignedUrl(publicId: string): string {
   const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
   const apiKey = process.env.CLOUDINARY_API_KEY;
   const apiSecret = process.env.CLOUDINARY_API_SECRET;
@@ -57,21 +43,28 @@ function generateCloudinarySignedUrl(publicId: string, ttlSecs = 600): string {
   }
 
   const timestamp = Math.floor(Date.now() / 1000);
-  const expiration = timestamp + ttlSecs;
 
-  // Parameters to sign (sorted alphabetically)
-  const paramsToSign = `expires_at=${expiration}&public_id=${publicId}&timestamp=${timestamp}`;
+  // Params to sign — sorted alphabetically by key, joined as key=value&key=value,
+  // per Cloudinary's api_sign_request convention (api_key/signature excluded).
+  const paramsToSign: Record<string, string> = {
+    attachment: "true",
+    public_id: publicId,
+    timestamp: String(timestamp),
+    type: "authenticated",
+  };
+  const toSign = Object.keys(paramsToSign)
+    .sort()
+    .map((key) => `${key}=${paramsToSign[key]}`)
+    .join("&");
   const signature = crypto
-    .createHash("sha256")
-    .update(paramsToSign + apiSecret)
+    .createHash("sha1")
+    .update(toSign + apiSecret)
     .digest("hex");
 
-  // Construct the authenticated URL for private Cloudinary assets
-  const url = new URL(
-    `https://res.cloudinary.com/${cloudName}/raw/authenticated/s--${signature.slice(0, 8)}--/fl_attachment/${publicId}`,
-  );
-  url.searchParams.set("timestamp", String(timestamp));
-  url.searchParams.set("expires_at", String(expiration));
+  const url = new URL(`https://api.cloudinary.com/v1_1/${cloudName}/raw/download`);
+  for (const [key, value] of Object.entries(paramsToSign)) {
+    url.searchParams.set(key, value);
+  }
   url.searchParams.set("api_key", apiKey);
   url.searchParams.set("signature", signature);
 
@@ -92,7 +85,9 @@ export const getActiveEbooks = createServerFn({ method: "POST" })
     const supabase = getAdminClient();
     const { data, error } = await supabase
       .from("ebooks")
-      .select("id, slug, title, subtitle, description, cover_image_url, price_inr, page_count, status")
+      .select(
+        "id, slug, title, subtitle, description, cover_image_url, price_inr, page_count, status",
+      )
       .eq("status", "active")
       .order("created_at", { ascending: true });
 

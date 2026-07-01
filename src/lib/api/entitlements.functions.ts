@@ -13,45 +13,8 @@
  */
 
 import { createServerFn } from "@tanstack/react-start";
-import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
-
-// ─── Helpers ────────────────────────────────────────────────────────────────
-
-/**
- * Creates a Supabase admin client using the service role key.
- * Service role bypasses RLS — only use server-side, never expose to clients.
- */
-function getAdminClient() {
-  const url = process.env.SUPABASE_URL;
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-  if (!url || !serviceRoleKey) {
-    throw new Error("[CalmTree] SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY is not set.");
-  }
-
-  return createClient(url, serviceRoleKey, {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false,
-    },
-  });
-}
-
-/**
- * Verifies the JWT and returns the authenticated user's id.
- * Throws a plain Error with a user-safe message on failure.
- */
-async function requireUser(accessToken: string): Promise<string> {
-  const supabase = getAdminClient();
-  const { data, error } = await supabase.auth.getUser(accessToken);
-
-  if (error || !data.user) {
-    throw new Error("Unauthorized: invalid or expired access token.");
-  }
-
-  return data.user.id;
-}
+import { getAdminClient, requireUser } from "./_shared";
 
 // ─── Schemas ────────────────────────────────────────────────────────────────
 

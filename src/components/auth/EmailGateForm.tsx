@@ -22,7 +22,8 @@ export function EmailGateForm({ onSuccess, prompt }: EmailGateFormProps) {
       <div className="text-center mb-6">
         <h3 className="text-xl font-semibold mb-1">See your full breakdown</h3>
         <p className="text-sm text-muted-foreground">
-          {prompt ?? "Enter your email to unlock the dimension-by-dimension analysis — free, always."}
+          {prompt ??
+            "Enter your email to unlock the dimension-by-dimension analysis — free, always."}
         </p>
       </div>
       <OtpFlow onSuccess={onSuccess} />

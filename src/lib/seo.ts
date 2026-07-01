@@ -45,11 +45,7 @@ export function founderSchema() {
 }
 
 /** Course schema — for each course on academy page */
-export function courseSchema(course: {
-  name: string;
-  description: string;
-  duration: string;
-}) {
+export function courseSchema(course: { name: string; description: string; duration: string }) {
   return JSON.stringify({
     "@context": "https://schema.org",
     "@type": "Course",

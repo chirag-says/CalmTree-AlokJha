@@ -102,12 +102,7 @@ function Page() {
           value={results.length}
           to="/dashboard/results"
         />
-        <StatCard
-          icon={BookOpen}
-          label="Ebooks owned"
-          value={ebookCount}
-          to="/dashboard/ebooks"
-        />
+        <StatCard icon={BookOpen} label="Ebooks owned" value={ebookCount} to="/dashboard/ebooks" />
         <Link
           to="/assessments"
           className="rounded-2xl border border-dashed border-primary/30 bg-primary/[0.03] p-5 flex items-center gap-4 hover:bg-primary/[0.06] transition-colors group"

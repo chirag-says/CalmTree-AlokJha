@@ -26,6 +26,4 @@ if (!hasCredentials) {
  * Supabase client — null when credentials are missing (dev / CI without .env).
  * Always guard usage: `if (supabase) { ... }` or use the local fallback path.
  */
-export const supabase = hasCredentials
-  ? createClient(supabaseUrl!, supabaseAnonKey!)
-  : null;
+export const supabase = hasCredentials ? createClient(supabaseUrl!, supabaseAnonKey!) : null;

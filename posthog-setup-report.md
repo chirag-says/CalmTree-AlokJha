@@ -3,18 +3,18 @@
 
 The wizard has completed a deep integration of PostHog into CalmTree Discover. The custom `initPostHog` manual boot was replaced with `PostHogProvider` from `@posthog/react`, which initialises posthog-js automatically and makes the `usePostHog()` hook available throughout the tree. Session recording and error capture are now enabled (the old `disable_session_recording: true` flag was removed). A Vite dev-server reverse proxy routes PostHog traffic through `/ingest` to improve reliability and avoid ad-blocker interference. Ten events were added across eight files covering the full user journey — from arriving at an assessment through to completing a purchase.
 
-| Event | Description | File |
-|---|---|---|
-| `assessment_started` | User clicks "Start Assessment" on the intro screen | `src/components/assessment/AssessmentRunner.tsx` |
-| `assessment_completed` | User finishes all questions and results are scored | `src/components/assessment/AssessmentRunner.tsx` |
-| `assessment_retaken` | User clicks Retake to restart a completed assessment | `src/components/assessment/AssessmentRunner.tsx` |
-| `assessment_result_shared` | User clicks the Share button on the results screen | `src/components/assessment/ResultsView.tsx` |
-| `email_captured` | User submits their email in the OTP flow (gate or modal) | `src/components/auth/AuthModal.tsx` |
-| `user_signed_in` | User is successfully authenticated via Supabase | `src/context/AuthContext.tsx` |
-| `checkout_initiated` | Razorpay checkout modal opened for a purchase | `src/components/payments/RazorpayCheckoutButton.tsx` |
-| `purchase_completed` | Razorpay payment handler fires after successful payment | `src/components/payments/RazorpayCheckoutButton.tsx` |
-| `payment_dismissed` | User closes the checkout modal without paying | `src/components/payments/RazorpayCheckoutButton.tsx` |
-| `newsletter_subscribed` | User successfully submits the newsletter signup form | `src/components/NewsletterForm.tsx` |
+| Event                      | Description                                              | File                                                 |
+| -------------------------- | -------------------------------------------------------- | ---------------------------------------------------- |
+| `assessment_started`       | User clicks "Start Assessment" on the intro screen       | `src/components/assessment/AssessmentRunner.tsx`     |
+| `assessment_completed`     | User finishes all questions and results are scored       | `src/components/assessment/AssessmentRunner.tsx`     |
+| `assessment_retaken`       | User clicks Retake to restart a completed assessment     | `src/components/assessment/AssessmentRunner.tsx`     |
+| `assessment_result_shared` | User clicks the Share button on the results screen       | `src/components/assessment/ResultsView.tsx`          |
+| `email_captured`           | User submits their email in the OTP flow (gate or modal) | `src/components/auth/AuthModal.tsx`                  |
+| `user_signed_in`           | User is successfully authenticated via Supabase          | `src/context/AuthContext.tsx`                        |
+| `checkout_initiated`       | Razorpay checkout modal opened for a purchase            | `src/components/payments/RazorpayCheckoutButton.tsx` |
+| `purchase_completed`       | Razorpay payment handler fires after successful payment  | `src/components/payments/RazorpayCheckoutButton.tsx` |
+| `payment_dismissed`        | User closes the checkout modal without paying            | `src/components/payments/RazorpayCheckoutButton.tsx` |
+| `newsletter_subscribed`    | User successfully submits the newsletter signup form     | `src/components/NewsletterForm.tsx`                  |
 
 User identification: `posthog.identify(userId)` is called in `AuthContext` on both the initial session load (returning visitors) and on every `SIGNED_IN` event. `posthog.reset()` is called on sign-out to clear the anonymous session.
 

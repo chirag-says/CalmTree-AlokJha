@@ -5,7 +5,7 @@
 CalmTree already ships a consolidated single-page landing experience (hero → Decode Your Mind →
 Assessments → Academy preview → Resources preview → About → Newsletter) — there is no separate
 onboarding step today, and there doesn't need to be one. What's actually missing is everything
-*after* that: a way to turn anonymous visitors into tracked users, a way to charge for paid-tier
+_after_ that: a way to turn anonymous visitors into tracked users, a way to charge for paid-tier
 assessments and ebooks, a place logged-in users go (dashboard), and a place the client (Alok) goes
 to see who's using the site and what they're buying (admin panel + analytics).
 
@@ -19,11 +19,12 @@ dashboard and admin panel — dark green sidebar, card stat tiles, Recharts char
 installed), activity table — which this plan reuses structurally.
 
 **Decisions already confirmed with the client, not to be re-litigated:**
+
 - Free assessments need **zero login**. Full report/dimension breakdown is unlocked by entering an
   **email only** — this triggers a real (passwordless) Supabase account creation, so these users
   show up as real Users in the admin panel from step one.
 - Passwordless (OTP) is the **default, permanent login method** everywhere (header sign-in
-  included) — not just a one-off report-gate trick. Users may *optionally* set a password later in
+  included) — not just a one-off report-gate trick. Users may _optionally_ set a password later in
   account settings if they want a faster repeat login; password is never required.
 - Paid-tier purchases require OTP verification first (so payments always attach to a real user).
 - A paid assessment purchase unlocks the **whole product category** (matches the existing
@@ -34,7 +35,7 @@ installed), activity table — which this plan reuses structurally.
   session recording is skipped to keep the compliance surface small.
 - Payments = **Razorpay**. Ebooks = PDFs in **Cloudinary**, sold as individual one-time SKUs,
   delivered via short-lived **signed URLs** generated fresh per download request (permanent
-  *access*, not a permanent public link).
+  _access_, not a permanent public link).
 - Admin access = a simple `profiles.is_admin` boolean (no RBAC) — right scale for a founder + 1 VA.
 - **Scope for this build**: Assessments commercialization + Ebooks + Admin panel + Analytics.
   Academy/courses stay a **catalog page linking to a future third-party LMS** — no purchase flow
@@ -49,25 +50,27 @@ installed), activity table — which this plan reuses structurally.
 
 ## 1. Data model (new migrations, additive only — extends `002_auth_and_access.sql`) ✅ Done
 
-**Principle:** keep `entitlements` exactly as it is today (category/universal *access* for
+**Principle:** keep `entitlements` exactly as it is today (category/universal _access_ for
 assessments). Add a **parallel** `purchases` table for one-time SKU ownership (ebooks now,
 courses/certificates later via `product_type` — no rearchitecture needed when courses launch).
 Never let the client write either table directly; all writes go through service-role server code
 (webhook or admin-gated server function), matching the existing convention.
 
 `supabase/migrations/003_commerce.sql`: ✅
+
 - `public.ebooks` — catalog: `id, slug, title, subtitle, description, cover_image_url,
-  cloudinary_public_id, price_inr (whole rupees), page_count, status, created_at, updated_at`.
+cloudinary_public_id, price_inr (whole rupees), page_count, status, created_at, updated_at`.
   RLS: public SELECT where `status = 'active'` (browsing the catalog needs no login); writes
   service-role only.
 - `public.purchases` — one-time SKU ownership ledger: `id, user_id, product_type ('ebook' |
-  future 'course'/'certificate'/'physical_product'), product_id, amount_paid_inr,
-  razorpay_order_id, razorpay_payment_id (UNIQUE — webhook idempotency), status, purchased_at`.
+future 'course'/'certificate'/'physical_product'), product_id, amount_paid_inr,
+razorpay_order_id, razorpay_payment_id (UNIQUE — webhook idempotency), status, purchased_at`.
   RLS: user reads own rows; writes service-role only.
 - Add `UNIQUE (payment_reference)` to existing `entitlements` table (nullable-safe unique) for the
   same idempotency reason on the assessment-category purchase path.
 
 `supabase/migrations/004_admin.sql`: ✅
+
 - `ALTER TABLE public.profiles ADD COLUMN is_admin boolean NOT NULL DEFAULT false;`
 - Admin-read-all RLS policies added to `profiles`, `assessment_results`, `entitlements`,
   `purchases`: `EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND is_admin)`.
@@ -97,11 +100,13 @@ convention); convert to paise (`amount * 100`) only at the Razorpay order-creati
 ## 3. Assessment monetization flow (end-to-end) ✅ Done
 
 **Result saving:**
+
 - `src/hooks/useResultPersistence.ts`: ✅ `saveIfAuthed`, `stashForLater`, `claimStashed`,
   `hasPendingStash` — anonymous results stashed in sessionStorage, claimed on OTP verification.
 - `AssessmentRunner.tsx` and `ProfileRunner.tsx`: ✅ `saveIfAuthed` wired into `goNext` when scoring.
 
 **Teaser vs. full report:**
+
 - `src/components/assessment/ReportGate.tsx`: ✅ wraps dimension breakdowns.
   - No user → `EmailGateForm` inline card.
   - `useEntitlement` reason `"upgrade-required"` → `UpgradeGate` with `RazorpayCheckoutButton`.
@@ -151,11 +156,13 @@ been **deleted from this codebase**. Admin now lives on its own domain/deploymen
 server functions, and its own UI — fully separate from this repo.
 
 **What stays here** (shared Supabase project, so this schema is still load-bearing):
+
 - `supabase/migrations/004_admin.sql` — `profiles.is_admin` column + admin-read-all RLS policies.
   The admin.calmtree.in app reads/writes through these same tables and needs this schema/RLS to
   exist on the shared DB; it does not belong to "this app's frontend" the way the deleted routes did.
 
 **What was removed from this repo:**
+
 - `src/routes/admin/` (route.tsx, index.tsx, users.tsx, assessments.tsx, ebooks.tsx, entitlements.tsx)
 - `src/lib/api/admin.functions.ts`
 - `src/hooks/useIsAdmin.ts`
@@ -237,6 +244,7 @@ phased core — pick up as a fast-follow if time remains.
   this plan doesn't touch them.
 
 ### Critical files
+
 - `src/hooks/useEntitlement.ts` — existing access-check pattern, extended (not replaced) for report-depth gating
 - `src/lib/api/results.functions.ts` — the `requireUser` + service-role convention all new API modules must follow
 - `supabase/migrations/002_auth_and_access.sql` — schema/RLS/trigger conventions that 003/004 extend
@@ -249,6 +257,7 @@ phased core — pick up as a fast-follow if time remains.
 ## Next Steps
 
 ### Phase 9 — Landing page category chip row (⬜ Todo)
+
 Wire the `ProductCategory` filter into the assessments landing page:
 
 1. Add chip row above the assessment grid in `src/routes/assessments/index.tsx`:

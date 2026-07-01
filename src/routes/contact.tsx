@@ -73,9 +73,7 @@ function Page() {
               <Input
                 id="contact-name"
                 value={form.name}
-                onChange={(e) =>
-                  setForm({ ...form, name: e.target.value })
-                }
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
                 maxLength={100}
                 required
               />
@@ -86,9 +84,7 @@ function Page() {
                 id="contact-email"
                 type="email"
                 value={form.email}
-                onChange={(e) =>
-                  setForm({ ...form, email: e.target.value })
-                }
+                onChange={(e) => setForm({ ...form, email: e.target.value })}
                 maxLength={255}
                 required
               />
@@ -100,9 +96,7 @@ function Page() {
               id="contact-message"
               rows={6}
               value={form.message}
-              onChange={(e) =>
-                setForm({ ...form, message: e.target.value })
-              }
+              onChange={(e) => setForm({ ...form, message: e.target.value })}
               maxLength={1000}
               required
             />

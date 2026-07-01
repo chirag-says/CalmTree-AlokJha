@@ -22,16 +22,66 @@ const COLOR_CLASSES: Record<
   NonNullable<ProfileDef["color"]>,
   { border: string; bg: string; text: string; badge: string }
 > = {
-  blue:    { border: "border-blue-500/30",    bg: "bg-blue-500/5",    text: "text-blue-600 dark:text-blue-400",    badge: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300" },
-  emerald: { border: "border-emerald-500/30", bg: "bg-emerald-500/5", text: "text-emerald-600 dark:text-emerald-400", badge: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300" },
-  yellow:  { border: "border-yellow-500/30",  bg: "bg-yellow-500/5",  text: "text-yellow-600 dark:text-yellow-400",  badge: "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-300" },
-  amber:   { border: "border-amber-500/30",   bg: "bg-amber-500/5",   text: "text-amber-600 dark:text-amber-400",   badge: "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300" },
-  orange:  { border: "border-orange-500/30",  bg: "bg-orange-500/5",  text: "text-orange-600 dark:text-orange-400",  badge: "bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300" },
-  red:     { border: "border-red-500/30",     bg: "bg-red-500/5",     text: "text-red-600 dark:text-red-400",     badge: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300" },
-  purple:  { border: "border-purple-500/30",  bg: "bg-purple-500/5",  text: "text-purple-600 dark:text-purple-400",  badge: "bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300" },
-  violet:  { border: "border-violet-500/30",  bg: "bg-violet-500/5",  text: "text-violet-600 dark:text-violet-400",  badge: "bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300" },
-  teal:    { border: "border-teal-500/30",    bg: "bg-teal-500/5",    text: "text-teal-600 dark:text-teal-400",    badge: "bg-teal-100 text-teal-700 dark:bg-teal-900/40 dark:text-teal-300" },
-  green:   { border: "border-green-500/30",   bg: "bg-green-500/5",   text: "text-green-600 dark:text-green-400",   badge: "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300" },
+  blue: {
+    border: "border-blue-500/30",
+    bg: "bg-blue-500/5",
+    text: "text-blue-600 dark:text-blue-400",
+    badge: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300",
+  },
+  emerald: {
+    border: "border-emerald-500/30",
+    bg: "bg-emerald-500/5",
+    text: "text-emerald-600 dark:text-emerald-400",
+    badge: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300",
+  },
+  yellow: {
+    border: "border-yellow-500/30",
+    bg: "bg-yellow-500/5",
+    text: "text-yellow-600 dark:text-yellow-400",
+    badge: "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-300",
+  },
+  amber: {
+    border: "border-amber-500/30",
+    bg: "bg-amber-500/5",
+    text: "text-amber-600 dark:text-amber-400",
+    badge: "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300",
+  },
+  orange: {
+    border: "border-orange-500/30",
+    bg: "bg-orange-500/5",
+    text: "text-orange-600 dark:text-orange-400",
+    badge: "bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300",
+  },
+  red: {
+    border: "border-red-500/30",
+    bg: "bg-red-500/5",
+    text: "text-red-600 dark:text-red-400",
+    badge: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300",
+  },
+  purple: {
+    border: "border-purple-500/30",
+    bg: "bg-purple-500/5",
+    text: "text-purple-600 dark:text-purple-400",
+    badge: "bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300",
+  },
+  violet: {
+    border: "border-violet-500/30",
+    bg: "bg-violet-500/5",
+    text: "text-violet-600 dark:text-violet-400",
+    badge: "bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300",
+  },
+  teal: {
+    border: "border-teal-500/30",
+    bg: "bg-teal-500/5",
+    text: "text-teal-600 dark:text-teal-400",
+    badge: "bg-teal-100 text-teal-700 dark:bg-teal-900/40 dark:text-teal-300",
+  },
+  green: {
+    border: "border-green-500/30",
+    bg: "bg-green-500/5",
+    text: "text-green-600 dark:text-green-400",
+    badge: "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300",
+  },
 };
 
 export function ProfileResultsView({ config, result, onRetake }: ProfileResultsViewProps) {
@@ -115,16 +165,23 @@ export function ProfileResultsView({ config, result, onRetake }: ProfileResultsV
               <div className="space-y-4">
                 {config.profiles.map((profile) => {
                   const count = result.counts[profile.code] ?? 0;
-                  const pct = result.totalQuestions > 0 ? Math.round((count / result.totalQuestions) * 100) : 0;
+                  const pct =
+                    result.totalQuestions > 0
+                      ? Math.round((count / result.totalQuestions) * 100)
+                      : 0;
                   const isPrimary = profile.code === primary.code;
                   const profileColors = COLOR_CLASSES[profile.color] ?? COLOR_CLASSES.blue;
                   return (
                     <div key={profile.code}>
                       <div className="flex items-center justify-between mb-1.5">
-                        <span className={`text-sm font-medium ${isPrimary ? profileColors.text : "text-foreground"}`}>
+                        <span
+                          className={`text-sm font-medium ${isPrimary ? profileColors.text : "text-foreground"}`}
+                        >
                           {profile.label}
                           {isPrimary && (
-                            <span className={`ml-2 text-xs px-1.5 py-0.5 rounded-full ${profileColors.badge}`}>
+                            <span
+                              className={`ml-2 text-xs px-1.5 py-0.5 rounded-full ${profileColors.badge}`}
+                            >
                               Primary
                             </span>
                           )}
@@ -134,7 +191,9 @@ export function ProfileResultsView({ config, result, onRetake }: ProfileResultsV
                             </span>
                           )}
                         </span>
-                        <span className="text-xs text-muted-foreground">{count}/{result.totalQuestions}</span>
+                        <span className="text-xs text-muted-foreground">
+                          {count}/{result.totalQuestions}
+                        </span>
                       </div>
                       <div className="h-2 rounded-full bg-border overflow-hidden">
                         <div

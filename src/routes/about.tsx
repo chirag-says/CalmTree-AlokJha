@@ -38,19 +38,16 @@ function Page() {
           className="aspect-square rounded-3xl object-cover"
         />
         <div>
-          <h2 className="text-2xl md:text-3xl font-semibold">
-            Psychology that meets real life.
-          </h2>
+          <h2 className="text-2xl md:text-3xl font-semibold">Psychology that meets real life.</h2>
           <p className="mt-5 text-lg text-muted-foreground">
-            {SITE.founder} is an entrepreneur and psychology educator. With an
-            MBA and a Master's in Psychology, he brings together two worlds — the
-            practical clarity of business and the depth of psychological insight.
+            {SITE.founder} is an entrepreneur and psychology educator. With an MBA and a Master's in
+            Psychology, he brings together two worlds — the practical clarity of business and the
+            depth of psychological insight.
           </p>
           <p className="mt-4 text-lg text-muted-foreground">
-            He founded {SITE.name} to make psychology simple, practical and
-            useful in everyday life — not as therapy or medical advice, but as
-            education that helps you understand yourself and the people around
-            you.
+            He founded {SITE.name} to make psychology simple, practical and useful in everyday life
+            — not as therapy or medical advice, but as education that helps you understand yourself
+            and the people around you.
           </p>
 
           <div className="mt-10 grid gap-5 sm:grid-cols-2">
@@ -76,10 +73,7 @@ function Page() {
                 d: "Curious learners, professionals, and self-discoverers — India and beyond.",
               },
             ].map((b) => (
-              <div
-                key={b.t}
-                className="rounded-2xl border border-border bg-card p-5"
-              >
+              <div key={b.t} className="rounded-2xl border border-border bg-card p-5">
                 <b.icon className="h-5 w-5 text-primary" />
                 <h3 className="mt-3 font-semibold">{b.t}</h3>
                 <p className="mt-1 text-sm text-muted-foreground">{b.d}</p>

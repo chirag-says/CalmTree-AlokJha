@@ -4,9 +4,10 @@
  * Receives payment events from Razorpay and writes entitlements/purchases
  * to the database using the service-role client (bypasses RLS).
  *
- * IDEMPOTENT: uses ON CONFLICT DO NOTHING on the unique constraints
- * (entitlements.payment_reference, purchases.razorpay_payment_id) so
- * duplicate webhook deliveries are silently ignored.
+ * IDEMPOTENT: unique constraints on entitlements.payment_reference and
+ * purchases.razorpay_payment_id mean a duplicate insert fails with Postgres
+ * error 23505 (unique_violation), which is treated as an already-processed
+ * no-op rather than a real failure.
  *
  * Security: signature is verified via HMAC-SHA256 before any DB writes.
  *
@@ -18,32 +19,15 @@
 
 import { createFileRoute } from "@tanstack/react-router";
 import crypto from "crypto";
-import { createClient } from "@supabase/supabase-js";
+import { getAdminClient } from "@/lib/api/_shared";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
-function getAdminClient() {
-  const url = process.env.SUPABASE_URL;
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !serviceRoleKey) {
-    throw new Error("[webhook] SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY is not set.");
-  }
-  return createClient(url, serviceRoleKey, {
-    auth: { autoRefreshToken: false, persistSession: false },
-  });
-}
-
 function verifySignature(body: string, signature: string, secret: string): boolean {
-  const expected = crypto
-    .createHmac("sha256", secret)
-    .update(body)
-    .digest("hex");
+  const expected = crypto.createHmac("sha256", secret).update(body).digest("hex");
   // Use timingSafeEqual to prevent timing attacks
   try {
-    return crypto.timingSafeEqual(
-      Buffer.from(expected, "hex"),
-      Buffer.from(signature, "hex"),
-    );
+    return crypto.timingSafeEqual(Buffer.from(expected, "hex"), Buffer.from(signature, "hex"));
   } catch {
     return false;
   }
@@ -92,31 +76,47 @@ export const Route = createFileRoute("/api/webhooks/razorpay")({
           return new Response("Missing payment entity", { status: 400 });
         }
 
-        const razorpayPaymentId = paymentEntity.id as string;
-        const razorpayOrderId = paymentEntity.order_id as string;
-        const amountPaise = paymentEntity.amount as number;
+        const razorpayPaymentId = paymentEntity.id;
+        const razorpayOrderId = paymentEntity.order_id;
+        const amountPaise = paymentEntity.amount;
         const notes = paymentEntity.notes as Record<string, string> | undefined;
 
-        if (!notes?.productType || !notes?.productRef || !notes?.userId) {
+        if (
+          typeof razorpayPaymentId !== "string" ||
+          !razorpayPaymentId ||
+          typeof razorpayOrderId !== "string" ||
+          !razorpayOrderId ||
+          typeof amountPaise !== "number" ||
+          !Number.isFinite(amountPaise)
+        ) {
+          console.error("[razorpay-webhook] Malformed payment entity:", paymentEntity);
+          return new Response("Malformed payment entity", { status: 400 });
+        }
+
+        if (!notes?.productType || !notes?.userId) {
           console.error("[razorpay-webhook] Missing required notes:", notes);
           return new Response("Missing order notes", { status: 400 });
         }
 
-        const { productType, productRef, userId } = notes;
+        const { productType, userId } = notes;
         const amountInr = Math.round(amountPaise / 100);
 
         const supabase = getAdminClient();
 
         if (productType === "assessment_category") {
-          // Grant category entitlement
-          // TIER -> productCategory mapping: productRef is the tier name ('growth'|'professional')
-          // Map to the actual productCategory string from the assessment config
-          // For now, productRef IS the tier name — the webhook stores what the client passed.
-          // Idempotent: unique index on payment_reference
+          if (!notes.tier || !notes.productCategory) {
+            console.error("[razorpay-webhook] Missing tier/productCategory in notes:", notes);
+            return new Response("Missing order notes", { status: 400 });
+          }
+
+          // Grant category entitlement — product_category is the real ProductCategory
+          // string (matches config.meta.productCategory), NOT the tier name; the tier
+          // only ever decided the price at order-creation time.
+          // Idempotent: unique index on payment_reference.
           const { error } = await supabase.from("entitlements").insert({
             user_id: userId,
             access_type: "category",
-            product_category: productRef, // tier name used as category key for now
+            product_category: notes.productCategory,
             expires_at: null,
             payment_reference: razorpayPaymentId,
           });
@@ -127,12 +127,17 @@ export const Route = createFileRoute("/api/webhooks/razorpay")({
             return new Response("DB error", { status: 500 });
           }
         } else if (productType === "ebook") {
+          if (!notes.productRef) {
+            console.error("[razorpay-webhook] Missing productRef in notes:", notes);
+            return new Response("Missing order notes", { status: 400 });
+          }
+
           // Record ebook purchase
           // Idempotent: UNIQUE on razorpay_payment_id
           const { error } = await supabase.from("purchases").insert({
             user_id: userId,
             product_type: "ebook",
-            product_id: productRef,
+            product_id: notes.productRef,
             amount_paid_inr: amountInr,
             razorpay_order_id: razorpayOrderId,
             razorpay_payment_id: razorpayPaymentId,
@@ -148,7 +153,7 @@ export const Route = createFileRoute("/api/webhooks/razorpay")({
         }
 
         console.log(
-          `[razorpay-webhook] Processed payment.captured: ${razorpayPaymentId} | type=${productType} | ref=${productRef}`,
+          `[razorpay-webhook] Processed payment.captured: ${razorpayPaymentId} | type=${productType}`,
         );
 
         return new Response("OK", { status: 200 });

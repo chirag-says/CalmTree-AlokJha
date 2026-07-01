@@ -5,15 +5,7 @@ import { YouTubeEmbed } from "@/components/shared/YouTubeEmbed";
 import { SocialLinks } from "@/components/shared/SocialLinks";
 import { SITE } from "@/data/constants";
 import { SOCIAL } from "@/data/social";
-import {
-  Youtube,
-  Instagram,
-  Play,
-  Brain,
-  HeartPulse,
-  Users,
-  Sparkles,
-} from "lucide-react";
+import { Youtube, Instagram, Play, Brain, HeartPulse, Users, Sparkles } from "lucide-react";
 
 export const Route = createFileRoute("/decode-your-mind")({
   head: () => ({
@@ -85,21 +77,13 @@ function Page() {
       <section className="mx-auto max-w-6xl px-5 py-16">
         <div className="flex flex-wrap gap-3">
           <Button size="lg" className="h-12 px-5" asChild>
-            <a
-              href={SOCIAL.youtube.url}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+            <a href={SOCIAL.youtube.url} target="_blank" rel="noopener noreferrer">
               <Youtube className="h-4 w-4" />
               Subscribe on YouTube
             </a>
           </Button>
           <Button size="lg" variant="secondary" className="h-12 px-5" asChild>
-            <a
-              href={SOCIAL.instagram.url}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+            <a href={SOCIAL.instagram.url} target="_blank" rel="noopener noreferrer">
               <Instagram className="h-4 w-4" />
               Follow on Instagram
             </a>
@@ -108,9 +92,7 @@ function Page() {
       </section>
 
       <section className="mx-auto max-w-6xl px-5 pb-16">
-        <h2 className="text-2xl md:text-3xl font-semibold mb-8">
-          Latest videos
-        </h2>
+        <h2 className="text-2xl md:text-3xl font-semibold mb-8">Latest videos</h2>
         <div className="grid gap-5 md:grid-cols-3">
           {videos.map((v) => (
             <article
@@ -126,9 +108,7 @@ function Page() {
               )}
               <div className="p-5">
                 <h3 className="font-semibold">{v.title}</h3>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  Decode Your Mind
-                </p>
+                <p className="mt-1 text-sm text-muted-foreground">Decode Your Mind</p>
               </div>
             </article>
           ))}
@@ -136,9 +116,7 @@ function Page() {
       </section>
 
       <section className="mx-auto max-w-6xl px-5 pb-16">
-        <h2 className="text-2xl md:text-3xl font-semibold mb-8">
-          From Instagram
-        </h2>
+        <h2 className="text-2xl md:text-3xl font-semibold mb-8">From Instagram</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {Array.from({ length: 8 }).map((_, i) => (
             <a
@@ -155,15 +133,10 @@ function Page() {
       </section>
 
       <section className="mx-auto max-w-6xl px-5 pb-24">
-        <h2 className="text-2xl md:text-3xl font-semibold mb-8">
-          What we cover
-        </h2>
+        <h2 className="text-2xl md:text-3xl font-semibold mb-8">What we cover</h2>
         <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
           {topics.map((t) => (
-            <div
-              key={t.title}
-              className="rounded-2xl border border-border bg-card p-6"
-            >
+            <div key={t.title} className="rounded-2xl border border-border bg-card p-6">
               <t.icon className="h-6 w-6 text-primary" />
               <h3 className="mt-3 font-semibold">{t.title}</h3>
               <p className="mt-2 text-sm text-muted-foreground">{t.body}</p>

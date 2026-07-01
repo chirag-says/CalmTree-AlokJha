@@ -67,9 +67,7 @@ function Page() {
         </div>
       ) : results.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-border p-10 text-center">
-          <p className="text-sm text-muted-foreground mb-4">
-            No assessments completed yet.
-          </p>
+          <p className="text-sm text-muted-foreground mb-4">No assessments completed yet.</p>
           <Button asChild>
             <a href="/assessments">
               Start an assessment
@@ -91,14 +89,10 @@ function Page() {
                 </p>
                 <p className="text-xs text-primary font-medium mt-1">{r.primary_label}</p>
                 {r.secondary_label && (
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    Blend: {r.secondary_label}
-                  </p>
+                  <p className="text-xs text-muted-foreground mt-0.5">Blend: {r.secondary_label}</p>
                 )}
                 {r.percentage != null && (
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    Score: {r.percentage}%
-                  </p>
+                  <p className="text-xs text-muted-foreground mt-0.5">Score: {r.percentage}%</p>
                 )}
               </div>
               <div className="flex items-center gap-1 text-xs text-muted-foreground shrink-0 ml-4 mt-0.5">

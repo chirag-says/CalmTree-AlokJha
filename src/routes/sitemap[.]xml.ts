@@ -5,14 +5,7 @@ import type {} from "@tanstack/react-start";
 interface SitemapEntry {
   path: string;
   lastmod?: string;
-  changefreq?:
-    | "always"
-    | "hourly"
-    | "daily"
-    | "weekly"
-    | "monthly"
-    | "yearly"
-    | "never";
+  changefreq?: "always" | "hourly" | "daily" | "weekly" | "monthly" | "yearly" | "never";
   priority?: string;
 }
 
@@ -43,9 +36,7 @@ export const Route = createFileRoute("/sitemap.xml")({
             `  <url>`,
             `    <loc>${SITE.url}${e.path}</loc>`,
             `    <lastmod>${today}</lastmod>`,
-            e.changefreq
-              ? `    <changefreq>${e.changefreq}</changefreq>`
-              : null,
+            e.changefreq ? `    <changefreq>${e.changefreq}</changefreq>` : null,
             e.priority ? `    <priority>${e.priority}</priority>` : null,
             `  </url>`,
           ]

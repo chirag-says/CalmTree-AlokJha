@@ -6,6 +6,7 @@
  */
 
 import { useState, useCallback } from "react";
+import { usePostHog } from "@posthog/react";
 import { Button } from "@/components/ui/button";
 import { ProfileResultsView } from "./ProfileResultsView";
 import { scoreAssessment } from "@/lib/assessment-engine";
@@ -27,6 +28,7 @@ export function ProfileRunner({ config }: ProfileRunnerProps) {
   const [result, setResult] = useState<ProfileResult | null>(null);
 
   const { saveIfAuthed } = useResultPersistence();
+  const posthog = usePostHog();
 
   const { profileQuestions } = config;
   const currentQ = profileQuestions[currentIndex];
@@ -51,10 +53,17 @@ export function ProfileRunner({ config }: ProfileRunnerProps) {
       setResult(scored);
       // Save immediately if logged in, stash in sessionStorage if anonymous.
       void saveIfAuthed(config, scored, answers);
+      posthog.capture("assessment_completed", {
+        assessment: config.meta.title,
+        slug: config.slug,
+        tier: config.tier,
+        result_type: scored.type,
+        question_count: config.meta.questionCount,
+      });
     } else {
       setCurrentIndex((i) => i + 1);
     }
-  }, [isLast, config, answers, saveIfAuthed]);
+  }, [isLast, config, answers, saveIfAuthed, posthog]);
 
   const goPrev = useCallback(() => {
     if (!isFirst) setCurrentIndex((i) => i - 1);
@@ -65,7 +74,22 @@ export function ProfileRunner({ config }: ProfileRunnerProps) {
     setCurrentIndex(0);
     setResult(null);
     setStarted(false);
-  }, []);
+    posthog.capture("assessment_retaken", {
+      assessment: config.meta.title,
+      slug: config.slug,
+      tier: config.tier,
+    });
+  }, [posthog, config]);
+
+  const handleStart = useCallback(() => {
+    setStarted(true);
+    posthog.capture("assessment_started", {
+      assessment: config.meta.title,
+      slug: config.slug,
+      tier: config.tier,
+      question_count: config.meta.questionCount,
+    });
+  }, [posthog, config]);
 
   // ── Results ──
   if (result) {
@@ -109,7 +133,7 @@ export function ProfileRunner({ config }: ProfileRunnerProps) {
           <p className="text-sm text-muted-foreground">{config.instructions}</p>
         </div>
 
-        <Button size="lg" className="h-12 px-8" onClick={() => setStarted(true)}>
+        <Button size="lg" className="h-12 px-8" onClick={handleStart}>
           Start Assessment
           <ArrowRight className="h-4 w-4" />
         </Button>

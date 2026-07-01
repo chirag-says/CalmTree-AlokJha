@@ -6,7 +6,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import { getMyPurchasedEbookIds, getActiveEbooks, getEbookDownloadUrl } from "@/lib/api/ebooks.functions";
+import {
+  getMyPurchasedEbookIds,
+  getActiveEbooks,
+  getEbookDownloadUrl,
+} from "@/lib/api/ebooks.functions";
 import { Download, FileText, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -48,9 +52,15 @@ function DownloadButton({ ebookId, session }: { ebookId: string; session: string
   return (
     <Button size="sm" onClick={handleDownload} disabled={loading}>
       {loading ? (
-        <><Loader2 className="h-4 w-4 animate-spin" />Generating link…</>
+        <>
+          <Loader2 className="h-4 w-4 animate-spin" />
+          Generating link…
+        </>
       ) : (
-        <><Download className="h-4 w-4" />Download PDF</>
+        <>
+          <Download className="h-4 w-4" />
+          Download PDF
+        </>
       )}
     </Button>
   );
@@ -69,9 +79,7 @@ function Page() {
       getMyPurchasedEbookIds({ data: { accessToken: session.access_token } }),
       getActiveEbooks({ data: {} }),
     ]).then(([purchasedRes, catalogRes]) => {
-      const ids = new Set(
-        "error" in purchasedRes ? [] : purchasedRes.ebookIds,
-      );
+      const ids = new Set("error" in purchasedRes ? [] : purchasedRes.ebookIds);
       const all = "error" in catalogRes ? [] : (catalogRes.ebooks as EbookRow[]);
       setEbooks(all.filter((e) => ids.has(e.id)));
       setLoading(false);
@@ -96,9 +104,7 @@ function Page() {
       ) : ebooks.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-border p-10 text-center">
           <FileText className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
-          <p className="text-sm text-muted-foreground">
-            You haven't purchased any ebooks yet.
-          </p>
+          <p className="text-sm text-muted-foreground">You haven't purchased any ebooks yet.</p>
           <Button asChild className="mt-4">
             <a href="/resources">Browse ebooks</a>
           </Button>
@@ -106,10 +112,7 @@ function Page() {
       ) : (
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {ebooks.map((e) => (
-            <div
-              key={e.id}
-              className="rounded-2xl border border-border bg-card p-5 flex flex-col"
-            >
+            <div key={e.id} className="rounded-2xl border border-border bg-card p-5 flex flex-col">
               <div className="h-28 rounded-xl bg-gradient-to-br from-accent/40 to-primary/15 flex items-center justify-center mb-4">
                 {e.cover_image_url ? (
                   <img
@@ -122,9 +125,7 @@ function Page() {
                 )}
               </div>
               <h3 className="text-sm font-semibold leading-snug">{e.title}</h3>
-              {e.subtitle && (
-                <p className="text-xs text-muted-foreground mt-1">{e.subtitle}</p>
-              )}
+              {e.subtitle && <p className="text-xs text-muted-foreground mt-1">{e.subtitle}</p>}
               {e.page_count && (
                 <p className="text-xs text-muted-foreground mt-1">{e.page_count} pages</p>
               )}

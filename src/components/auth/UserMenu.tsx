@@ -26,9 +26,7 @@ export function UserMenu() {
 
   if (loading) {
     // Tiny skeleton to avoid layout shift
-    return (
-      <div className="h-9 w-20 rounded-full bg-muted animate-pulse" />
-    );
+    return <div className="h-9 w-20 rounded-full bg-muted animate-pulse" />;
   }
 
   if (!user) {
@@ -50,7 +48,9 @@ export function UserMenu() {
 
   // Derive display initial
   const displayName = user.user_metadata?.full_name as string | undefined;
-  const initial = displayName ? displayName[0].toUpperCase() : (user.email?.[0].toUpperCase() ?? "U");
+  const initial = displayName
+    ? displayName[0].toUpperCase()
+    : (user.email?.[0].toUpperCase() ?? "U");
 
   async function handleSignOut() {
     await signOut();

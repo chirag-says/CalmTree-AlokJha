@@ -75,8 +75,8 @@ function Footer() {
         <div className="md:col-span-2">
           <Logo static />
           <p className="mt-3 text-sm text-muted-foreground max-w-sm">
-            Decode Your Mind by {SITE.name}. Psychology education, courses,
-            assessments, and resources for everyday self-awareness and growth.
+            Decode Your Mind by {SITE.name}. Psychology education, courses, assessments, and
+            resources for everyday self-awareness and growth.
           </p>
           <div className="mt-5 flex gap-3">
             <SocialLinks platforms={["youtube", "instagram"]} />
@@ -146,23 +146,16 @@ export function PageHeader({
   description?: string;
 }) {
   return (
-    <section
-      className="border-b border-border/60"
-      style={{ background: "var(--gradient-hero)" }}
-    >
+    <section className="border-b border-border/60" style={{ background: "var(--gradient-hero)" }}>
       <div className="mx-auto max-w-6xl px-5 py-16 md:py-24">
         {eyebrow && (
           <p className="text-xs font-medium tracking-[0.18em] uppercase text-primary mb-4">
             {eyebrow}
           </p>
         )}
-        <h1 className="text-4xl md:text-5xl font-semibold text-foreground max-w-3xl">
-          {title}
-        </h1>
+        <h1 className="text-4xl md:text-5xl font-semibold text-foreground max-w-3xl">{title}</h1>
         {description && (
-          <p className="mt-5 text-lg text-muted-foreground max-w-2xl">
-            {description}
-          </p>
+          <p className="mt-5 text-lg text-muted-foreground max-w-2xl">{description}</p>
         )}
       </div>
     </section>

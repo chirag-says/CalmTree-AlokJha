@@ -6,7 +6,6 @@
  * Password auth is kept as a secondary path for users who have set one.
  */
 
-import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase";
 
 export async function signUp(
@@ -25,10 +24,7 @@ export async function signUp(
   return { error: error?.message ?? null };
 }
 
-export async function signIn(
-  email: string,
-  password: string,
-): Promise<{ error: string | null }> {
+export async function signIn(email: string, password: string): Promise<{ error: string | null }> {
   if (!supabase) return { error: "Auth is not configured." };
   const { error } = await supabase.auth.signInWithPassword({ email, password });
   return { error: error?.message ?? null };
@@ -37,22 +33,6 @@ export async function signIn(
 export async function signOut(): Promise<void> {
   if (!supabase) return;
   await supabase.auth.signOut();
-}
-
-export async function getSession(): Promise<Session | null> {
-  if (!supabase) return null;
-  const { data } = await supabase.auth.getSession();
-  return data.session;
-}
-
-export function onAuthStateChange(
-  callback: (user: User | null, session: Session | null) => void,
-): () => void {
-  if (!supabase) return () => {};
-  const { data } = supabase.auth.onAuthStateChange((_event, session) => {
-    callback(session?.user ?? null, session);
-  });
-  return () => data.subscription.unsubscribe();
 }
 
 // ─── OTP auth (primary path) ─────────────────────────────────────────────────
@@ -79,10 +59,7 @@ export async function sendOtp(email: string): Promise<{ error: string | null }> 
  * Verifies the 6-digit OTP the user received by email.
  * On success the Supabase session is set and AuthContext picks it up automatically.
  */
-export async function verifyOtp(
-  email: string,
-  token: string,
-): Promise<{ error: string | null }> {
+export async function verifyOtp(email: string, token: string): Promise<{ error: string | null }> {
   if (!supabase) return { error: "Auth is not configured." };
   const { error } = await supabase.auth.verifyOtp({
     email,

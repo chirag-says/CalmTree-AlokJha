@@ -104,8 +104,7 @@ function UpgradeGate({ config }: { config: AnyAssessmentConfig }) {
       </div>
       <h3 className="text-xl font-semibold mb-2">Unlock the Full Report</h3>
       <p className="text-sm text-muted-foreground mb-1">
-        The dimension breakdown is part of the{" "}
-        <strong>{tierInfo.label}</strong> tier.
+        The dimension breakdown is part of the <strong>{tierInfo.label}</strong> tier.
       </p>
       <p className="text-sm text-muted-foreground mb-6">
         One purchase unlocks all <strong>{config.meta.productCategory}</strong> assessments.
@@ -113,7 +112,8 @@ function UpgradeGate({ config }: { config: AnyAssessmentConfig }) {
 
       <RazorpayCheckoutButton
         productType="assessment_category"
-        productRef={tier}
+        tier={tier as "growth" | "professional"}
+        productCategory={config.meta.productCategory}
         label={`Unlock for ${tierInfo.price}`}
         size="lg"
         className="gap-2"

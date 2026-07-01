@@ -83,9 +83,7 @@ function Page() {
     <div>
       <div className="mb-8">
         <h1 className="text-2xl font-semibold">Settings</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Manage your account details.
-        </p>
+        <p className="mt-1 text-sm text-muted-foreground">Manage your account details.</p>
       </div>
 
       <div className="space-y-8 max-w-lg">
@@ -120,7 +118,10 @@ function Page() {
             </div>
             <Button type="submit" disabled={nameForm.formState.isSubmitting}>
               {nameForm.formState.isSubmitting ? (
-                <><Loader2 className="h-4 w-4 animate-spin" />Saving…</>
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Saving…
+                </>
               ) : (
                 "Save name"
               )}
@@ -132,8 +133,8 @@ function Page() {
         <div className="rounded-2xl border border-border bg-card p-6">
           <h2 className="text-base font-semibold mb-1">Password (optional)</h2>
           <p className="text-sm text-muted-foreground mb-4">
-            Set a password if you'd like a faster way to sign in. You can always still use
-            the email code method instead.
+            Set a password if you'd like a faster way to sign in. You can always still use the email
+            code method instead.
           </p>
           {!showPasswordForm ? (
             <Button variant="outline" onClick={() => setShowPasswordForm(true)}>
@@ -174,7 +175,10 @@ function Page() {
               <div className="flex gap-3">
                 <Button type="submit" disabled={passwordForm.formState.isSubmitting}>
                   {passwordForm.formState.isSubmitting ? (
-                    <><Loader2 className="h-4 w-4 animate-spin" />Setting…</>
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Setting…
+                    </>
                   ) : (
                     "Set password"
                   )}

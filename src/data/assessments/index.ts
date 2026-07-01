@@ -126,24 +126,27 @@ export function getAssessment(slug: string): AnyAssessmentConfig | undefined {
 /** Tier metadata for display */
 export const TIER_INFO: Record<
   AssessmentTier,
-  { label: string; description: string; price: string; color: string }
+  { label: string; description: string; price: string; priceInr: number | null; color: string }
 > = {
   discovery: {
     label: "Discovery",
     description: "Free self-checks to understand where you are today.",
     price: "Free",
+    priceInr: null,
     color: "green",
   },
   growth: {
     label: "Growth",
     description: "Deeper assessments with detailed reports and insights.",
-    price: "₹99–299",
+    price: "₹99",
+    priceInr: 99,
     color: "blue",
   },
   professional: {
     label: "Professional",
     description: "Premium assessments for leaders, teams, and career growth.",
-    price: "₹299–999",
+    price: "₹299",
+    priceInr: 299,
     color: "purple",
   },
 };

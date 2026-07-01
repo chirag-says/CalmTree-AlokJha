@@ -1,10 +1,13 @@
 /**
- * useEntitlement — checks whether the current user can access a given assessment.
+ * useEntitlement — checks whether the current user can see the FULL report for
+ * a given assessment (the teaser above the gate is always visible to everyone).
  *
  * Rules:
- *   - isFree assessments: always accessible, no login required
- *   - Logged-in users: fetch their entitlements once, cache in context
- *   - "free" entitlement row: unlocks all isFree assessments
+ *   - isFree assessments: taking the quiz needs no login, but the full report
+ *     still needs an account — anonymous users get reason: null (email-gate copy),
+ *     logged-in users get hasAccess: true immediately (no paid entitlement needed).
+ *   - Paid-tier assessments, no user: reason "login-required".
+ *   - Logged-in users: fetch their entitlements once, cache in context.
  *   - "category" entitlement row: unlocks all assessments in that productCategory
  *   - "universal" entitlement row (product_category = null): unlocks everything
  *   - Expired entitlements are ignored
@@ -83,19 +86,22 @@ export function useEntitlement(config: AnyAssessmentConfig): UseEntitlementResul
   // Still loading auth
   if (authLoading) return { hasAccess: false, loading: true, reason: null };
 
-  // Free assessments — always open
-  if (isFree) return { hasAccess: true, loading: false, reason: null };
+  // Not logged in
+  if (!user) {
+    // Free assessments: the quiz itself needs no login, but the full report
+    // does — reason: null signals "email-gate", distinct from a paid paywall.
+    if (isFree) return { hasAccess: false, loading: false, reason: null };
+    return { hasAccess: false, loading: false, reason: "login-required" };
+  }
 
-  // Paid assessment, not logged in
-  if (!user) return { hasAccess: false, loading: false, reason: "login-required" };
+  // Logged in — free assessments unlock immediately, no purchase needed.
+  if (isFree) return { hasAccess: true, loading: false, reason: null };
 
   // Still fetching entitlements
   if (loading || entitlements === null) return { hasAccess: false, loading: true, reason: null };
 
   const now = new Date();
-  const active = entitlements.filter(
-    (e) => !e.expires_at || new Date(e.expires_at) > now,
-  );
+  const active = entitlements.filter((e) => !e.expires_at || new Date(e.expires_at) > now);
 
   // Universal access
   if (active.some((e) => e.access_type === "universal")) {

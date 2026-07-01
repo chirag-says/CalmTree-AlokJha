@@ -14,8 +14,7 @@ export const SITE = {
   founder: "Alok Jha",
   founderTitle: "Founder of Calmtree. Psychology educator.",
   /** Legal disclaimer shown in footer and assessment pages */
-  disclaimer:
-    "Psychology education — not medical or counselling advice.",
+  disclaimer: "Psychology education — not medical or counselling advice.",
   location: "India",
   logoPath: "/logo.png",
 } as const;

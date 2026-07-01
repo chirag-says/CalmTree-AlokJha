@@ -192,12 +192,9 @@ export function PersonalityCompassResults({
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
       {/* Header */}
       <div className="text-center mb-10">
-        <h2 className="text-3xl md:text-4xl font-semibold mb-2">
-          Your Personality Profile
-        </h2>
+        <h2 className="text-3xl md:text-4xl font-semibold mb-2">Your Personality Profile</h2>
         <p className="text-muted-foreground">
-          {config.meta.title} · {result.answeredCount} of {result.totalQuestions}{" "}
-          questions answered
+          {config.meta.title} · {result.answeredCount} of {result.totalQuestions} questions answered
         </p>
       </div>
 
@@ -206,9 +203,7 @@ export function PersonalityCompassResults({
         <p className="text-xs uppercase tracking-widest text-muted-foreground mb-2">
           Your Personality Archetype
         </p>
-        <h3 className="text-2xl md:text-3xl font-semibold text-primary mb-3">
-          {archetype.label}
-        </h3>
+        <h3 className="text-2xl md:text-3xl font-semibold text-primary mb-3">{archetype.label}</h3>
         <p className="text-muted-foreground leading-relaxed max-w-lg mx-auto">
           {archetype.description}
         </p>
@@ -218,9 +213,7 @@ export function PersonalityCompassResults({
       <div className="mb-8">
         <ReportGate config={config}>
           <div className="rounded-2xl border border-border bg-card p-6 md:p-8">
-            <h3 className="text-xl font-semibold mb-6 text-center">
-              Your Four Dimensions
-            </h3>
+            <h3 className="text-xl font-semibold mb-6 text-center">Your Four Dimensions</h3>
             <RadarChart dimensions={dimensions} />
           </div>
         </ReportGate>
@@ -228,8 +221,8 @@ export function PersonalityCompassResults({
 
       {/* Source attribution */}
       <p className="text-xs text-muted-foreground mb-8">
-        Calmtree Original Assessment™ · This is an educational self-check, not a
-        clinical diagnosis. {SITE.disclaimer}
+        Calmtree Original Assessment™ · This is an educational self-check, not a clinical diagnosis.{" "}
+        {SITE.disclaimer}
       </p>
 
       {/* Actions */}

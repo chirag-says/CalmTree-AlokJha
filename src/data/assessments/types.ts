@@ -26,6 +26,18 @@ export type ScaleOption = { label: string; value: number };
 
 // ─── Tier & Category ────────────────────────────────────────────────
 
+export type ProductCategory =
+  | "Self-Awareness & Personality"
+  | "Emotional Strength & Everyday Mind"
+  | "Relationships & Emotional Connection"
+  | "Workplace Effectiveness"
+  | "Leadership & Teams"
+  | "Founders & Entrepreneurship"
+  | "Gen Z & Digital Life"
+  | "Career Direction"
+  | "Family & Parenting"
+  | "Life Transitions & Healthy Ageing";
+
 export type AssessmentTier = "discovery" | "growth" | "professional";
 export type AssessmentCategory =
   | "Mental Wellness"
@@ -34,7 +46,7 @@ export type AssessmentCategory =
   | "Relationships"
   | "Lifestyle";
 
-export type AssessmentType = "standard" | "personality-compass";
+export type AssessmentType = "standard" | "personality-compass" | "profile-based";
 
 // ─── Core Assessment Config ──────────────────────────────────────────
 
@@ -69,6 +81,10 @@ export interface AssessmentMeta {
   duration: string;
   questionCount: number;
   icon: AssessmentIcon;
+  /** One of the 10 Calmtree product categories */
+  productCategory: ProductCategory;
+  /** Whether this assessment is available on the free tier */
+  isFree: boolean;
 }
 
 export type AssessmentIcon =
@@ -87,7 +103,16 @@ export type AssessmentIcon =
   | "compass"
   | "shield"
   | "target"
-  | "zap";
+  | "zap"
+  | "layers"
+  | "activity"
+  | "award"
+  | "settings"
+  | "trending-up"
+  | "eye"
+  | "git-branch"
+  | "refresh-cw"
+  | "alert-circle";
 
 // ─── Questions ──────────────────────────────────────────────────────
 
@@ -201,7 +226,69 @@ export interface PersonalityDimension {
   leaning: "low" | "balanced" | "high";
 }
 
-export type AssessmentResult = StandardResult | PersonalityCompassResult;
+// ─── Profile-Based Assessment Types ────────────────────────────────
+
+export interface ProfileOption {
+  label: string;
+  /** e.g. "A", "B", "C", "D", "E" */
+  profileCode: string;
+}
+
+export interface ProfileQuestion {
+  id: string;
+  text: string;
+  options: ProfileOption[];
+}
+
+export interface ProfileDef {
+  code: string;
+  label: string;
+  meaning: string;
+  interpretation: string;
+  nextStep: string;
+  color:
+    | "green"
+    | "emerald"
+    | "yellow"
+    | "amber"
+    | "orange"
+    | "red"
+    | "blue"
+    | "purple"
+    | "violet"
+    | "teal";
+}
+
+export interface ProfileAssessmentConfig {
+  slug: string;
+  order: number;
+  type: "profile-based";
+  tier: AssessmentTier;
+  category: AssessmentCategory;
+  status: "active" | "draft" | "archived";
+  meta: AssessmentMeta;
+  instructions: string;
+  profileQuestions: ProfileQuestion[];
+  profiles: ProfileDef[];
+  tieBreakQuestionIds: string[];
+  dimensions: DimensionDef[];
+}
+
+// ─── Profile-Based Result ─────────────────────────────────────────
+
+export interface ProfileResult {
+  type: "profile-based";
+  /** The winning profile */
+  primary: ProfileDef;
+  /** Second-place profile if within 1 point of primary */
+  secondary?: ProfileDef;
+  /** Raw counts per profile code */
+  counts: Record<string, number>;
+  answeredCount: number;
+  totalQuestions: number;
+}
+
+export type AssessmentResult = StandardResult | PersonalityCompassResult | ProfileResult;
 
 // ─── Runtime State ──────────────────────────────────────────────────
 

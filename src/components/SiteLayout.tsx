@@ -4,6 +4,7 @@ import { Menu, X, Mail, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/shared/Logo";
 import { SocialLinks } from "@/components/shared/SocialLinks";
+import { UserMenu } from "@/components/auth/UserMenu";
 import { NAV_LINKS, FOOTER_LINKS } from "@/data/navigation";
 import { SITE } from "@/data/constants";
 
@@ -35,6 +36,7 @@ function Header() {
               <ArrowRight className="h-3.5 w-3.5" />
             </Link>
           </Button>
+          <UserMenu />
           <button
             aria-label="Menu"
             className="lg:hidden inline-flex h-10 w-10 items-center justify-center rounded-lg hover:bg-muted"

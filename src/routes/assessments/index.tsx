@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button";
 import { SITE } from "@/data/constants";
 import { getAssessmentsByTier, TIER_INFO } from "@/data/assessments";
 import { TierBadge } from "@/components/assessment/TierBadge";
-import type { AssessmentConfig, AssessmentTier, AssessmentIcon } from "@/data/assessments/types";
+import type { AssessmentTier, AssessmentIcon } from "@/data/assessments/types";
+import type { AnyAssessmentConfig } from "@/data/assessments";
 import {
   Flame,
   Brain,
@@ -25,9 +26,18 @@ import {
   Shield,
   Target,
   Zap,
+  Layers,
+  Activity,
+  Award,
+  Settings,
+  TrendingUp,
+  Eye,
+  GitBranch,
+  RefreshCw,
+  AlertCircle,
 } from "lucide-react";
 
-export const Route = createFileRoute("/assessments/")(({
+export const Route = createFileRoute("/assessments/")({
   head: () => ({
     meta: [
       { title: `Psychology Assessments — ${SITE.name}` },
@@ -47,7 +57,7 @@ export const Route = createFileRoute("/assessments/")(({
     ],
   }),
   component: Page,
-}));
+});
 
 const ICON_MAP: Record<AssessmentIcon, React.ComponentType<{ className?: string }>> = {
   flame: Flame,
@@ -66,9 +76,18 @@ const ICON_MAP: Record<AssessmentIcon, React.ComponentType<{ className?: string 
   shield: Shield,
   target: Target,
   zap: Zap,
+  layers: Layers,
+  activity: Activity,
+  award: Award,
+  settings: Settings,
+  "trending-up": TrendingUp,
+  eye: Eye,
+  "git-branch": GitBranch,
+  "refresh-cw": RefreshCw,
+  "alert-circle": AlertCircle,
 };
 
-function AssessmentCard({ assessment }: { assessment: AssessmentConfig }) {
+function AssessmentCard({ assessment }: { assessment: AnyAssessmentConfig }) {
   const Icon = ICON_MAP[assessment.meta.icon] ?? ClipboardCheck;
   return (
     <article className="rounded-2xl border border-border bg-card p-6 flex flex-col hover:shadow-[var(--shadow-soft)] transition-all duration-300 hover:-translate-y-0.5">
@@ -77,9 +96,7 @@ function AssessmentCard({ assessment }: { assessment: AssessmentConfig }) {
         <TierBadge tier={assessment.tier} />
       </div>
       <h3 className="mt-1 text-lg font-semibold">{assessment.meta.title}</h3>
-      <p className="mt-2 text-sm text-muted-foreground flex-1">
-        {assessment.meta.description}
-      </p>
+      <p className="mt-2 text-sm text-muted-foreground flex-1">{assessment.meta.description}</p>
       <div className="mt-5 flex items-center gap-4 text-xs text-muted-foreground">
         <span className="inline-flex items-center gap-1.5">
           <Timer className="h-3.5 w-3.5" />
@@ -141,9 +158,8 @@ function Page() {
         <TierSection tier="professional" />
 
         <p className="mt-4 text-sm text-muted-foreground max-w-2xl">
-          Note: {SITE.name} assessments are for psychology education and
-          self-reflection only. They are not a substitute for clinical
-          evaluation, diagnosis or counselling.
+          Note: {SITE.name} assessments are for psychology education and self-reflection only. They
+          are not a substitute for clinical evaluation, diagnosis or counselling.
         </p>
       </section>
     </SiteLayout>

@@ -17,9 +17,15 @@ import { Route as DecodeYourMindRouteImport } from './routes/decode-your-mind'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as AcademyRouteImport } from './routes/academy'
 import { Route as AboutRouteImport } from './routes/about'
+import { Route as DashboardRouteRouteImport } from './routes/dashboard/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
 import { Route as AssessmentsIndexRouteImport } from './routes/assessments/index'
+import { Route as DashboardSettingsRouteImport } from './routes/dashboard/settings'
+import { Route as DashboardResultsRouteImport } from './routes/dashboard/results'
+import { Route as DashboardEbooksRouteImport } from './routes/dashboard/ebooks'
 import { Route as AssessmentsSlugRouteImport } from './routes/assessments/$slug'
+import { Route as ApiWebhooksRazorpayRouteImport } from './routes/api/webhooks/razorpay'
 
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
@@ -61,24 +67,55 @@ const AboutRoute = AboutRouteImport.update({
   path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashboardRouteRoute = DashboardRouteRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardIndexRoute = DashboardIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DashboardRouteRoute,
 } as any)
 const AssessmentsIndexRoute = AssessmentsIndexRouteImport.update({
   id: '/assessments/',
   path: '/assessments/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashboardSettingsRoute = DashboardSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => DashboardRouteRoute,
+} as any)
+const DashboardResultsRoute = DashboardResultsRouteImport.update({
+  id: '/results',
+  path: '/results',
+  getParentRoute: () => DashboardRouteRoute,
+} as any)
+const DashboardEbooksRoute = DashboardEbooksRouteImport.update({
+  id: '/ebooks',
+  path: '/ebooks',
+  getParentRoute: () => DashboardRouteRoute,
+} as any)
 const AssessmentsSlugRoute = AssessmentsSlugRouteImport.update({
   id: '/assessments/$slug',
   path: '/assessments/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiWebhooksRazorpayRoute = ApiWebhooksRazorpayRouteImport.update({
+  id: '/api/webhooks/razorpay',
+  path: '/api/webhooks/razorpay',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/dashboard': typeof DashboardRouteRouteWithChildren
   '/about': typeof AboutRoute
   '/academy': typeof AcademyRoute
   '/contact': typeof ContactRoute
@@ -88,7 +125,12 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/assessments/$slug': typeof AssessmentsSlugRoute
+  '/dashboard/ebooks': typeof DashboardEbooksRoute
+  '/dashboard/results': typeof DashboardResultsRoute
+  '/dashboard/settings': typeof DashboardSettingsRoute
   '/assessments/': typeof AssessmentsIndexRoute
+  '/dashboard/': typeof DashboardIndexRoute
+  '/api/webhooks/razorpay': typeof ApiWebhooksRazorpayRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -101,11 +143,17 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/assessments/$slug': typeof AssessmentsSlugRoute
+  '/dashboard/ebooks': typeof DashboardEbooksRoute
+  '/dashboard/results': typeof DashboardResultsRoute
+  '/dashboard/settings': typeof DashboardSettingsRoute
   '/assessments': typeof AssessmentsIndexRoute
+  '/dashboard': typeof DashboardIndexRoute
+  '/api/webhooks/razorpay': typeof ApiWebhooksRazorpayRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/dashboard': typeof DashboardRouteRouteWithChildren
   '/about': typeof AboutRoute
   '/academy': typeof AcademyRoute
   '/contact': typeof ContactRoute
@@ -115,12 +163,18 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/assessments/$slug': typeof AssessmentsSlugRoute
+  '/dashboard/ebooks': typeof DashboardEbooksRoute
+  '/dashboard/results': typeof DashboardResultsRoute
+  '/dashboard/settings': typeof DashboardSettingsRoute
   '/assessments/': typeof AssessmentsIndexRoute
+  '/dashboard/': typeof DashboardIndexRoute
+  '/api/webhooks/razorpay': typeof ApiWebhooksRazorpayRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/dashboard'
     | '/about'
     | '/academy'
     | '/contact'
@@ -130,7 +184,12 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/terms'
     | '/assessments/$slug'
+    | '/dashboard/ebooks'
+    | '/dashboard/results'
+    | '/dashboard/settings'
     | '/assessments/'
+    | '/dashboard/'
+    | '/api/webhooks/razorpay'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -143,10 +202,16 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/terms'
     | '/assessments/$slug'
+    | '/dashboard/ebooks'
+    | '/dashboard/results'
+    | '/dashboard/settings'
     | '/assessments'
+    | '/dashboard'
+    | '/api/webhooks/razorpay'
   id:
     | '__root__'
     | '/'
+    | '/dashboard'
     | '/about'
     | '/academy'
     | '/contact'
@@ -156,11 +221,17 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/terms'
     | '/assessments/$slug'
+    | '/dashboard/ebooks'
+    | '/dashboard/results'
+    | '/dashboard/settings'
     | '/assessments/'
+    | '/dashboard/'
+    | '/api/webhooks/razorpay'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  DashboardRouteRoute: typeof DashboardRouteRouteWithChildren
   AboutRoute: typeof AboutRoute
   AcademyRoute: typeof AcademyRoute
   ContactRoute: typeof ContactRoute
@@ -171,6 +242,7 @@ export interface RootRouteChildren {
   TermsRoute: typeof TermsRoute
   AssessmentsSlugRoute: typeof AssessmentsSlugRoute
   AssessmentsIndexRoute: typeof AssessmentsIndexRoute
+  ApiWebhooksRazorpayRoute: typeof ApiWebhooksRazorpayRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -231,12 +303,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/dashboard/': {
+      id: '/dashboard/'
+      path: '/'
+      fullPath: '/dashboard/'
+      preLoaderRoute: typeof DashboardIndexRouteImport
+      parentRoute: typeof DashboardRouteRoute
     }
     '/assessments/': {
       id: '/assessments/'
@@ -245,6 +331,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AssessmentsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dashboard/settings': {
+      id: '/dashboard/settings'
+      path: '/settings'
+      fullPath: '/dashboard/settings'
+      preLoaderRoute: typeof DashboardSettingsRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
+    '/dashboard/results': {
+      id: '/dashboard/results'
+      path: '/results'
+      fullPath: '/dashboard/results'
+      preLoaderRoute: typeof DashboardResultsRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
+    '/dashboard/ebooks': {
+      id: '/dashboard/ebooks'
+      path: '/ebooks'
+      fullPath: '/dashboard/ebooks'
+      preLoaderRoute: typeof DashboardEbooksRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
     '/assessments/$slug': {
       id: '/assessments/$slug'
       path: '/assessments/$slug'
@@ -252,11 +359,37 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AssessmentsSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/webhooks/razorpay': {
+      id: '/api/webhooks/razorpay'
+      path: '/api/webhooks/razorpay'
+      fullPath: '/api/webhooks/razorpay'
+      preLoaderRoute: typeof ApiWebhooksRazorpayRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
+interface DashboardRouteRouteChildren {
+  DashboardEbooksRoute: typeof DashboardEbooksRoute
+  DashboardResultsRoute: typeof DashboardResultsRoute
+  DashboardSettingsRoute: typeof DashboardSettingsRoute
+  DashboardIndexRoute: typeof DashboardIndexRoute
+}
+
+const DashboardRouteRouteChildren: DashboardRouteRouteChildren = {
+  DashboardEbooksRoute: DashboardEbooksRoute,
+  DashboardResultsRoute: DashboardResultsRoute,
+  DashboardSettingsRoute: DashboardSettingsRoute,
+  DashboardIndexRoute: DashboardIndexRoute,
+}
+
+const DashboardRouteRouteWithChildren = DashboardRouteRoute._addFileChildren(
+  DashboardRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  DashboardRouteRoute: DashboardRouteRouteWithChildren,
   AboutRoute: AboutRoute,
   AcademyRoute: AcademyRoute,
   ContactRoute: ContactRoute,
@@ -267,6 +400,7 @@ const rootRouteChildren: RootRouteChildren = {
   TermsRoute: TermsRoute,
   AssessmentsSlugRoute: AssessmentsSlugRoute,
   AssessmentsIndexRoute: AssessmentsIndexRoute,
+  ApiWebhooksRazorpayRoute: ApiWebhooksRazorpayRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

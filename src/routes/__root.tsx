@@ -8,11 +8,27 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
+import { PostHogProvider, usePostHog } from "@posthog/react";
+import posthogJs from "posthog-js";
 
 import appCss from "../styles.css?url";
 import { SITE } from "@/data/constants";
 import { organizationSchema, websiteSchema } from "@/lib/seo";
 import { Toaster } from "@/components/ui/sonner";
+import { AuthProvider } from "@/context/AuthContext";
+import { CookieConsent } from "@/components/shared/CookieConsent";
+
+/** Typed event tracking — usable outside React components. */
+export function trackEvent(
+  event: "assessment_started" | "assessment_completed" | "email_captured" | "purchase_completed",
+  properties?: Record<string, unknown>,
+) {
+  if (typeof window !== "undefined") {
+    posthogJs.capture(event, properties);
+  }
+}
+
+// ─── Not Found / Error ───────────────────────────────────────────────────────
 
 function NotFoundComponent() {
   return (
@@ -73,52 +89,52 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   );
 }
 
-export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
-  {
-    head: () => ({
-      meta: [
-        { charSet: "utf-8" },
-        { name: "viewport", content: "width=device-width, initial-scale=1" },
-        { title: `${SITE.name} — Understand Your Mind. Improve Your Life.` },
-        {
-          name: "description",
-          content: SITE.description,
-        },
-        { name: "author", content: SITE.name },
-        {
-          property: "og:title",
-          content: `${SITE.name} — Practical Psychology for Everyday Life`,
-        },
-        {
-          property: "og:description",
-          content:
-            "Decode Your Mind. Learn at Calmtree Academy. Take psychology assessments and download practical resources.",
-        },
-        { property: "og:type", content: "website" },
-        { property: "og:url", content: SITE.url },
-        { name: "twitter:card", content: "summary" },
-      ],
-      links: [
-        { rel: "stylesheet", href: appCss },
-        { rel: "preconnect", href: "https://fonts.googleapis.com" },
-        {
-          rel: "preconnect",
-          href: "https://fonts.gstatic.com",
-          crossOrigin: "anonymous",
-        },
-        {
-          rel: "stylesheet",
-          href: "https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Inter:wght@400;500;600&display=swap",
-        },
-        { rel: "icon", href: SITE.logoPath, type: "image/png" },
-      ],
-    }),
-    shellComponent: RootShell,
-    component: RootComponent,
-    notFoundComponent: NotFoundComponent,
-    errorComponent: ErrorComponent,
-  },
-);
+// ─── Root route ──────────────────────────────────────────────────────────────
+
+export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
+  head: () => ({
+    meta: [
+      { charSet: "utf-8" },
+      { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { title: `${SITE.name} — Understand Your Mind. Improve Your Life.` },
+      {
+        name: "description",
+        content: SITE.description,
+      },
+      { name: "author", content: SITE.name },
+      {
+        property: "og:title",
+        content: `${SITE.name} — Practical Psychology for Everyday Life`,
+      },
+      {
+        property: "og:description",
+        content:
+          "Decode Your Mind. Learn at Calmtree Academy. Take psychology assessments and download practical resources.",
+      },
+      { property: "og:type", content: "website" },
+      { property: "og:url", content: SITE.url },
+      { name: "twitter:card", content: "summary" },
+    ],
+    links: [
+      { rel: "stylesheet", href: appCss },
+      { rel: "preconnect", href: "https://fonts.googleapis.com" },
+      {
+        rel: "preconnect",
+        href: "https://fonts.gstatic.com",
+        crossOrigin: "anonymous",
+      },
+      {
+        rel: "stylesheet",
+        href: "https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Inter:wght@400;500;600&display=swap",
+      },
+      { rel: "icon", href: SITE.logoPath, type: "image/png" },
+    ],
+  }),
+  shellComponent: RootShell,
+  component: RootComponent,
+  notFoundComponent: NotFoundComponent,
+  errorComponent: ErrorComponent,
+});
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
@@ -129,13 +145,22 @@ function RootShell({ children }: { children: ReactNode }) {
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: organizationSchema() }}
         />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: websiteSchema() }}
-        />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: websiteSchema() }} />
       </head>
       <body>
-        {children}
+        <PostHogProvider
+          apiKey={import.meta.env.VITE_POSTHOG_KEY!}
+          options={{
+            api_host: "/ingest",
+            ui_host: import.meta.env.VITE_POSTHOG_HOST || "https://us.posthog.com",
+            defaults: "2025-05-24",
+            capture_exceptions: true,
+            capture_pageview: false,
+            debug: import.meta.env.DEV,
+          }}
+        >
+          {children}
+        </PostHogProvider>
         <Scripts />
       </body>
     </html>
@@ -144,12 +169,25 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const router = useRouter();
+  const posthog = usePostHog();
+
+  // Reliable SPA pageview tracking — fires on every resolved navigation
+  useEffect(() => {
+    const unsub = router.subscribe("onResolved", () => {
+      posthog?.capture("$pageview");
+    });
+    return unsub;
+  }, [router, posthog]);
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
-      <Toaster richColors position="top-center" />
+      <AuthProvider>
+        {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+        <Outlet />
+        <Toaster richColors position="top-center" />
+        <CookieConsent />
+      </AuthProvider>
     </QueryClientProvider>
   );
 }

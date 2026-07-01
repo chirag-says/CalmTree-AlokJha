@@ -11,13 +11,21 @@
 
 import { createClient } from "@supabase/supabase-js";
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL ?? "";
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY ?? "";
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-if (!supabaseUrl || !supabaseAnonKey) {
+const hasCredentials = Boolean(supabaseUrl && supabaseAnonKey);
+
+if (!hasCredentials) {
   console.warn(
     "[CalmTree] Supabase credentials not configured. Assessment data will use local fallback.",
   );
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+/**
+ * Supabase client — null when credentials are missing (dev / CI without .env).
+ * Always guard usage: `if (supabase) { ... }` or use the local fallback path.
+ */
+export const supabase = hasCredentials
+  ? createClient(supabaseUrl!, supabaseAnonKey!)
+  : null;

@@ -15,6 +15,9 @@ import type {
   AssessmentResult,
   StandardResult,
   PersonalityCompassResult,
+  ProfileResult,
+  ProfileDef,
+  ProfileAssessmentConfig,
   Question,
   DimensionScore,
   PersonalityDimension,
@@ -23,21 +26,22 @@ import type {
 // ─── Main entry ─────────────────────────────────────────────────────
 
 export function scoreAssessment(
-  config: AssessmentConfig,
+  config: AssessmentConfig | ProfileAssessmentConfig,
   answers: Record<string, number>,
 ): AssessmentResult {
-  if (config.type === "personality-compass") {
-    return scorePersonalityCompass(config, answers);
+  if (config.type === "profile-based") {
+    return scoreProfileBased(config as ProfileAssessmentConfig, answers);
   }
-  return scoreStandard(config, answers);
+  const stdConfig = config as AssessmentConfig;
+  if (stdConfig.type === "personality-compass") {
+    return scorePersonalityCompass(stdConfig, answers);
+  }
+  return scoreStandard(stdConfig, answers);
 }
 
 // ─── Standard scoring (14 assessments) ──────────────────────────────
 
-function scoreStandard(
-  config: AssessmentConfig,
-  answers: Record<string, number>,
-): StandardResult {
+function scoreStandard(config: AssessmentConfig, answers: Record<string, number>): StandardResult {
   const { questions, scoring, archetypes, dimensions } = config;
 
   let total = 0;
@@ -51,14 +55,11 @@ function scoreStandard(
   }
 
   // Client formula: ((score - 10) / 40) * 100
-  const percentage = Math.round(
-    ((total - scoring.min) / (scoring.max - scoring.min)) * 100,
-  );
+  const percentage = Math.round(((total - scoring.min) / (scoring.max - scoring.min)) * 100);
 
   // Find matching archetype
   const archetype =
-    archetypes.find((a) => total >= a.min && total <= a.max) ??
-    archetypes[archetypes.length - 1]!;
+    archetypes.find((a) => total >= a.min && total <= a.max) ?? archetypes[archetypes.length - 1]!;
 
   // Compute dimension sub-scores
   const dimensionScores = computeDimensionScores(questions, answers, dimensions);
@@ -124,10 +125,7 @@ function scorePersonalityCompass(
   });
 
   // Match personality archetype based on dimension leanings
-  const archetype = matchPersonalityArchetype(
-    personalityDimensions,
-    personalityArchetypes ?? [],
-  );
+  const archetype = matchPersonalityArchetype(personalityDimensions, personalityArchetypes ?? []);
 
   return {
     type: "personality-compass",
@@ -168,9 +166,7 @@ function computeDimensionScores(
     const maxPossible = dimQuestions.length * 5;
     const minPossible = dimQuestions.length * 1;
     const percentage =
-      count > 0
-        ? Math.round(((sum - minPossible) / (maxPossible - minPossible)) * 100)
-        : 0;
+      count > 0 ? Math.round(((sum - minPossible) / (maxPossible - minPossible)) * 100) : 0;
 
     return {
       dimensionId: dim.id,
@@ -240,6 +236,77 @@ function matchPersonalityArchetype(
 
   // Default: balanced
   return findArchetype(archetypes, "balanced");
+}
+
+// ─── Profile-Based scoring ─────────────────────────────────────────
+
+function scoreProfileBased(
+  config: ProfileAssessmentConfig,
+  answers: Record<string, number>,
+): ProfileResult {
+  const { profileQuestions, profiles, tieBreakQuestionIds } = config;
+
+  // answers for profile-based store profileCode as a numeric index (0-based into the options array)
+  // but ProfileRunner will store the option index; we need to map back to profileCode.
+  // Convention: answers[questionId] = option index (0-based)
+  const counts: Record<string, number> = {};
+  for (const p of profiles) counts[p.code] = 0;
+
+  let answeredCount = 0;
+
+  for (const q of profileQuestions) {
+    const selectedIndex = answers[q.id];
+    if (selectedIndex === undefined) continue;
+    const option = q.options[selectedIndex];
+    if (!option) continue;
+    counts[option.profileCode] = (counts[option.profileCode] ?? 0) + 1;
+    answeredCount++;
+  }
+
+  // Sort profiles by count descending
+  const sorted = [...profiles].sort((a, b) => (counts[b.code] ?? 0) - (counts[a.code] ?? 0));
+
+  let primary = sorted[0]!;
+  let secondary: ProfileDef | undefined;
+
+  // Tie-break: use tieBreakQuestionIds in order
+  const second = sorted[1];
+  if (second && (counts[primary.code] ?? 0) === (counts[second.code] ?? 0)) {
+    // Apply tie-break: whichever of the two tied profiles appears first in the tie-break questions
+    for (const qId of tieBreakQuestionIds) {
+      const selectedIndex = answers[qId];
+      if (selectedIndex === undefined) continue;
+      const q = profileQuestions.find((pq) => pq.id === qId);
+      if (!q) continue;
+      const option = q.options[selectedIndex];
+      if (!option) continue;
+      const tiedCodes = sorted
+        .filter((p) => (counts[p.code] ?? 0) === (counts[sorted[0]!.code] ?? 0))
+        .map((p) => p.code);
+      if (tiedCodes.includes(option.profileCode)) {
+        primary = profiles.find((p) => p.code === option.profileCode) ?? primary;
+        break;
+      }
+    }
+  }
+
+  // Secondary: if second-highest is within 1 point
+  if (second && primary.code !== second.code) {
+    const primaryCount = counts[primary.code] ?? 0;
+    const secondCount = counts[second.code] ?? 0;
+    if (primaryCount - secondCount <= 1) {
+      secondary = second;
+    }
+  }
+
+  return {
+    type: "profile-based",
+    primary,
+    secondary,
+    counts,
+    answeredCount,
+    totalQuestions: profileQuestions.length,
+  };
 }
 
 function findArchetype(

@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { SiteLayout } from "@/components/SiteLayout";
 import { NewsletterForm } from "@/components/NewsletterForm";
@@ -28,28 +29,36 @@ import {
   Shield,
   Target,
   Zap,
+  Layers,
+  Activity,
+  Award,
+  Settings,
+  TrendingUp,
+  Eye,
+  GitBranch,
+  RefreshCw,
+  AlertCircle,
+  Mail,
 } from "lucide-react";
 import type { AssessmentIcon } from "@/data/assessments/types";
 
-export const Route = createFileRoute("/")(
-  {
-    head: () => ({
-      meta: [
-        { title: `${SITE.name} — Understand Your Mind. Improve Your Life.` },
-        { name: "description", content: SITE.description },
-        {
-          property: "og:title",
-          content: `${SITE.name} — Practical Psychology for Everyday Life`,
-        },
-        {
-          property: "og:description",
-          content: `Decode Your Mind. Learn at ${SITE.name} Academy. Take assessments and download resources.`,
-        },
-      ],
-    }),
-    component: Index,
-  },
-);
+export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: `${SITE.name} — Understand Your Mind. Improve Your Life.` },
+      { name: "description", content: SITE.description },
+      {
+        property: "og:title",
+        content: `${SITE.name} — Practical Psychology for Everyday Life`,
+      },
+      {
+        property: "og:description",
+        content: `Decode Your Mind. Learn at ${SITE.name} Academy. Take assessments and download resources.`,
+      },
+    ],
+  }),
+  component: Index,
+});
 
 const ICON_MAP: Record<AssessmentIcon, React.ComponentType<{ className?: string }>> = {
   flame: Flame,
@@ -68,6 +77,15 @@ const ICON_MAP: Record<AssessmentIcon, React.ComponentType<{ className?: string 
   shield: Shield,
   target: Target,
   zap: Zap,
+  layers: Layers,
+  activity: Activity,
+  award: Award,
+  settings: Settings,
+  "trending-up": TrendingUp,
+  eye: Eye,
+  "git-branch": GitBranch,
+  "refresh-cw": RefreshCw,
+  "alert-circle": AlertCircle,
 };
 
 function Index() {
@@ -120,9 +138,9 @@ function Index() {
 
           {/* Subtitle */}
           <p className="mt-4 md:mt-8 text-sm md:text-lg text-[#4a6b5e] max-w-sm md:max-w-lg mx-auto leading-relaxed">
-            A calm, credible place to learn applied psychology — for
-            self-awareness, emotional wellness, relationships, and personal
-            growth. Not therapy. Just useful psychology for everyday life.
+            A calm, credible place to learn applied psychology — for self-awareness, emotional
+            wellness, relationships, and personal growth. Not therapy. Just useful psychology for
+            everyday life.
           </p>
 
           {/* Three pillars — always in one row */}
@@ -155,16 +173,18 @@ function Index() {
                 <p className="mt-0.5 md:mt-1 text-[10px] md:text-sm text-[#5a7d6e] leading-snug md:leading-relaxed hidden md:block">
                   {p.bodyFull}
                 </p>
-                <p className="mt-0.5 text-[10px] text-[#5a7d6e] leading-snug md:hidden">
-                  {p.body}
-                </p>
+                <p className="mt-0.5 text-[10px] text-[#5a7d6e] leading-snug md:hidden">{p.body}</p>
               </div>
             ))}
           </div>
 
           {/* CTAs */}
           <div className="mt-6 md:mt-12 flex flex-wrap items-center justify-center gap-2 md:gap-3">
-            <Button asChild size="default" className="h-9 md:h-11 px-5 md:px-7 rounded-full shadow-md text-xs md:text-sm">
+            <Button
+              asChild
+              size="default"
+              className="h-9 md:h-11 px-5 md:px-7 rounded-full shadow-md text-xs md:text-sm"
+            >
               <Link to="/assessments">
                 Start Your Journey
                 <ArrowRight className="h-3.5 w-3.5 md:h-4 md:w-4" />
@@ -196,14 +216,9 @@ function Index() {
         <div className="grid gap-5 md:grid-cols-3">
           {/* Video 1 — Real YouTube embed */}
           <article className="group rounded-2xl border border-border bg-card overflow-hidden hover:shadow-[var(--shadow-soft)] transition-all duration-300 hover:-translate-y-0.5">
-            <YouTubeEmbed
-              videoId="JVTlRoVoZW4"
-              title="Decode Your Mind — Calmtree"
-            />
+            <YouTubeEmbed videoId="JVTlRoVoZW4" title="Decode Your Mind — Calmtree" />
             <div className="p-5">
-              <span className="text-xs text-primary font-medium">
-                Decode Your Mind
-              </span>
+              <span className="text-xs text-primary font-medium">Decode Your Mind</span>
               <h3 className="mt-1 font-semibold">The Silent Mind</h3>
               <p className="mt-1 text-sm text-muted-foreground">
                 Decode Your Mind · by {SITE.founder}
@@ -232,13 +247,9 @@ function Index() {
                 </span>
               </div>
               <div className="p-5">
-                <span className="text-xs text-primary font-medium">
-                  {v.cat}
-                </span>
+                <span className="text-xs text-primary font-medium">{v.cat}</span>
                 <h3 className="mt-1 font-semibold">{v.t}</h3>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  Decode Your Mind · Coming soon
-                </p>
+                <p className="mt-1 text-sm text-muted-foreground">Decode Your Mind · Coming soon</p>
               </div>
             </article>
           ))}
@@ -254,7 +265,7 @@ function Index() {
         action={{ to: "/assessments", label: "See all assessments" }}
       >
         <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-5">
-          {ASSESSMENT_LIST.map((a) => {
+          {ASSESSMENT_LIST.slice(0, 10).map((a) => {
             const Icon = ICON_MAP[a.meta.icon] ?? ClipboardCheck;
             return (
               <Link
@@ -319,32 +330,9 @@ function Index() {
       </Section>
 
       {/* ═══════════════════════════════════════════════
-          RESOURCES
+          RESOURCES — real ebook catalog from DB
          ═══════════════════════════════════════════════ */}
-      <Section
-        eyebrow="Download Practical Resources"
-        title="Workbooks and journals you'll actually use."
-        action={{ to: "/resources", label: "Browse resources" }}
-      >
-        <div className="grid gap-5 md:grid-cols-3">
-          {[
-            "Burnout Recovery Workbook",
-            "Self-Reflection Journal",
-            "Habit Tracker",
-          ].map((t) => (
-            <div
-              key={t}
-              className="group rounded-2xl border border-border bg-card p-6 hover:shadow-[var(--shadow-soft)] transition-all duration-300 hover:-translate-y-0.5"
-            >
-              <BookOpen className="h-6 w-6 text-primary" />
-              <h3 className="mt-3 font-semibold">{t}</h3>
-              <p className="mt-1 text-sm text-muted-foreground">
-                PDF · Print-ready
-              </p>
-            </div>
-          ))}
-        </div>
-      </Section>
+      <EbooksSection />
 
       {/* ═══════════════════════════════════════════════
           ABOUT — Founder section
@@ -361,14 +349,11 @@ function Index() {
               <p className="text-xs font-medium tracking-[0.18em] uppercase text-primary mb-3">
                 About the Founder
               </p>
-              <h2 className="text-2xl md:text-3xl font-semibold">
-                {SITE.founder}
-              </h2>
+              <h2 className="text-2xl md:text-3xl font-semibold">{SITE.founder}</h2>
               <p className="mt-4 text-muted-foreground leading-relaxed">
-                MBA and Master's in Psychology. {SITE.founder} founded{" "}
-                {SITE.name} to make psychology simple, practical and useful in
-                everyday life — not as therapy, but as education that helps you
-                understand yourself and the people around you.
+                MBA and Master's in Psychology. {SITE.founder} founded {SITE.name} to make
+                psychology simple, practical and useful in everyday life — not as therapy, but as
+                education that helps you understand yourself and the people around you.
               </p>
               <Button asChild variant="outline" className="mt-6 rounded-full">
                 <Link to="/about">
@@ -386,14 +371,14 @@ function Index() {
       <section className="mx-auto max-w-6xl px-5 pb-24">
         <div className="rounded-3xl bg-primary/[0.06] border border-primary/15 p-8 md:p-12 text-center">
           <div className="flex items-center justify-center gap-2 text-primary text-xs font-medium tracking-[0.18em] uppercase mb-4">
-            <Sparkles className="h-4 w-4" /> Newsletter
+            <Mail className="h-4 w-4" /> Newsletter
           </div>
           <h2 className="text-3xl md:text-4xl font-semibold max-w-lg mx-auto">
             One thoughtful psychology read, each week.
           </h2>
           <p className="mt-3 text-muted-foreground max-w-md mx-auto">
-            Join the {SITE.name} newsletter — no noise, no spam. Just useful
-            psychology that helps you understand yourself better.
+            Join the {SITE.name} newsletter — no noise, no spam. Just useful psychology that helps
+            you understand yourself better.
           </p>
           <div className="mt-8 max-w-sm mx-auto">
             <NewsletterForm />
@@ -424,9 +409,7 @@ function Section({
           <p className="text-xs font-medium tracking-[0.18em] uppercase text-primary mb-3">
             {eyebrow}
           </p>
-          <h2 className="text-3xl md:text-4xl font-semibold max-w-2xl">
-            {title}
-          </h2>
+          <h2 className="text-3xl md:text-4xl font-semibold max-w-2xl">{title}</h2>
         </div>
         {action && (
           <Link
@@ -439,5 +422,91 @@ function Section({
       </div>
       {children}
     </section>
+  );
+}
+
+// ─── EbooksSection — renders real catalog from DB ─────────────────────────────
+
+import { getActiveEbooks } from "@/lib/api/ebooks.functions";
+
+interface EbookCard {
+  id: string;
+  title: string;
+  subtitle: string | null;
+  price_inr: number;
+  cover_image_url: string | null;
+}
+
+const PLACEHOLDER_EBOOKS: EbookCard[] = [
+  { id: "p1", title: "Burnout Recovery Workbook", subtitle: "Print-ready · PDF", price_inr: 0, cover_image_url: null },
+  { id: "p2", title: "Self-Reflection Journal", subtitle: "Print-ready · PDF", price_inr: 0, cover_image_url: null },
+  { id: "p3", title: "Habit Tracker", subtitle: "Print-ready · PDF", price_inr: 0, cover_image_url: null },
+];
+
+function EbooksSection() {
+  const [ebooks, setEbooks] = useState<EbookCard[]>([]);
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    getActiveEbooks({ data: {} }).then((res) => {
+      if (!("error" in res) && res.ebooks.length > 0) {
+        setEbooks(res.ebooks as EbookCard[]);
+      }
+      setLoaded(true);
+    });
+  }, []);
+
+  const displayEbooks = ebooks.length > 0 ? ebooks.slice(0, 3) : PLACEHOLDER_EBOOKS;
+
+  return (
+    <Section
+      eyebrow="Download Practical Resources"
+      title="Workbooks and journals you'll actually use."
+      action={{ to: "/resources", label: "Browse resources" }}
+    >
+      <div className="grid gap-5 md:grid-cols-3">
+        {displayEbooks.map((e) => (
+          <div
+            key={e.id}
+            className="group rounded-2xl border border-border bg-card p-6 hover:shadow-[var(--shadow-soft)] transition-all duration-300 hover:-translate-y-0.5 flex flex-col"
+          >
+            {e.cover_image_url ? (
+              <img
+                src={e.cover_image_url}
+                alt={e.title}
+                className="h-24 w-full object-cover rounded-xl mb-4"
+              />
+            ) : (
+              <div className="h-24 w-full rounded-xl bg-gradient-to-br from-primary/10 to-accent/30 flex items-center justify-center mb-4">
+                <BookOpen className="h-8 w-8 text-primary" />
+              </div>
+            )}
+            <h3 className="font-semibold">{e.title}</h3>
+            <p className="mt-1 text-sm text-muted-foreground flex-1">
+              {e.subtitle ?? "PDF · Print-ready"}
+            </p>
+            <div className="mt-4 flex items-center justify-between">
+              <span className="text-sm font-semibold text-primary">
+                {e.price_inr > 0 ? `₹${e.price_inr}` : "Free"}
+              </span>
+              <Link
+                to="/resources"
+                className="text-xs text-muted-foreground hover:text-primary transition-colors flex items-center gap-1"
+              >
+                View <ArrowRight className="h-3 w-3" />
+              </Link>
+            </div>
+          </div>
+        ))}
+        {!loaded && ebooks.length === 0 && (
+          // Skeleton loading state
+          <>
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="rounded-2xl border border-border bg-card p-6 h-44 animate-pulse" />
+            ))}
+          </>
+        )}
+      </div>
+    </Section>
   );
 }

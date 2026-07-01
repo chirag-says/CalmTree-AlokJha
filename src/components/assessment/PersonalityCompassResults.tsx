@@ -9,6 +9,7 @@
 
 import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
+import { ReportGate } from "./ReportGate";
 import { SITE } from "@/data/constants";
 import { ArrowRight, RotateCcw, Share2 } from "lucide-react";
 import type {
@@ -213,12 +214,16 @@ export function PersonalityCompassResults({
         </p>
       </div>
 
-      {/* Radar chart */}
-      <div className="rounded-2xl border border-border bg-card p-6 md:p-8 mb-8">
-        <h3 className="text-xl font-semibold mb-6 text-center">
-          Your Four Dimensions
-        </h3>
-        <RadarChart dimensions={dimensions} />
+      {/* Radar chart — gated */}
+      <div className="mb-8">
+        <ReportGate config={config}>
+          <div className="rounded-2xl border border-border bg-card p-6 md:p-8">
+            <h3 className="text-xl font-semibold mb-6 text-center">
+              Your Four Dimensions
+            </h3>
+            <RadarChart dimensions={dimensions} />
+          </div>
+        </ReportGate>
       </div>
 
       {/* Source attribution */}

@@ -1,16 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { SiteLayout } from "@/components/SiteLayout";
 import { AssessmentRunner } from "@/components/assessment/AssessmentRunner";
+import { ProfileRunner } from "@/components/assessment/ProfileRunner";
 import { getAssessment } from "@/data/assessments";
+import type { ProfileAssessmentConfig } from "@/data/assessments/types";
 import { SITE } from "@/data/constants";
 import { Link } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/assessments/$slug")({
   head: ({ params }) => {
     const config = getAssessment(params.slug);
-    const title = config
-      ? `${config.meta.title} — ${SITE.name}`
-      : `Assessment — ${SITE.name}`;
+    const title = config ? `${config.meta.title} — ${SITE.name}` : `Assessment — ${SITE.name}`;
     const description = config?.meta.description ?? "Take a psychology self-check.";
     return {
       meta: [
@@ -49,10 +49,7 @@ function Page() {
 
   return (
     <SiteLayout>
-      <section
-        className="border-b border-border/60"
-        style={{ background: "var(--gradient-hero)" }}
-      >
+      <section className="border-b border-border/60" style={{ background: "var(--gradient-hero)" }}>
         <div className="mx-auto max-w-6xl px-5 py-8">
           <Link
             to="/assessments"
@@ -63,7 +60,11 @@ function Page() {
         </div>
       </section>
       <section className="mx-auto max-w-3xl px-5 py-12 md:py-16">
-        <AssessmentRunner config={config} />
+        {config.type === "profile-based" ? (
+          <ProfileRunner config={config as ProfileAssessmentConfig} />
+        ) : (
+          <AssessmentRunner config={config} />
+        )}
       </section>
     </SiteLayout>
   );

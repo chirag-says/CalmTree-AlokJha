@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { usePostHog } from "@posthog/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
@@ -11,6 +12,7 @@ const schema = z.object({
 export function NewsletterForm({ compact = false }: { compact?: boolean }) {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
+  const posthog = usePostHog();
 
   function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -23,6 +25,7 @@ export function NewsletterForm({ compact = false }: { compact?: boolean }) {
     setTimeout(() => {
       setLoading(false);
       setEmail("");
+      posthog.capture("newsletter_subscribed");
       toast.success("You're on the list. Check your inbox.");
     }, 600);
   }

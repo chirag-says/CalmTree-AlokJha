@@ -1,0 +1,72 @@
+/**
+ * RequireAuth — single, declarative auth guard for protected areas.
+ *
+ * Replaces the old ad-hoc guards (some used window.location.href hard reloads,
+ * some fell through to render protected content when the profile failed to load).
+ *
+ * Behavior:
+ *   1. Not ready (auth/profile still resolving) → full-page spinner.
+ *   2. No user                                  → redirect to /login?redirect=<here>.
+ *   3. Profile failed to load                   → Retry screen (never strand the user).
+ *   4. requireOnboarded && not onboarded        → redirect to /onboarding?redirect=<here>.
+ *   5. Otherwise                                → render children.
+ */
+
+import { Navigate, useLocation } from "@tanstack/react-router";
+import type { ReactNode } from "react";
+import { useAuth } from "@/hooks/useAuth";
+import { Button } from "@/components/ui/button";
+
+export function FullPageSpinner() {
+  return (
+    <div className="flex min-h-screen items-center justify-center">
+      <div className="h-8 w-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+    </div>
+  );
+}
+
+function ProfileErrorRetry() {
+  const { refreshProfile, signOut } = useAuth();
+  return (
+    <div className="flex min-h-screen flex-col items-center justify-center px-4 text-center">
+      <h1 className="text-xl font-semibold text-foreground">We couldn't load your account</h1>
+      <p className="mt-2 max-w-sm text-sm text-muted-foreground">
+        Something went wrong reaching our servers. Please try again.
+      </p>
+      <div className="mt-6 flex gap-3">
+        <Button onClick={() => void refreshProfile()}>Retry</Button>
+        <Button variant="outline" onClick={() => void signOut()}>
+          Sign out
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+export function RequireAuth({
+  requireOnboarded = true,
+  children,
+}: {
+  /** Set false for routes reachable before onboarding is finished. */
+  requireOnboarded?: boolean;
+  children: ReactNode;
+}) {
+  const { user, isReady, profile, profileError } = useAuth();
+  const location = useLocation();
+
+  if (!isReady) return <FullPageSpinner />;
+
+  if (!user) {
+    const redirect = location.pathname + location.search;
+    return <Navigate to="/login" search={{ redirect }} />;
+  }
+
+  if (profileError) return <ProfileErrorRetry />;
+
+  if (requireOnboarded && profile && !profile.onboarding_completed) {
+    const redirect = location.pathname + location.search;
+    return <Navigate to="/onboarding" search={{ redirect }} />;
+  }
+
+  return <>{children}</>;
+}

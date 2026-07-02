@@ -308,9 +308,11 @@ export interface AuthModalProps {
   onOpenChange: (open: boolean) => void;
   /** Optional message shown above the form */
   prompt?: string;
+  /** Called after successful auth (in addition to closing the modal). */
+  onAuthed?: () => void;
 }
 
-export function AuthModal({ open, onOpenChange, prompt }: AuthModalProps) {
+export function AuthModal({ open, onOpenChange, prompt, onAuthed }: AuthModalProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md rounded-2xl p-0 overflow-hidden gap-0">
@@ -323,7 +325,13 @@ export function AuthModal({ open, onOpenChange, prompt }: AuthModalProps) {
           </DialogHeader>
         </div>
         <div className="px-6 pb-6">
-          <OtpFlow prompt={undefined} onSuccess={() => onOpenChange(false)} />
+          <OtpFlow
+            prompt={undefined}
+            onSuccess={() => {
+              onOpenChange(false);
+              onAuthed?.();
+            }}
+          />
         </div>
       </DialogContent>
     </Dialog>

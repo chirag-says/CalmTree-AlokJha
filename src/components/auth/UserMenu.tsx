@@ -6,8 +6,8 @@
  */
 
 import { useState } from "react";
-import { Link } from "@tanstack/react-router";
-import { User, LayoutDashboard, LogOut, ChevronDown } from "lucide-react";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { User, LayoutDashboard, LogOut, ChevronDown, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -21,8 +21,9 @@ import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 
 export function UserMenu() {
-  const { user, loading, signOut } = useAuth();
+  const { user, loading, signOut, profile } = useAuth();
   const [authOpen, setAuthOpen] = useState(false);
+  const navigate = useNavigate();
 
   if (loading) {
     // Tiny skeleton to avoid layout shift
@@ -41,7 +42,11 @@ export function UserMenu() {
         >
           Sign in
         </Button>
-        <AuthModal open={authOpen} onOpenChange={setAuthOpen} />
+        <AuthModal
+          open={authOpen}
+          onOpenChange={setAuthOpen}
+          onAuthed={() => navigate({ to: "/dashboard" })}
+        />
       </>
     );
   }
@@ -80,6 +85,21 @@ export function UserMenu() {
             Dashboard
           </Link>
         </DropdownMenuItem>
+        {profile?.is_admin && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem asChild>
+              {/* Admin is a separate app (admin.calmtree.in) — link out, not an in-app route. */}
+              <a
+                href={import.meta.env.VITE_ADMIN_URL ?? "https://admin.calmtree.in"}
+                className="flex items-center gap-2 text-cyan-600"
+              >
+                <Shield className="h-4 w-4" />
+                Admin
+              </a>
+            </DropdownMenuItem>
+          </>
+        )}
         <DropdownMenuSeparator />
         <DropdownMenuItem
           onClick={handleSignOut}

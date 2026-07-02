@@ -19,7 +19,7 @@ import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
-import { createRazorpayOrder } from "@/lib/api/payments.functions";
+import { createRazorpayOrder } from "@/server/functions/payments.functions";
 import { invalidateEntitlementCache } from "@/hooks/useEntitlement";
 
 // Razorpay checkout.js type declaration

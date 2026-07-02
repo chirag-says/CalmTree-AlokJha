@@ -20,7 +20,12 @@ import { CookieConsent } from "@/components/shared/CookieConsent";
 
 /** Typed event tracking — usable outside React components. */
 export function trackEvent(
-  event: "assessment_started" | "assessment_completed" | "email_captured" | "purchase_completed",
+  event:
+    | "assessment_started"
+    | "assessment_completed"
+    | "email_captured"
+    | "purchase_completed"
+    | "onboarding_completed",
   properties?: Record<string, unknown>,
 ) {
   if (typeof window !== "undefined") {
@@ -151,7 +156,12 @@ function RootShell({ children }: { children: ReactNode }) {
         <PostHogProvider
           apiKey={import.meta.env.VITE_POSTHOG_KEY!}
           options={{
-            api_host: "/ingest",
+            // In dev, the Vite proxy doesn't apply to TanStack Start's Node server,
+            // so talk to PostHog directly. In prod, route through /ingest to avoid
+            // ad-blocker interference.
+            api_host: import.meta.env.DEV
+              ? (import.meta.env.VITE_POSTHOG_HOST || "https://us.i.posthog.com")
+              : "/ingest",
             ui_host: import.meta.env.VITE_POSTHOG_HOST || "https://us.posthog.com",
             defaults: "2025-05-24",
             capture_exceptions: true,

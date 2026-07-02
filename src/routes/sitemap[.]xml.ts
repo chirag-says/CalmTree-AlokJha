@@ -16,8 +16,6 @@ export const Route = createFileRoute("/sitemap.xml")({
         const entries: SitemapEntry[] = [
           { path: "/", changefreq: "weekly", priority: "1.0" },
           { path: "/about", changefreq: "monthly", priority: "0.8" },
-          { path: "/academy", changefreq: "weekly", priority: "0.9" },
-          { path: "/assessments", changefreq: "weekly", priority: "0.8" },
           { path: "/contact", changefreq: "monthly", priority: "0.7" },
           {
             path: "/decode-your-mind",
@@ -25,8 +23,8 @@ export const Route = createFileRoute("/sitemap.xml")({
             priority: "0.9",
           },
           { path: "/privacy-policy", changefreq: "yearly", priority: "0.3" },
-          { path: "/resources", changefreq: "weekly", priority: "0.8" },
           { path: "/terms", changefreq: "yearly", priority: "0.3" },
+          // Note: /academy, /assessments, /resources are auth-protected and excluded.
         ];
 
         const today = new Date().toISOString().split("T")[0];

@@ -6,7 +6,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import { getMyResults } from "@/lib/api/results.functions";
+import { getMyResults } from "@/server/functions/results.functions";
 import { Clock, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { formatDistanceToNow } from "date-fns";
@@ -46,7 +46,7 @@ function Page() {
   function formatSlug(slug: string) {
     return slug
       .split("-")
-      .map((w) => w[0].toUpperCase() + w.slice(1))
+      .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
       .join(" ");
   }
 

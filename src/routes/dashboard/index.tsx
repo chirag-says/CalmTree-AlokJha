@@ -8,11 +8,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import { getMyResults } from "@/lib/api/results.functions";
-import { getMyPurchasedEbookIds } from "@/lib/api/ebooks.functions";
+import { getMyResults } from "@/server/functions/results.functions";
+import { getMyPurchasedEbookIds } from "@/server/functions/ebooks.functions";
+import { ASSESSMENT_LIST } from "@/data/assessments";
 import { ArrowRight, BookText, BookOpen, Sparkles, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { formatDistanceToNow } from "date-fns";
+
 
 export const Route = createFileRoute("/dashboard/")({
   head: () => ({
@@ -58,7 +60,7 @@ function StatCard({
 }
 
 function Page() {
-  const { user, session, loading: authLoading } = useAuth();
+  const { user, session, loading: authLoading, profile } = useAuth();
   const [results, setResults] = useState<ResultRow[]>([]);
   const [ebookCount, setEbookCount] = useState(0);
   const [dataLoading, setDataLoading] = useState(true);
@@ -81,18 +83,32 @@ function Page() {
     });
   }, [user, session, authLoading]);
 
-  const displayName = user?.user_metadata?.full_name as string | undefined;
+  // Personalization from profile
+  const displayName =
+    profile?.full_name?.split(" ")?.[0] ||
+    (user?.user_metadata?.full_name as string | undefined)?.split(" ")?.[0];
+
+  // Recommended assessments from focus areas
+  const recommended = profile?.focus_areas?.length
+    ? ASSESSMENT_LIST.filter((a) =>
+        profile.focus_areas.some((f: string) => a.meta.productCategory === f),
+      ).slice(0, 3)
+    : [];
 
   return (
     <div>
       <div className="mb-8">
         <h1 className="text-2xl md:text-3xl font-semibold">
-          Welcome back{displayName ? `, ${displayName.split(" ")[0]}` : ""}
+          Welcome back{displayName ? `, ${displayName}` : ""}
         </h1>
+        {profile?.primary_goal && (
+          <p className="mt-1 text-sm text-primary/80 font-medium">Goal: {profile.primary_goal}</p>
+        )}
         <p className="mt-1 text-sm text-muted-foreground">
           Here's a snapshot of your CalmTree journey.
         </p>
       </div>
+
 
       {/* Stat tiles */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 mb-10">
@@ -118,6 +134,32 @@ function Page() {
         </Link>
       </div>
 
+      {/* Recommended for you */}
+      {recommended.length > 0 && (
+        <div className="mb-10">
+          <div className="mb-4 flex items-center gap-2">
+            <Sparkles className="h-4 w-4 text-primary" />
+            <h2 className="text-lg font-semibold">Recommended for you</h2>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {recommended.map((a) => (
+              <Link
+                key={a.slug}
+                to="/assessments/$slug"
+                params={{ slug: a.slug }}
+                className="flex items-center gap-3 rounded-xl border border-border bg-card px-4 py-3 hover:border-primary/40 hover:shadow-sm transition-all group"
+              >
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium truncate">{a.meta.title}</p>
+                  <p className="text-xs text-muted-foreground">{a.meta.duration}</p>
+                </div>
+                <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary shrink-0 transition-colors" />
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Recent results */}
       <div className="mb-6 flex items-center justify-between">
         <h2 className="text-lg font-semibold">Recent Results</h2>
@@ -125,6 +167,7 @@ function Page() {
           <Link to="/dashboard/results">View all</Link>
         </Button>
       </div>
+
 
       {dataLoading ? (
         <div className="space-y-3">
@@ -155,7 +198,7 @@ function Page() {
                 <p className="text-sm font-medium">
                   {r.assessment_slug
                     .split("-")
-                    .map((w) => w[0].toUpperCase() + w.slice(1))
+                    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
                     .join(" ")}
                 </p>
                 <p className="text-xs text-primary font-medium mt-0.5">{r.primary_label}</p>

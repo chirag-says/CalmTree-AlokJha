@@ -7,9 +7,16 @@ import { SocialLinks } from "@/components/shared/SocialLinks";
 import { UserMenu } from "@/components/auth/UserMenu";
 import { NAV_LINKS, FOOTER_LINKS } from "@/data/navigation";
 import { SITE } from "@/data/constants";
+import { useAuth } from "@/hooks/useAuth";
 
 function Header() {
   const [open, setOpen] = useState(false);
+  const { user } = useAuth();
+  const isAuthed = Boolean(user);
+
+  // Filter: exclude footerOnly links and requiresAuth links when not authenticated.
+  const visibleLinks = NAV_LINKS.filter((l) => !l.footerOnly && (!l.requiresAuth || isAuthed));
+
   return (
     <header className="sticky top-0 z-40 backdrop-blur bg-background/80 border-b border-border/60">
       <div className="mx-auto max-w-6xl px-5 h-16 flex items-center justify-between">
@@ -17,7 +24,7 @@ function Header() {
           <Logo />
         </span>
         <nav className="hidden lg:flex items-center gap-7">
-          {NAV_LINKS.map((l) => (
+          {visibleLinks.map((l) => (
             <Link
               key={l.to}
               to={l.to}
@@ -31,10 +38,17 @@ function Header() {
         </nav>
         <div className="flex items-center gap-3">
           <Button asChild size="sm" className="hidden lg:inline-flex rounded-full px-5">
-            <Link to="/assessments">
-              Start Your Journey
-              <ArrowRight className="h-3.5 w-3.5" />
-            </Link>
+            {isAuthed ? (
+              <Link to="/dashboard">
+                Go to Dashboard
+                <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
+            ) : (
+              <Link to="/assessments">
+                Start Your Journey
+                <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
+            )}
           </Button>
           <UserMenu />
           <button
@@ -49,7 +63,7 @@ function Header() {
       {open && (
         <div className="lg:hidden border-t border-border/60 bg-background">
           <div className="mx-auto max-w-6xl px-5 py-3 flex flex-col gap-1">
-            {NAV_LINKS.map((l) => (
+            {visibleLinks.map((l) => (
               <Link
                 key={l.to}
                 to={l.to}

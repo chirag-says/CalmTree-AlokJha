@@ -1,10 +1,11 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, Navigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { SiteLayout } from "@/components/SiteLayout";
 import { NewsletterForm } from "@/components/NewsletterForm";
 import { YouTubeEmbed } from "@/components/shared/YouTubeEmbed";
 import { SITE } from "@/data/constants";
+import { useAuth } from "@/hooks/useAuth";
 import { ASSESSMENT_LIST } from "@/data/assessments";
 import {
   Leaf,
@@ -100,6 +101,18 @@ const ICON_MAP: Record<AssessmentIcon, React.ComponentType<{ className?: string 
 };
 
 function Index() {
+  const { user, isReady, profile } = useAuth();
+
+  // Logged-in users don't need the marketing landing page — send them to their
+  // dashboard (or onboarding if they haven't finished it). Anonymous visitors
+  // still get the full SSR landing page below (important for SEO).
+  if (isReady && user) {
+    if (profile && !profile.onboarding_completed) {
+      return <Navigate to="/onboarding" search={{ redirect: "/dashboard" }} />;
+    }
+    return <Navigate to="/dashboard" />;
+  }
+
   return (
     <SiteLayout>
       {/* ═══════════════════════════════════════════════
@@ -451,7 +464,7 @@ function Section({
 
 // ─── EbooksSection — renders real catalog from DB ─────────────────────────────
 
-import { getActiveEbooks } from "@/lib/api/ebooks.functions";
+import { getActiveEbooks } from "@/server/functions/ebooks.functions";
 
 interface EbookCard {
   id: string;

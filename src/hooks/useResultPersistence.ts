@@ -15,7 +15,7 @@
 
 import { useCallback } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import { saveAssessmentResult } from "@/lib/api/results.functions";
+import { saveAssessmentResult } from "@/server/functions/results.functions";
 import type {
   AssessmentConfig,
   ProfileAssessmentConfig,

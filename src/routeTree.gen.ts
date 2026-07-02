@@ -11,21 +11,24 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
-import { Route as ResourcesRouteImport } from './routes/resources'
 import { Route as PrivacyPolicyRouteImport } from './routes/privacy-policy'
+import { Route as OnboardingRouteImport } from './routes/onboarding'
+import { Route as LoginRouteImport } from './routes/login'
 import { Route as DecodeYourMindRouteImport } from './routes/decode-your-mind'
 import { Route as ContactRouteImport } from './routes/contact'
-import { Route as AcademyRouteImport } from './routes/academy'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as DashboardRouteRouteImport } from './routes/dashboard/route'
+import { Route as AuthedRouteRouteImport } from './routes/_authed/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
-import { Route as AssessmentsIndexRouteImport } from './routes/assessments/index'
 import { Route as DashboardSettingsRouteImport } from './routes/dashboard/settings'
 import { Route as DashboardResultsRouteImport } from './routes/dashboard/results'
 import { Route as DashboardEbooksRouteImport } from './routes/dashboard/ebooks'
-import { Route as AssessmentsSlugRouteImport } from './routes/assessments/$slug'
+import { Route as AuthedResourcesRouteImport } from './routes/_authed/resources'
+import { Route as AuthedAcademyRouteImport } from './routes/_authed/academy'
+import { Route as AuthedAssessmentsIndexRouteImport } from './routes/_authed/assessments/index'
 import { Route as ApiWebhooksRazorpayRouteImport } from './routes/api/webhooks/razorpay'
+import { Route as AuthedAssessmentsSlugRouteImport } from './routes/_authed/assessments/$slug'
 
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
@@ -37,14 +40,19 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ResourcesRoute = ResourcesRouteImport.update({
-  id: '/resources',
-  path: '/resources',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const PrivacyPolicyRoute = PrivacyPolicyRouteImport.update({
   id: '/privacy-policy',
   path: '/privacy-policy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OnboardingRoute = OnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DecodeYourMindRoute = DecodeYourMindRouteImport.update({
@@ -57,11 +65,6 @@ const ContactRoute = ContactRouteImport.update({
   path: '/contact',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AcademyRoute = AcademyRouteImport.update({
-  id: '/academy',
-  path: '/academy',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
@@ -70,6 +73,10 @@ const AboutRoute = AboutRouteImport.update({
 const DashboardRouteRoute = DashboardRouteRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthedRouteRoute = AuthedRouteRouteImport.update({
+  id: '/_authed',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -81,11 +88,6 @@ const DashboardIndexRoute = DashboardIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => DashboardRouteRoute,
-} as any)
-const AssessmentsIndexRoute = AssessmentsIndexRouteImport.update({
-  id: '/assessments/',
-  path: '/assessments/',
-  getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardSettingsRoute = DashboardSettingsRouteImport.update({
   id: '/settings',
@@ -102,73 +104,95 @@ const DashboardEbooksRoute = DashboardEbooksRouteImport.update({
   path: '/ebooks',
   getParentRoute: () => DashboardRouteRoute,
 } as any)
-const AssessmentsSlugRoute = AssessmentsSlugRouteImport.update({
-  id: '/assessments/$slug',
-  path: '/assessments/$slug',
-  getParentRoute: () => rootRouteImport,
+const AuthedResourcesRoute = AuthedResourcesRouteImport.update({
+  id: '/resources',
+  path: '/resources',
+  getParentRoute: () => AuthedRouteRoute,
+} as any)
+const AuthedAcademyRoute = AuthedAcademyRouteImport.update({
+  id: '/academy',
+  path: '/academy',
+  getParentRoute: () => AuthedRouteRoute,
+} as any)
+const AuthedAssessmentsIndexRoute = AuthedAssessmentsIndexRouteImport.update({
+  id: '/assessments/',
+  path: '/assessments/',
+  getParentRoute: () => AuthedRouteRoute,
 } as any)
 const ApiWebhooksRazorpayRoute = ApiWebhooksRazorpayRouteImport.update({
   id: '/api/webhooks/razorpay',
   path: '/api/webhooks/razorpay',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthedAssessmentsSlugRoute = AuthedAssessmentsSlugRouteImport.update({
+  id: '/assessments/$slug',
+  path: '/assessments/$slug',
+  getParentRoute: () => AuthedRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRouteRouteWithChildren
   '/about': typeof AboutRoute
-  '/academy': typeof AcademyRoute
   '/contact': typeof ContactRoute
   '/decode-your-mind': typeof DecodeYourMindRoute
+  '/login': typeof LoginRoute
+  '/onboarding': typeof OnboardingRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
-  '/resources': typeof ResourcesRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
-  '/assessments/$slug': typeof AssessmentsSlugRoute
+  '/academy': typeof AuthedAcademyRoute
+  '/resources': typeof AuthedResourcesRoute
   '/dashboard/ebooks': typeof DashboardEbooksRoute
   '/dashboard/results': typeof DashboardResultsRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
-  '/assessments/': typeof AssessmentsIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
+  '/assessments/$slug': typeof AuthedAssessmentsSlugRoute
   '/api/webhooks/razorpay': typeof ApiWebhooksRazorpayRoute
+  '/assessments/': typeof AuthedAssessmentsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/academy': typeof AcademyRoute
   '/contact': typeof ContactRoute
   '/decode-your-mind': typeof DecodeYourMindRoute
+  '/login': typeof LoginRoute
+  '/onboarding': typeof OnboardingRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
-  '/resources': typeof ResourcesRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
-  '/assessments/$slug': typeof AssessmentsSlugRoute
+  '/academy': typeof AuthedAcademyRoute
+  '/resources': typeof AuthedResourcesRoute
   '/dashboard/ebooks': typeof DashboardEbooksRoute
   '/dashboard/results': typeof DashboardResultsRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
-  '/assessments': typeof AssessmentsIndexRoute
   '/dashboard': typeof DashboardIndexRoute
+  '/assessments/$slug': typeof AuthedAssessmentsSlugRoute
   '/api/webhooks/razorpay': typeof ApiWebhooksRazorpayRoute
+  '/assessments': typeof AuthedAssessmentsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authed': typeof AuthedRouteRouteWithChildren
   '/dashboard': typeof DashboardRouteRouteWithChildren
   '/about': typeof AboutRoute
-  '/academy': typeof AcademyRoute
   '/contact': typeof ContactRoute
   '/decode-your-mind': typeof DecodeYourMindRoute
+  '/login': typeof LoginRoute
+  '/onboarding': typeof OnboardingRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
-  '/resources': typeof ResourcesRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
-  '/assessments/$slug': typeof AssessmentsSlugRoute
+  '/_authed/academy': typeof AuthedAcademyRoute
+  '/_authed/resources': typeof AuthedResourcesRoute
   '/dashboard/ebooks': typeof DashboardEbooksRoute
   '/dashboard/results': typeof DashboardResultsRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
-  '/assessments/': typeof AssessmentsIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
+  '/_authed/assessments/$slug': typeof AuthedAssessmentsSlugRoute
   '/api/webhooks/razorpay': typeof ApiWebhooksRazorpayRoute
+  '/_authed/assessments/': typeof AuthedAssessmentsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -176,72 +200,78 @@ export interface FileRouteTypes {
     | '/'
     | '/dashboard'
     | '/about'
-    | '/academy'
     | '/contact'
     | '/decode-your-mind'
+    | '/login'
+    | '/onboarding'
     | '/privacy-policy'
-    | '/resources'
     | '/sitemap.xml'
     | '/terms'
-    | '/assessments/$slug'
+    | '/academy'
+    | '/resources'
     | '/dashboard/ebooks'
     | '/dashboard/results'
     | '/dashboard/settings'
-    | '/assessments/'
     | '/dashboard/'
+    | '/assessments/$slug'
     | '/api/webhooks/razorpay'
+    | '/assessments/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/about'
-    | '/academy'
     | '/contact'
     | '/decode-your-mind'
+    | '/login'
+    | '/onboarding'
     | '/privacy-policy'
-    | '/resources'
     | '/sitemap.xml'
     | '/terms'
-    | '/assessments/$slug'
+    | '/academy'
+    | '/resources'
     | '/dashboard/ebooks'
     | '/dashboard/results'
     | '/dashboard/settings'
-    | '/assessments'
     | '/dashboard'
+    | '/assessments/$slug'
     | '/api/webhooks/razorpay'
+    | '/assessments'
   id:
     | '__root__'
     | '/'
+    | '/_authed'
     | '/dashboard'
     | '/about'
-    | '/academy'
     | '/contact'
     | '/decode-your-mind'
+    | '/login'
+    | '/onboarding'
     | '/privacy-policy'
-    | '/resources'
     | '/sitemap.xml'
     | '/terms'
-    | '/assessments/$slug'
+    | '/_authed/academy'
+    | '/_authed/resources'
     | '/dashboard/ebooks'
     | '/dashboard/results'
     | '/dashboard/settings'
-    | '/assessments/'
     | '/dashboard/'
+    | '/_authed/assessments/$slug'
     | '/api/webhooks/razorpay'
+    | '/_authed/assessments/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthedRouteRoute: typeof AuthedRouteRouteWithChildren
   DashboardRouteRoute: typeof DashboardRouteRouteWithChildren
   AboutRoute: typeof AboutRoute
-  AcademyRoute: typeof AcademyRoute
   ContactRoute: typeof ContactRoute
   DecodeYourMindRoute: typeof DecodeYourMindRoute
+  LoginRoute: typeof LoginRoute
+  OnboardingRoute: typeof OnboardingRoute
   PrivacyPolicyRoute: typeof PrivacyPolicyRoute
-  ResourcesRoute: typeof ResourcesRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermsRoute: typeof TermsRoute
-  AssessmentsSlugRoute: typeof AssessmentsSlugRoute
-  AssessmentsIndexRoute: typeof AssessmentsIndexRoute
   ApiWebhooksRazorpayRoute: typeof ApiWebhooksRazorpayRoute
 }
 
@@ -261,18 +291,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/resources': {
-      id: '/resources'
-      path: '/resources'
-      fullPath: '/resources'
-      preLoaderRoute: typeof ResourcesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/privacy-policy': {
       id: '/privacy-policy'
       path: '/privacy-policy'
       fullPath: '/privacy-policy'
       preLoaderRoute: typeof PrivacyPolicyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/onboarding': {
+      id: '/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof OnboardingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/decode-your-mind': {
@@ -289,13 +326,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ContactRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/academy': {
-      id: '/academy'
-      path: '/academy'
-      fullPath: '/academy'
-      preLoaderRoute: typeof AcademyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/about': {
       id: '/about'
       path: '/about'
@@ -308,6 +338,13 @@ declare module '@tanstack/react-router' {
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof DashboardRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authed': {
+      id: '/_authed'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -323,13 +360,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/dashboard/'
       preLoaderRoute: typeof DashboardIndexRouteImport
       parentRoute: typeof DashboardRouteRoute
-    }
-    '/assessments/': {
-      id: '/assessments/'
-      path: '/assessments'
-      fullPath: '/assessments/'
-      preLoaderRoute: typeof AssessmentsIndexRouteImport
-      parentRoute: typeof rootRouteImport
     }
     '/dashboard/settings': {
       id: '/dashboard/settings'
@@ -352,12 +382,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardEbooksRouteImport
       parentRoute: typeof DashboardRouteRoute
     }
-    '/assessments/$slug': {
-      id: '/assessments/$slug'
-      path: '/assessments/$slug'
-      fullPath: '/assessments/$slug'
-      preLoaderRoute: typeof AssessmentsSlugRouteImport
-      parentRoute: typeof rootRouteImport
+    '/_authed/resources': {
+      id: '/_authed/resources'
+      path: '/resources'
+      fullPath: '/resources'
+      preLoaderRoute: typeof AuthedResourcesRouteImport
+      parentRoute: typeof AuthedRouteRoute
+    }
+    '/_authed/academy': {
+      id: '/_authed/academy'
+      path: '/academy'
+      fullPath: '/academy'
+      preLoaderRoute: typeof AuthedAcademyRouteImport
+      parentRoute: typeof AuthedRouteRoute
+    }
+    '/_authed/assessments/': {
+      id: '/_authed/assessments/'
+      path: '/assessments'
+      fullPath: '/assessments/'
+      preLoaderRoute: typeof AuthedAssessmentsIndexRouteImport
+      parentRoute: typeof AuthedRouteRoute
     }
     '/api/webhooks/razorpay': {
       id: '/api/webhooks/razorpay'
@@ -366,8 +410,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiWebhooksRazorpayRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authed/assessments/$slug': {
+      id: '/_authed/assessments/$slug'
+      path: '/assessments/$slug'
+      fullPath: '/assessments/$slug'
+      preLoaderRoute: typeof AuthedAssessmentsSlugRouteImport
+      parentRoute: typeof AuthedRouteRoute
+    }
   }
 }
+
+interface AuthedRouteRouteChildren {
+  AuthedAcademyRoute: typeof AuthedAcademyRoute
+  AuthedResourcesRoute: typeof AuthedResourcesRoute
+  AuthedAssessmentsSlugRoute: typeof AuthedAssessmentsSlugRoute
+  AuthedAssessmentsIndexRoute: typeof AuthedAssessmentsIndexRoute
+}
+
+const AuthedRouteRouteChildren: AuthedRouteRouteChildren = {
+  AuthedAcademyRoute: AuthedAcademyRoute,
+  AuthedResourcesRoute: AuthedResourcesRoute,
+  AuthedAssessmentsSlugRoute: AuthedAssessmentsSlugRoute,
+  AuthedAssessmentsIndexRoute: AuthedAssessmentsIndexRoute,
+}
+
+const AuthedRouteRouteWithChildren = AuthedRouteRoute._addFileChildren(
+  AuthedRouteRouteChildren,
+)
 
 interface DashboardRouteRouteChildren {
   DashboardEbooksRoute: typeof DashboardEbooksRoute
@@ -389,17 +458,16 @@ const DashboardRouteRouteWithChildren = DashboardRouteRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthedRouteRoute: AuthedRouteRouteWithChildren,
   DashboardRouteRoute: DashboardRouteRouteWithChildren,
   AboutRoute: AboutRoute,
-  AcademyRoute: AcademyRoute,
   ContactRoute: ContactRoute,
   DecodeYourMindRoute: DecodeYourMindRoute,
+  LoginRoute: LoginRoute,
+  OnboardingRoute: OnboardingRoute,
   PrivacyPolicyRoute: PrivacyPolicyRoute,
-  ResourcesRoute: ResourcesRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermsRoute: TermsRoute,
-  AssessmentsSlugRoute: AssessmentsSlugRoute,
-  AssessmentsIndexRoute: AssessmentsIndexRoute,
   ApiWebhooksRazorpayRoute: ApiWebhooksRazorpayRoute,
 }
 export const routeTree = rootRouteImport

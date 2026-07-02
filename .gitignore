@@ -23,6 +23,9 @@ dist-ssr
 # Vercel
 .vercel/
 
+# Supabase CLI temp
+supabase/.temp/
+
 # Environment variables
 .env
 .env.*

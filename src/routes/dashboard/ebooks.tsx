@@ -10,7 +10,7 @@ import {
   getMyPurchasedEbookIds,
   getActiveEbooks,
   getEbookDownloadUrl,
-} from "@/lib/api/ebooks.functions";
+} from "@/server/functions/ebooks.functions";
 import { Download, FileText, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";

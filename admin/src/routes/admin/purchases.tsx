@@ -5,8 +5,108 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import { listPurchases } from "@/server/functions/admin.functions";
+import { listPurchases, exportPurchases } from "@/server/functions/admin.functions";
 import { formatDistanceToNow } from "date-fns";
+import { toast } from "sonner";
+import { Download, Loader2 } from "lucide-react";
+
+// ─── CSV helpers ──────────────────────────────────────────────────────────────
+
+interface ExportRow {
+  id: string;
+  user_id: string;
+  email: string | null;
+  product_type: string;
+  product_id: string | null;
+  amount_paid_inr: number;
+  status: string;
+  razorpay_order_id: string | null;
+  razorpay_payment_id: string | null;
+  purchased_at: string;
+}
+
+function csvEscape(value: unknown): string {
+  const s = value == null ? "" : String(value);
+  return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+}
+
+function buildCsv(rows: ExportRow[]): string {
+  const header = [
+    "purchase_id",
+    "purchased_at",
+    "email",
+    "user_id",
+    "product_type",
+    "product_id",
+    "amount_inr",
+    "status",
+    "razorpay_order_id",
+    "razorpay_payment_id",
+  ];
+  const lines = rows.map((r) =>
+    [
+      r.id,
+      r.purchased_at,
+      r.email,
+      r.user_id,
+      r.product_type,
+      r.product_id,
+      r.amount_paid_inr,
+      r.status,
+      r.razorpay_order_id,
+      r.razorpay_payment_id,
+    ]
+      .map(csvEscape)
+      .join(","),
+  );
+  return [header.join(","), ...lines].join("\n");
+}
+
+function ExportCsvButton() {
+  const { session } = useAuth();
+  const [exporting, setExporting] = useState(false);
+
+  async function handleExport() {
+    if (!session?.access_token || exporting) return;
+    setExporting(true);
+    try {
+      const res = await exportPurchases({ data: { accessToken: session.access_token } });
+      if ("error" in res && res.error) {
+        toast.error(res.error);
+        return;
+      }
+      const rows = res.purchases as ExportRow[];
+      if (rows.length === 0) {
+        toast("No purchases to export yet.");
+        return;
+      }
+      const blob = new Blob([buildCsv(rows)], { type: "text/csv;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `calmtree-purchases-${new Date().toISOString().slice(0, 10)}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+      toast.success(`Exported ${rows.length} purchases.`);
+    } catch (e) {
+      console.error("[export-csv] failed:", e);
+      toast.error("Export failed. Please try again.");
+    } finally {
+      setExporting(false);
+    }
+  }
+
+  return (
+    <button
+      onClick={handleExport}
+      disabled={exporting}
+      className="inline-flex items-center gap-2 rounded-lg bg-white/10 hover:bg-white/20 text-white text-sm px-3 py-2 disabled:opacity-40 transition-colors"
+    >
+      {exporting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
+      Export CSV
+    </button>
+  );
+}
 
 export const Route = createFileRoute("/admin/purchases")({
   head: () => ({ meta: [{ title: "Purchases — CalmTree Admin" }] }),
@@ -48,11 +148,14 @@ function AdminPurchasesPage() {
 
   return (
     <div>
-      <div className="mb-8">
-        <h1 className="text-2xl font-semibold text-white">Purchases</h1>
-        <p className="text-sm text-white/40 mt-1">
-          {total} purchases · ₹{totalRevenue.toLocaleString("en-IN")} shown
-        </p>
+      <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-semibold text-white">Purchases</h1>
+          <p className="text-sm text-white/40 mt-1">
+            {total} purchases · ₹{totalRevenue.toLocaleString("en-IN")} shown
+          </p>
+        </div>
+        <ExportCsvButton />
       </div>
 
       <div className="rounded-2xl border border-white/10 overflow-hidden">

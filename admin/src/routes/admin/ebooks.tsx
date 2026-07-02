@@ -4,7 +4,7 @@
  */
 
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import {
   listAllEbooks,
@@ -20,6 +20,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Plus, Pencil, Trash2, Loader2, X } from "lucide-react";
+import { CloudinaryUploadButton } from "@/components/CloudinaryUploadButton";
 
 export const Route = createFileRoute("/admin/ebooks")({
   head: () => ({ meta: [{ title: "Ebooks — CalmTree Admin" }] }),
@@ -131,7 +132,11 @@ function EbookForm({
 
         <div className="space-y-1.5">
           <Label className="text-white/60 text-xs">Slug *</Label>
-          <Input {...form.register("slug")} className="bg-white/5 border-white/10 text-white font-mono text-sm" placeholder="e.g. burnout-recovery" />
+          <Input
+            {...form.register("slug")}
+            className="bg-white/5 border-white/10 text-white font-mono text-sm"
+            placeholder="e.g. burnout-recovery"
+          />
           {form.formState.errors.slug && (
             <p className="text-xs text-red-400">{form.formState.errors.slug.message}</p>
           )}
@@ -139,7 +144,11 @@ function EbookForm({
 
         <div className="space-y-1.5">
           <Label className="text-white/60 text-xs">Price (INR) *</Label>
-          <Input type="number" {...form.register("price_inr")} className="bg-white/5 border-white/10 text-white" />
+          <Input
+            type="number"
+            {...form.register("price_inr")}
+            className="bg-white/5 border-white/10 text-white"
+          />
         </div>
 
         <div className="space-y-1.5">
@@ -156,7 +165,11 @@ function EbookForm({
 
         <div className="space-y-1.5">
           <Label className="text-white/60 text-xs">Page count</Label>
-          <Input type="number" {...form.register("page_count")} className="bg-white/5 border-white/10 text-white" />
+          <Input
+            type="number"
+            {...form.register("page_count")}
+            className="bg-white/5 border-white/10 text-white"
+          />
         </div>
 
         <div className="sm:col-span-2 space-y-1.5">
@@ -165,27 +178,58 @@ function EbookForm({
         </div>
 
         <div className="sm:col-span-2 space-y-1.5">
-          <Label className="text-white/60 text-xs">Cover image URL</Label>
-          <Input {...form.register("cover_image_url")} className="bg-white/5 border-white/10 text-white font-mono text-sm" />
+          <Label className="text-white/60 text-xs">Cover image</Label>
+          <div className="flex gap-2">
+            <Input
+              {...form.register("cover_image_url")}
+              placeholder="Upload an image or paste a URL"
+              className="bg-white/5 border-white/10 text-white font-mono text-sm"
+            />
+            <CloudinaryUploadButton
+              kind="cover"
+              onUploaded={(url) => form.setValue("cover_image_url", url, { shouldDirty: true })}
+            />
+          </div>
         </div>
 
         <div className="sm:col-span-2 space-y-1.5">
-          <Label className="text-white/60 text-xs">Cloudinary public ID</Label>
-          <Input {...form.register("cloudinary_public_id")} className="bg-white/5 border-white/10 text-white font-mono text-sm" />
+          <Label className="text-white/60 text-xs">Ebook PDF (Cloudinary public ID)</Label>
+          <div className="flex gap-2">
+            <Input
+              {...form.register("cloudinary_public_id")}
+              placeholder="Upload the PDF or paste a public ID"
+              className="bg-white/5 border-white/10 text-white font-mono text-sm"
+            />
+            <CloudinaryUploadButton
+              kind="pdf"
+              onUploaded={(publicId) =>
+                form.setValue("cloudinary_public_id", publicId, { shouldDirty: true })
+              }
+            />
+          </div>
+          <p className="text-xs text-white/30">
+            The PDF is stored privately — buyers get short-lived signed links.
+          </p>
         </div>
 
         <div className="sm:col-span-2 flex gap-3 justify-end">
           <Button type="button" variant="ghost" onClick={onCancel} className="text-white/50">
             Cancel
           </Button>
-          <Button type="submit" disabled={form.formState.isSubmitting} className="bg-cyan-600 hover:bg-cyan-500 text-white">
+          <Button
+            type="submit"
+            disabled={form.formState.isSubmitting}
+            className="bg-cyan-600 hover:bg-cyan-500 text-white"
+          >
             {form.formState.isSubmitting ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin" />
                 Saving…
               </>
+            ) : initial ? (
+              "Save changes"
             ) : (
-              initial ? "Save changes" : "Create ebook"
+              "Create ebook"
             )}
           </Button>
         </div>
@@ -203,18 +247,20 @@ function AdminEbooksPage() {
   const [showForm, setShowForm] = useState(false);
   const [editTarget, setEditTarget] = useState<EbookRow | null>(null);
 
-  function fetchEbooks() {
+  const fetchEbooks = useCallback(() => {
     if (!session?.access_token) return;
     setLoading(true);
-    listAllEbooks({ data: { accessToken: session.access_token } }).then((res) => {
-      if (!("error" in res)) setEbooks(res.ebooks as EbookRow[]);
-      setLoading(false);
-    });
-  }
+    listAllEbooks({ data: { accessToken: session.access_token } })
+      .then((res) => {
+        if (!("error" in res)) setEbooks(res.ebooks as EbookRow[]);
+      })
+      .catch((e) => console.error("[admin-ebooks] fetch failed:", e))
+      .finally(() => setLoading(false));
+  }, [session]);
 
   useEffect(() => {
     fetchEbooks();
-  }, [session]);
+  }, [fetchEbooks]);
 
   async function handleDelete(id: string) {
     if (!session?.access_token) return;

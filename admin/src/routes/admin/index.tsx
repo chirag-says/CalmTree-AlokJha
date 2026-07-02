@@ -5,10 +5,62 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import { getAdminOverview } from "@/server/functions/admin.functions";
+import { getAdminOverview, getOverviewTimeSeries } from "@/server/functions/admin.functions";
 import { StatCard } from "@/admin/AdminLayout";
 import { ASSESSMENT_LIST } from "@/data/assessments";
 import { Users, UserPlus, TrendingUp, ShoppingBag, BookOpen, CheckCircle2 } from "lucide-react";
+
+// ─── Minimal dependency-free daily bar chart ──────────────────────────────────
+
+interface DayPoint {
+  date: string;
+  signups: number;
+  results: number;
+  revenue: number;
+}
+
+function DailyBarChart({
+  days,
+  metric,
+  title,
+  color,
+  format = (v) => String(v),
+}: {
+  days: DayPoint[];
+  metric: keyof Omit<DayPoint, "date">;
+  title: string;
+  color: string;
+  format?: (v: number) => string;
+}) {
+  const max = Math.max(...days.map((d) => d[metric]), 1);
+  const total = days.reduce((s, d) => s + d[metric], 0);
+
+  return (
+    <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
+      <div className="flex items-baseline justify-between mb-4">
+        <p className="text-xs text-white/50 uppercase tracking-wider">{title}</p>
+        <p className="text-sm font-semibold text-white">{format(total)} in 30d</p>
+      </div>
+      <div className="flex items-end gap-[3px] h-24">
+        {days.map((d) => (
+          <div
+            key={d.date}
+            className="flex-1 rounded-t-sm min-h-[2px] transition-all"
+            style={{
+              height: `${Math.max((d[metric] / max) * 100, 2)}%`,
+              backgroundColor: d[metric] > 0 ? color : "rgba(255,255,255,0.06)",
+            }}
+            title={`${d.date}: ${format(d[metric])}`}
+          />
+        ))}
+      </div>
+      <div className="flex justify-between mt-2 text-[10px] text-white/25">
+        <span>{days[0]?.date.slice(5)}</span>
+        <span>{days[days.length - 1]?.date.slice(5)}</span>
+      </div>
+    </div>
+  );
+}
 
 export const Route = createFileRoute("/admin/")({
   head: () => ({ meta: [{ title: "Admin Overview — CalmTree" }] }),
@@ -29,6 +81,7 @@ interface Overview {
 function AdminOverviewPage() {
   const { session } = useAuth();
   const [overview, setOverview] = useState<Overview | null>(null);
+  const [days, setDays] = useState<DayPoint[]>([]);
   const [loading, setLoading] = useState(true);
 
   // slug → human title, so the top-assessments panel isn't raw slugs.
@@ -40,10 +93,16 @@ function AdminOverviewPage() {
 
   useEffect(() => {
     if (!session?.access_token) return;
-    getAdminOverview({ data: { accessToken: session.access_token } }).then((res) => {
-      if (!("error" in res)) setOverview(res as Overview);
-      setLoading(false);
-    });
+    Promise.all([
+      getAdminOverview({ data: { accessToken: session.access_token } }),
+      getOverviewTimeSeries({ data: { accessToken: session.access_token } }),
+    ])
+      .then(([overviewRes, seriesRes]) => {
+        if (!("error" in overviewRes)) setOverview(overviewRes as Overview);
+        if (!("error" in seriesRes)) setDays(seriesRes.days as DayPoint[]);
+      })
+      .catch((e) => console.error("[admin-overview] fetch failed:", e))
+      .finally(() => setLoading(false));
   }, [session]);
 
   return (
@@ -79,6 +138,21 @@ function AdminOverviewPage() {
             />
             <StatCard label="Active Ebooks" value={overview.activeEbooks} icon={BookOpen} />
           </div>
+
+          {/* Daily trends (last 30 days) */}
+          {days.length > 0 && (
+            <div className="mt-8 grid gap-4 lg:grid-cols-3">
+              <DailyBarChart days={days} metric="signups" title="Signups / day" color="#22d3ee" />
+              <DailyBarChart days={days} metric="results" title="Results / day" color="#34d399" />
+              <DailyBarChart
+                days={days}
+                metric="revenue"
+                title="Revenue / day"
+                color="#fbbf24"
+                format={(v) => `₹${v.toLocaleString("en-IN")}`}
+              />
+            </div>
+          )}
 
           {/* Top assessments (last 30 days) */}
           <div className="mt-8 rounded-2xl border border-white/10 bg-white/5 p-5">

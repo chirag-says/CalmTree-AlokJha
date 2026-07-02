@@ -32,15 +32,13 @@ function AdminResultsPage() {
   useEffect(() => {
     if (!session?.access_token) return;
     setLoading(true);
-    listResults({ data: { accessToken: session.access_token, page, pageSize: 20 } }).then(
-      (res) => {
-        if (!("error" in res)) {
-          setResults(res.results as ResultRow[]);
-          setTotal(res.total);
-        }
-        setLoading(false);
-      },
-    );
+    listResults({ data: { accessToken: session.access_token, page, pageSize: 20 } }).then((res) => {
+      if (!("error" in res)) {
+        setResults(res.results as ResultRow[]);
+        setTotal(res.total);
+      }
+      setLoading(false);
+    });
   }, [session, page]);
 
   return (

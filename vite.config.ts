@@ -21,7 +21,15 @@ export default defineConfig({
     }),
     react(),
     // Vercel deployment — generates .vercel/output
-    nitro({ preset: "vercel" }),
+    nitro({
+      preset: "vercel",
+      // Prod equivalent of the dev-server /ingest proxy below — without this,
+      // PostHog (api_host: "/ingest") silently 404s in production.
+      routeRules: {
+        "/ingest/static/**": { proxy: "https://us-assets.i.posthog.com/static/**" },
+        "/ingest/**": { proxy: "https://us.i.posthog.com/**" },
+      },
+    }),
   ],
   resolve: {
     dedupe: ["react", "react-dom", "@tanstack/react-router"],

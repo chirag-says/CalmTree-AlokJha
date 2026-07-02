@@ -3,7 +3,7 @@
  * Full assessment history, newest first.
  */
 
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { getMyResults } from "@/server/functions/results.functions";
@@ -35,12 +35,16 @@ function Page() {
   useEffect(() => {
     if (authLoading || !user || !session?.access_token) return;
     setLoading(true);
-    getMyResults({ data: { accessToken: session.access_token, limit: 100 } }).then((res) => {
-      if (!("error" in res) && res.results) {
-        setResults(res.results as ResultRow[]);
-      }
-      setLoading(false);
-    });
+    getMyResults({ data: { accessToken: session.access_token, limit: 100 } })
+      .then((res) => {
+        if (!("error" in res) && res.results) {
+          setResults(res.results as ResultRow[]);
+        }
+      })
+      .catch((e) => {
+        console.error("[results] failed to load results:", e);
+      })
+      .finally(() => setLoading(false));
   }, [user, session, authLoading]);
 
   function formatSlug(slug: string) {
@@ -69,18 +73,19 @@ function Page() {
         <div className="rounded-2xl border border-dashed border-border p-10 text-center">
           <p className="text-sm text-muted-foreground mb-4">No assessments completed yet.</p>
           <Button asChild>
-            <a href="/assessments">
+            <Link to="/assessments">
               Start an assessment
               <ArrowRight className="h-4 w-4" />
-            </a>
+            </Link>
           </Button>
         </div>
       ) : (
         <div className="space-y-3">
           {results.map((r) => (
-            <a
+            <Link
               key={r.id}
-              href={`/assessments/${r.assessment_slug}`}
+              to="/assessments/$slug"
+              params={{ slug: r.assessment_slug }}
               className="flex items-start justify-between rounded-xl border border-border bg-card px-5 py-4 hover:shadow-md transition-shadow group"
             >
               <div>
@@ -99,7 +104,7 @@ function Page() {
                 <Clock className="h-3 w-3" />
                 {formatDistanceToNow(new Date(r.completed_at), { addSuffix: true })}
               </div>
-            </a>
+            </Link>
           ))}
         </div>
       )}

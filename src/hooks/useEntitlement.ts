@@ -65,7 +65,15 @@ export function useEntitlement(config: AnyAssessmentConfig): UseEntitlementResul
       .from("entitlements")
       .select("access_type, product_category, expires_at")
       .eq("user_id", user.id)
-      .then(({ data }) => {
+      .then(({ data, error }) => {
+        if (error) {
+          // Don't cache a failed fetch — an empty cache here would show a
+          // paying user the paywall until the cache is invalidated.
+          console.error("[useEntitlement] fetch error:", error.message);
+          setEntitlements([]);
+          setLoading(false);
+          return;
+        }
         const rows = (data ?? []) as EntitlementRow[];
         cachedUserId = user.id;
         cachedEntitlements = rows;

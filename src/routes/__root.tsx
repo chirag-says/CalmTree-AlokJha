@@ -160,7 +160,7 @@ function RootShell({ children }: { children: ReactNode }) {
             // so talk to PostHog directly. In prod, route through /ingest to avoid
             // ad-blocker interference.
             api_host: import.meta.env.DEV
-              ? (import.meta.env.VITE_POSTHOG_HOST || "https://us.i.posthog.com")
+              ? import.meta.env.VITE_POSTHOG_HOST || "https://us.i.posthog.com"
               : "/ingest",
             ui_host: import.meta.env.VITE_POSTHOG_HOST || "https://us.posthog.com",
             defaults: "2025-05-24",

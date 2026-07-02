@@ -16,7 +16,9 @@ export function getAdminClient(): SupabaseClient {
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
   if (!url || !serviceRoleKey) {
-    throw new Error("[CalmTree] SUPABASE_URL/VITE_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY is not set.");
+    throw new Error(
+      "[CalmTree] SUPABASE_URL/VITE_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY is not set.",
+    );
   }
 
   return createClient(url, serviceRoleKey, {

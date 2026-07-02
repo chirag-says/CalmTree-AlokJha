@@ -10,6 +10,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/lib/supabase";
+import { updateProfile } from "@/server/functions/profile.functions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -39,10 +40,10 @@ type NameFields = z.infer<typeof nameSchema>;
 type PasswordFields = z.infer<typeof passwordSchema>;
 
 function Page() {
-  const { user, setPassword } = useAuth();
+  const { user, session, profile, setPassword, refreshProfile } = useAuth();
   const [showPasswordForm, setShowPasswordForm] = useState(false);
 
-  const displayName = user?.user_metadata?.full_name as string | undefined;
+  const displayName = profile?.full_name ?? (user?.user_metadata?.full_name as string | undefined);
 
   // Name form
   const nameForm = useForm<NameFields>({
@@ -51,18 +52,25 @@ function Page() {
   });
 
   async function onSaveName(values: NameFields) {
-    if (!supabase) {
+    if (!supabase || !session?.access_token) {
       toast.error("Auth not configured.");
       return;
     }
-    const { error } = await supabase.auth.updateUser({
-      data: { full_name: values.fullName },
-    });
-    if (error) {
-      toast.error(error.message);
-    } else {
-      toast.success("Name updated.");
+    // The dashboard greeting reads profiles.full_name, while the sidebar chip
+    // reads auth user_metadata — keep both in sync.
+    const [{ error: metaError }, profileRes] = await Promise.all([
+      supabase.auth.updateUser({ data: { full_name: values.fullName } }),
+      updateProfile({
+        data: { accessToken: session.access_token, fullName: values.fullName },
+      }),
+    ]);
+    const profileError = "error" in profileRes ? profileRes.error : null;
+    if (metaError || profileError) {
+      toast.error(metaError?.message ?? profileError ?? "Could not update name.");
+      return;
     }
+    await refreshProfile();
+    toast.success("Name updated.");
   }
 
   // Password form

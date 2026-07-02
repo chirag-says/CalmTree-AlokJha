@@ -3,17 +3,13 @@
  * Lists purchased ebooks with a signed download button.
  */
 
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import {
-  getMyPurchasedEbookIds,
-  getActiveEbooks,
-  getEbookDownloadUrl,
-} from "@/server/functions/ebooks.functions";
-import { Download, FileText, Loader2 } from "lucide-react";
+import { getMyPurchasedEbookIds, getActiveEbooks } from "@/server/functions/ebooks.functions";
+import { FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
+import { EbookDownloadButton } from "@/components/ebooks/EbookDownloadButton";
 
 export const Route = createFileRoute("/dashboard/ebooks")({
   head: () => ({ meta: [{ title: "My Ebooks — CalmTree Dashboard" }] }),
@@ -29,43 +25,6 @@ interface EbookRow {
   page_count: number | null;
 }
 
-function DownloadButton({ ebookId, session }: { ebookId: string; session: string }) {
-  const [loading, setLoading] = useState(false);
-
-  async function handleDownload() {
-    setLoading(true);
-    try {
-      const res = await getEbookDownloadUrl({ data: { accessToken: session, ebookId } });
-      if ("error" in res && res.error) {
-        toast.error(res.error);
-        return;
-      }
-      if ("downloadUrl" in res && res.downloadUrl) {
-        // Open in new tab — browser handles PDF download
-        window.open(res.downloadUrl, "_blank", "noopener,noreferrer");
-      }
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  return (
-    <Button size="sm" onClick={handleDownload} disabled={loading}>
-      {loading ? (
-        <>
-          <Loader2 className="h-4 w-4 animate-spin" />
-          Generating link…
-        </>
-      ) : (
-        <>
-          <Download className="h-4 w-4" />
-          Download PDF
-        </>
-      )}
-    </Button>
-  );
-}
-
 function Page() {
   const { user, session, loading: authLoading } = useAuth();
   const [ebooks, setEbooks] = useState<EbookRow[]>([]);
@@ -78,12 +37,16 @@ function Page() {
     Promise.all([
       getMyPurchasedEbookIds({ data: { accessToken: session.access_token } }),
       getActiveEbooks({ data: {} }),
-    ]).then(([purchasedRes, catalogRes]) => {
-      const ids = new Set("error" in purchasedRes ? [] : purchasedRes.ebookIds);
-      const all = "error" in catalogRes ? [] : (catalogRes.ebooks as EbookRow[]);
-      setEbooks(all.filter((e) => ids.has(e.id)));
-      setLoading(false);
-    });
+    ])
+      .then(([purchasedRes, catalogRes]) => {
+        const ids = new Set("error" in purchasedRes ? [] : purchasedRes.ebookIds);
+        const all = "error" in catalogRes ? [] : (catalogRes.ebooks as EbookRow[]);
+        setEbooks(all.filter((e) => ids.has(e.id)));
+      })
+      .catch((e) => {
+        console.error("[ebooks] failed to load ebooks:", e);
+      })
+      .finally(() => setLoading(false));
   }, [user, session, authLoading]);
 
   return (
@@ -106,7 +69,7 @@ function Page() {
           <FileText className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
           <p className="text-sm text-muted-foreground">You haven't purchased any ebooks yet.</p>
           <Button asChild className="mt-4">
-            <a href="/resources">Browse ebooks</a>
+            <Link to="/resources">Browse ebooks</Link>
           </Button>
         </div>
       ) : (
@@ -131,7 +94,7 @@ function Page() {
               )}
               <div className="mt-auto pt-4">
                 {session?.access_token && (
-                  <DownloadButton ebookId={e.id} session={session.access_token} />
+                  <EbookDownloadButton ebookId={e.id} accessToken={session.access_token} />
                 )}
               </div>
             </div>

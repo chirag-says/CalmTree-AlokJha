@@ -15,7 +15,6 @@ import { ArrowRight, BookText, BookOpen, Sparkles, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { formatDistanceToNow } from "date-fns";
 
-
 export const Route = createFileRoute("/dashboard/")({
   head: () => ({
     meta: [{ title: "Dashboard — CalmTree" }],
@@ -70,17 +69,23 @@ function Page() {
     setDataLoading(true);
 
     Promise.all([
-      getMyResults({ data: { accessToken: session.access_token, limit: 5 } }),
+      // limit 100 so the "Assessments taken" stat is a real count, not capped at
+      // the recent-list size; only the first 5 are rendered below.
+      getMyResults({ data: { accessToken: session.access_token, limit: 100 } }),
       getMyPurchasedEbookIds({ data: { accessToken: session.access_token } }),
-    ]).then(([resultsRes, ebooksRes]) => {
-      if (!("error" in resultsRes) && resultsRes.results) {
-        setResults(resultsRes.results as ResultRow[]);
-      }
-      if (!("error" in ebooksRes)) {
-        setEbookCount(ebooksRes.ebookIds.length);
-      }
-      setDataLoading(false);
-    });
+    ])
+      .then(([resultsRes, ebooksRes]) => {
+        if (!("error" in resultsRes) && resultsRes.results) {
+          setResults(resultsRes.results as ResultRow[]);
+        }
+        if (!("error" in ebooksRes)) {
+          setEbookCount(ebooksRes.ebookIds.length);
+        }
+      })
+      .catch((e) => {
+        console.error("[dashboard] failed to load overview data:", e);
+      })
+      .finally(() => setDataLoading(false));
   }, [user, session, authLoading]);
 
   // Personalization from profile
@@ -108,7 +113,6 @@ function Page() {
           Here's a snapshot of your CalmTree journey.
         </p>
       </div>
-
 
       {/* Stat tiles */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 mb-10">
@@ -168,7 +172,6 @@ function Page() {
         </Button>
       </div>
 
-
       {dataLoading ? (
         <div className="space-y-3">
           {[1, 2, 3].map((i) => (
@@ -189,7 +192,7 @@ function Page() {
         </div>
       ) : (
         <div className="space-y-3">
-          {results.map((r) => (
+          {results.slice(0, 5).map((r) => (
             <div
               key={r.id}
               className="flex items-center justify-between rounded-xl border border-border bg-card px-4 py-3"

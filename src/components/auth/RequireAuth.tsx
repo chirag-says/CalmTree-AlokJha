@@ -13,7 +13,7 @@
  */
 
 import { Navigate, useLocation } from "@tanstack/react-router";
-import type { ReactNode } from "react";
+import { useRef, type ReactNode } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 
@@ -53,20 +53,32 @@ export function RequireAuth({
 }) {
   const { user, isReady, profile, profileError } = useAuth();
   const location = useLocation();
+  // Captured once when a redirect is first needed. RequireAuth re-renders while
+  // the navigation is in flight (location already points at /login), so reading
+  // location.href on every render would wrap the redirect param recursively.
+  const redirectTarget = useRef<string | null>(null);
 
   if (!isReady) return <FullPageSpinner />;
 
+  // location.href is the full path + query string (location.search is a parsed
+  // object in TanStack Router, never concatenate it).
   if (!user) {
-    const redirect = location.pathname + location.search;
-    return <Navigate to="/login" search={{ redirect }} />;
+    redirectTarget.current ??= location.href.startsWith("/login") ? "/dashboard" : location.href;
+    return <Navigate to="/login" search={{ redirect: redirectTarget.current }} />;
   }
 
-  if (profileError) return <ProfileErrorRetry />;
+  if (profileError) {
+    redirectTarget.current = null;
+    return <ProfileErrorRetry />;
+  }
 
   if (requireOnboarded && profile && !profile.onboarding_completed) {
-    const redirect = location.pathname + location.search;
-    return <Navigate to="/onboarding" search={{ redirect }} />;
+    redirectTarget.current ??= location.href.startsWith("/onboarding")
+      ? "/dashboard"
+      : location.href;
+    return <Navigate to="/onboarding" search={{ redirect: redirectTarget.current }} />;
   }
 
+  redirectTarget.current = null;
   return <>{children}</>;
 }

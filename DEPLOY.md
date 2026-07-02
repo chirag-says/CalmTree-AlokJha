@@ -13,7 +13,7 @@ Each deploys independently. Local dev: client on `:8080`, admin on `:8081`
 ---
 
 ## 1. Supabase (shared — do once)
-- One project serves both apps. Apply migrations `001`–`007` (Supabase SQL editor or
+- One project serves both apps. Apply migrations `001`–`008` (Supabase SQL editor or
   `supabase db push`). **Confirm `007` is applied** (fixes RLS recursion on `profiles`).
 - Make an admin: `UPDATE public.profiles SET is_admin = true WHERE id = '<your-user-uuid>';`
 - **Auth → URL Configuration:** add both origins to *Site URL* / *Redirect URLs*:
@@ -34,7 +34,8 @@ Each deploys independently. Local dev: client on `:8080`, admin on `:8081`
 ## 3. Admin → Vercel project B
 - New Vercel project, **Root Directory = `admin`**. Same framework auto-detect.
 - Env vars (from `admin/.env.example`): `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`,
-  `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` (+ `CLOUDINARY_*` later for ebook uploads).
+  `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, and `CLOUDINARY_CLOUD_NAME` /
+  `CLOUDINARY_API_KEY` / `CLOUDINARY_API_SECRET` (required — ebook PDF/cover uploads).
 - Attach subdomain **admin.calmtree.in** (add the DNS record Vercel shows for the `admin` host).
 
 ## 4. Verify after deploy

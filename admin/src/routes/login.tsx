@@ -1,12 +1,12 @@
 /**
- * /login — Admin sign-in (self-contained OTP, no dependency on the client's
- * AuthModal/assessment machinery). Same Supabase login as the main site;
- * RequireAdmin turns away non-admin accounts after they authenticate.
+ * /login — Admin sign-in (email + password only; no OTP, no self-signup).
+ * Same Supabase auth as the main site; RequireAdmin turns away non-admin
+ * accounts after they authenticate. Admin accounts are seeded manually.
  */
 
 import { createFileRoute, Navigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { Loader2, Mail, KeyRound } from "lucide-react";
+import { Loader2, KeyRound } from "lucide-react";
 import { toast } from "sonner";
 import { Logo } from "@/components/shared/Logo";
 import { Button } from "@/components/ui/button";
@@ -20,29 +20,18 @@ export const Route = createFileRoute("/login")({
 });
 
 function AdminLoginPage() {
-  const { user, isReady, sendOtp, verifyOtp } = useAuth();
-  const [phase, setPhase] = useState<"email" | "code">("email");
+  const { user, isReady, signIn } = useAuth();
   const [email, setEmail] = useState("");
-  const [code, setCode] = useState("");
+  const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
 
   // Once authenticated, go to the panel. RequireAdmin there gates non-admins.
   if (isReady && user) return <Navigate to="/admin" />;
 
-  async function requestCode(e: React.FormEvent) {
+  async function submit(e: React.FormEvent) {
     e.preventDefault();
     setBusy(true);
-    const { error } = await sendOtp(email.trim());
-    setBusy(false);
-    if (error) return toast.error(error);
-    toast.success("Code sent — check your inbox.");
-    setPhase("code");
-  }
-
-  async function submitCode(e: React.FormEvent) {
-    e.preventDefault();
-    setBusy(true);
-    const { error } = await verifyOtp(email.trim(), code.trim());
+    const { error } = await signIn(email.trim(), password);
     setBusy(false);
     if (error) return toast.error(error);
     // On success the auth state updates and the <Navigate> above takes over.
@@ -58,69 +47,55 @@ function AdminLoginPage() {
           <div className="mb-6 text-center">
             <h1 className="text-2xl font-semibold">Admin sign in</h1>
             <p className="mt-2 text-sm text-white/60">
-              {phase === "email"
-                ? "Enter your admin email — we'll send a one-time code."
-                : `Enter the 6-digit code sent to ${email}.`}
+              Enter your admin email and password.
             </p>
           </div>
 
-          {phase === "email" ? (
-            <form onSubmit={requestCode} className="space-y-4">
-              <div className="space-y-1.5">
-                <Label htmlFor="admin-email" className="text-white/70">
-                  Email
-                </Label>
-                <Input
-                  id="admin-email"
-                  type="email"
-                  required
-                  autoFocus
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="you@calmtree.in"
-                  className="bg-white/5 border-white/10 text-white"
-                />
-              </div>
-              <Button type="submit" disabled={busy} className="w-full">
-                {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Mail className="h-4 w-4" />}
-                Send code
-              </Button>
-            </form>
-          ) : (
-            <form onSubmit={submitCode} className="space-y-4">
-              <div className="space-y-1.5">
-                <Label htmlFor="admin-code" className="text-white/70">
-                  6-digit code
-                </Label>
-                <Input
-                  id="admin-code"
-                  inputMode="numeric"
-                  required
-                  autoFocus
-                  value={code}
-                  onChange={(e) => setCode(e.target.value)}
-                  placeholder="123456"
-                  className="bg-white/5 border-white/10 text-white tracking-[0.4em] text-center"
-                />
-              </div>
-              <Button type="submit" disabled={busy} className="w-full">
-                {busy ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <KeyRound className="h-4 w-4" />
-                )}
-                Verify & sign in
-              </Button>
-              <button
-                type="button"
-                onClick={() => setPhase("email")}
-                className="w-full text-center text-xs text-white/40 hover:text-white/70"
-              >
-                Use a different email
-              </button>
-            </form>
-          )}
+          <form onSubmit={submit} className="space-y-4">
+            <div className="space-y-1.5">
+              <Label htmlFor="admin-email" className="text-white/70">
+                Email
+              </Label>
+              <Input
+                id="admin-email"
+                type="email"
+                required
+                autoFocus
+                autoComplete="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@calmtree.in"
+                className="bg-white/5 border-white/10 text-white"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="admin-password" className="text-white/70">
+                Password
+              </Label>
+              <Input
+                id="admin-password"
+                type="password"
+                required
+                autoComplete="current-password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                className="bg-white/5 border-white/10 text-white"
+              />
+            </div>
+            <Button type="submit" disabled={busy} className="w-full">
+              {busy ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <KeyRound className="h-4 w-4" />
+              )}
+              Sign in
+            </Button>
+          </form>
         </div>
+        <p className="mt-6 text-center text-xs text-white/30">
+          Admin access is provisioned manually — there is no self-signup.
+        </p>
       </div>
     </div>
   );

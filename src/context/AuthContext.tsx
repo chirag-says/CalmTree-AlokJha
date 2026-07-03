@@ -2,7 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useState, type React
 import type { Session, User } from "@supabase/supabase-js";
 import { usePostHog } from "@posthog/react";
 import { supabase } from "@/lib/supabase";
-import { signUp, signIn, signOut, sendOtp, verifyOtp, setPassword } from "@/lib/auth";
+import { signUp, signIn, signOut as authSignOut, sendOtp, verifyOtp, setPassword } from "@/lib/auth";
 
 // ─── Profile type (mirrors profiles table + migration 006 columns) ────────────
 
@@ -32,6 +32,13 @@ interface AuthContextValue {
   profileError: boolean;
   /** Combined ready flag — false while either auth or profile is still loading. */
   isReady: boolean;
+  /**
+   * True from the moment an intentional sign-out begins until the next sign-in.
+   * Lets RequireAuth send the now-userless session to the landing page instead
+   * of bouncing to /login?redirect=… (the deep-link path, only correct for a
+   * genuine logged-out visitor).
+   */
+  signingOut: boolean;
   /** Re-fetch the profile row. Call after onboarding or settings save, or to retry. */
   refreshProfile: () => Promise<void>;
   signUp: (email: string, password: string, fullName: string) => Promise<{ error: string | null }>;
@@ -53,6 +60,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [profileLoading, setProfileLoading] = useState(false);
   const [profileError, setProfileError] = useState(false);
+  const [signingOut, setSigningOut] = useState(false);
   const posthog = usePostHog();
 
   // Fetch the profile row for a given userId.
@@ -101,6 +109,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (user) await fetchProfile(user.id);
   }, [user, fetchProfile]);
 
+  // Sign out and flag the transition. The SIGNED_OUT event clears `user`, at
+  // which point RequireAuth would normally redirect to /login?redirect=<here>.
+  // That's wrong for an intentional logout — `signingOut` tells RequireAuth to
+  // send the user to the landing page instead. Flag clears on the next sign-in.
+  const handleSignOut = useCallback(async () => {
+    setSigningOut(true);
+    await authSignOut();
+  }, []);
+
   useEffect(() => {
     if (!supabase) {
       setLoading(false);
@@ -127,6 +144,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(newUser);
 
       if (event === "SIGNED_IN" && newUser) {
+        setSigningOut(false);
         posthog.identify(newUser.id);
         posthog.capture("user_signed_in");
         void fetchProfile(newUser.id);
@@ -151,10 +169,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     profileLoading,
     profileError,
     isReady,
+    signingOut,
     refreshProfile,
     signUp,
     signIn,
-    signOut,
+    signOut: handleSignOut,
     sendOtp,
     verifyOtp,
     setPassword,

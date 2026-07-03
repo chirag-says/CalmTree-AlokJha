@@ -51,7 +51,7 @@ export function RequireAuth({
   requireOnboarded?: boolean;
   children: ReactNode;
 }) {
-  const { user, isReady, profile, profileError } = useAuth();
+  const { user, isReady, profile, profileError, signingOut } = useAuth();
   const location = useLocation();
   // Captured once when a redirect is first needed. RequireAuth re-renders while
   // the navigation is in flight (location already points at /login), so reading
@@ -59,6 +59,16 @@ export function RequireAuth({
   const redirectTarget = useRef<string | null>(null);
 
   if (!isReady) return <FullPageSpinner />;
+
+  // Intentional sign-out: the session just cleared while the user was inside the
+  // app. Send them to the public landing page rather than /login?redirect=<here>
+  // (the deep-link path below, only correct for a logged-out visitor who
+  // navigated straight to a protected route). Without this, signing out from the
+  // dashboard bounced users to the sign-in screen.
+  if (signingOut && !user) {
+    redirectTarget.current = null;
+    return <Navigate to="/" replace />;
+  }
 
   // location.href is the full path + query string (location.search is a parsed
   // object in TanStack Router, never concatenate it).

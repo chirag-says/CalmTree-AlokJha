@@ -59,7 +59,7 @@ export const Route = createFileRoute("/_authed/assessments/")({
   validateSearch: searchSchema,
   head: () => ({
     meta: [
-      { title: `Psychology Assessments — ${SITE.name}` },
+      { title: `Psychology Assessments | ${SITE.name}` },
       {
         name: "description",
         content:
@@ -67,7 +67,7 @@ export const Route = createFileRoute("/_authed/assessments/")({
       },
       {
         property: "og:title",
-        content: `Psychology Assessments — ${SITE.name}`,
+        content: `Psychology Assessments | ${SITE.name}`,
       },
       {
         property: "og:description",
@@ -200,7 +200,7 @@ function CategoryResults({ category }: { category: string }) {
   if (assessments.length === 0) {
     return (
       <p className="text-muted-foreground">
-        No assessments in this category yet — check back soon.
+        No assessments in this category yet. Check back soon.
       </p>
     );
   }

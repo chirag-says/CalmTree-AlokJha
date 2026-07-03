@@ -7,12 +7,12 @@ import { User, GraduationCap, Briefcase, Target } from "lucide-react";
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
-      { title: `About ${SITE.founder} — Founder of ${SITE.name}` },
+      { title: `About ${SITE.founder} | Founder of ${SITE.name}` },
       {
         name: "description",
-        content: `${SITE.founder} — MBA, Master's in Psychology, entrepreneur and psychology educator — on making psychology simple and useful.`,
+        content: `${SITE.founder}: MBA, Master's in Psychology, entrepreneur and psychology educator. On making psychology simple and useful.`,
       },
-      { property: "og:title", content: `About ${SITE.founder} — ${SITE.name}` },
+      { property: "og:title", content: `About ${SITE.founder} | ${SITE.name}` },
       {
         property: "og:description",
         content: `The story behind ${SITE.name} and Decode Your Mind.`,
@@ -41,12 +41,12 @@ function Page() {
           <h2 className="text-2xl md:text-3xl font-semibold">Psychology that meets real life.</h2>
           <p className="mt-5 text-lg text-muted-foreground">
             {SITE.founder} is an entrepreneur and psychology educator. With an MBA and a Master's in
-            Psychology, he brings together two worlds — the practical clarity of business and the
+            Psychology, he brings together two worlds: the practical clarity of business and the
             depth of psychological insight.
           </p>
           <p className="mt-4 text-lg text-muted-foreground">
             He founded {SITE.name} to make psychology simple, practical and useful in everyday life
-            — not as therapy or medical advice, but as education that helps you understand yourself
+            , not as therapy or medical advice, but as education that helps you understand yourself
             and the people around you.
           </p>
 
@@ -70,7 +70,7 @@ function Page() {
               {
                 icon: User,
                 t: "Audience",
-                d: "Curious learners, professionals, and self-discoverers — India and beyond.",
+                d: "Curious learners, professionals, and self-discoverers. India and beyond.",
               },
             ].map((b) => (
               <div key={b.t} className="rounded-2xl border border-border bg-card p-5">

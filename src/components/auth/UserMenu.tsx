@@ -60,6 +60,7 @@ export function UserMenu() {
   async function handleSignOut() {
     await signOut();
     toast.success("Signed out.");
+    navigate({ to: "/" });
   }
 
   return (

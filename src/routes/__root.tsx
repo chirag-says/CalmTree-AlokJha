@@ -101,7 +101,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: `${SITE.name} — Understand Your Mind. Improve Your Life.` },
+      { title: `${SITE.name} | Understand Your Mind. Improve Your Life.` },
       {
         name: "description",
         content: SITE.description,
@@ -109,7 +109,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "author", content: SITE.name },
       {
         property: "og:title",
-        content: `${SITE.name} — Practical Psychology for Everyday Life`,
+        content: `${SITE.name} | Practical Psychology for Everyday Life`,
       },
       {
         property: "og:description",

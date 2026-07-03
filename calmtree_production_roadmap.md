@@ -58,7 +58,7 @@ The form has good Zod validation already. Just needs a real backend.
 
 **Options (pick one):**
 
-- **Resend** — send form data as an email to `hello@calmtree.in` via TanStack Start server function. Cleanest.
+- **Resend** — send form data as an email to `alok@calmtree.in` via TanStack Start server function. Cleanest.
 - **Formspree / Web3Forms** — zero-backend, form submits to a third-party endpoint. Fastest.
 - **Supabase** — store submissions in a table + trigger email. Most flexible if you're already using Supabase elsewhere.
 

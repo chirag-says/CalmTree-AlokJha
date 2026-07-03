@@ -1,19 +1,18 @@
 /**
  * Social media links — one place to update, used everywhere.
- * TODO: Replace placeholder URLs with Alok's real channel/handle.
  */
 
 export const SOCIAL = {
   youtube: {
-    url: "https://www.youtube.com/@calmtree", // TODO: confirm with Alok
+    url: "https://www.youtube.com/@decodeminddeep",
     label: "YouTube",
   },
   instagram: {
-    url: "https://www.instagram.com/calmtree.in", // TODO: confirm with Alok
+    url: "https://www.instagram.com/calmtree.in?igsh=MW5uczZ2eXJ4MHRsOA==",
     label: "Instagram",
   },
   telegram: {
-    url: "https://t.me/calmtree", // TODO: confirm with Alok
+    url: "https://t.me/calmtree",
     label: "Telegram",
   },
 } as const;

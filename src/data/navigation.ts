@@ -14,7 +14,7 @@ export interface NavLink {
 
 export const NAV_LINKS: readonly NavLink[] = [
   { to: "/", label: "Home" },
-  { to: "/decode-your-mind", label: "Decode Your Mind", footerOnly: true },
+  { to: "/decode-your-mind", label: "Decode Your Mind" },
   { to: "/academy", label: "Academy", requiresAuth: true },
   { to: "/assessments", label: "Assessments", requiresAuth: true },
   { to: "/resources", label: "Resources", requiresAuth: true },

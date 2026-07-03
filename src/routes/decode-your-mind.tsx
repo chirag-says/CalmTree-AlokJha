@@ -10,7 +10,7 @@ import { Youtube, Instagram, Play, Brain, HeartPulse, Users, Sparkles } from "lu
 export const Route = createFileRoute("/decode-your-mind")({
   head: () => ({
     meta: [
-      { title: `Decode Your Mind — by ${SITE.name}` },
+      { title: `Decode Your Mind by ${SITE.name}` },
       {
         name: "description",
         content: `The media channel by ${SITE.name}. YouTube videos and Instagram reels on psychology, behaviour and mental wellness.`,
@@ -19,7 +19,7 @@ export const Route = createFileRoute("/decode-your-mind")({
       {
         property: "og:description",
         content:
-          "Psychology concepts, human behaviour and personality education — simply explained.",
+          "Psychology concepts, human behaviour and personality education, simply explained.",
       },
     ],
   }),
@@ -35,7 +35,7 @@ export const Route = createFileRoute("/decode-your-mind")({
 const videos: { id: string; title: string }[] = [
   // Placeholder entries — will be replaced with real video IDs
   { id: "", title: "Why your brain loves overthinking" },
-  { id: "", title: "Burnout vs stress — the real difference" },
+  { id: "", title: "Burnout vs stress: the real difference" },
   { id: "", title: "How emotional intelligence is built" },
   { id: "", title: "The psychology of habits that stick" },
   { id: "", title: "Understanding personality types" },
@@ -51,7 +51,7 @@ const topics = [
   {
     icon: Users,
     title: "Human Behaviour",
-    body: "Why we do what we do — in work, love and life.",
+    body: "Why we do what we do, in work, love and life.",
   },
   {
     icon: HeartPulse,
@@ -71,7 +71,7 @@ function Page() {
       <PageHeader
         eyebrow={`The channel by ${SITE.name}`}
         title="Decode Your Mind."
-        description="Practical psychology on YouTube and Instagram — short, honest, useful."
+        description="Practical psychology on YouTube and Instagram. Short, honest, useful."
       />
 
       <section className="mx-auto max-w-6xl px-5 py-16">

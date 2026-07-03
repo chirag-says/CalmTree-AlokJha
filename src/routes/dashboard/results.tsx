@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { formatDistanceToNow } from "date-fns";
 
 export const Route = createFileRoute("/dashboard/results")({
-  head: () => ({ meta: [{ title: "My Results — CalmTree Dashboard" }] }),
+  head: () => ({ meta: [{ title: "My Results | CalmTree Dashboard" }] }),
   component: Page,
 });
 

@@ -34,7 +34,7 @@ const searchSchema = z.object({
 export const Route = createFileRoute("/login")({
   validateSearch: searchSchema,
   head: () => ({
-    meta: [{ title: "Sign in — CalmTree" }],
+    meta: [{ title: "Sign in | CalmTree" }],
   }),
   component: LoginPage,
 });
@@ -69,7 +69,7 @@ function LoginPage() {
           <div className="mb-6 text-center">
             <h1 className="text-2xl font-semibold">Sign in to CalmTree</h1>
             <p className="mt-2 text-sm text-muted-foreground">
-              Enter your email — we'll send you a one-time code. No password needed.
+              Enter your email. We'll send you a one-time code. No password needed.
             </p>
           </div>
 

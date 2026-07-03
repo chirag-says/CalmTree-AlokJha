@@ -22,7 +22,7 @@ import { EbookDownloadButton } from "@/components/ebooks/EbookDownloadButton";
 export const Route = createFileRoute("/_authed/resources")({
   head: () => ({
     meta: [
-      { title: `Resources — ${SITE.name} Workbooks & Journals` },
+      { title: `Resources | ${SITE.name} Workbooks & Journals` },
       {
         name: "description",
         content:
@@ -99,7 +99,7 @@ function Page() {
       <PageHeader
         eyebrow="Resources"
         title="Practical tools you'll actually use."
-        description="Workbooks, journals and toolkits — designed to be simple, repeatable and rooted in psychology."
+        description="Workbooks, journals and toolkits, designed to be simple, repeatable and rooted in psychology."
       />
       <section className="mx-auto max-w-6xl px-5 py-16">
         {loading ? (
@@ -112,7 +112,7 @@ function Page() {
           <div className="rounded-2xl border border-dashed border-border p-12 text-center">
             <FileText className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
             <p className="text-sm text-muted-foreground">
-              New workbooks and journals are on the way — check back soon.
+              New workbooks and journals are on the way. Check back soon.
             </p>
           </div>
         ) : (

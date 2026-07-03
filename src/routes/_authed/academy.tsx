@@ -7,7 +7,7 @@ import { Clock, GraduationCap, BookOpen } from "lucide-react";
 export const Route = createFileRoute("/_authed/academy")({
   head: () => ({
     meta: [
-      { title: `${SITE.name} Academy — Micro & Certificate Courses` },
+      { title: `${SITE.name} Academy | Micro & Certificate Courses` },
       {
         name: "description",
         content: "Short, practical psychology courses. Build real understanding at your pace.",
@@ -40,7 +40,7 @@ const micro = [
   },
   {
     t: "Psychology of Habits",
-    d: "How habits form, break, and stick — without the willpower myth.",
+    d: "How habits form, break, and stick. Without the willpower myth.",
     time: "6 lessons · 80 min",
   },
   {
@@ -56,7 +56,7 @@ function Page() {
       <PageHeader
         eyebrow={`${SITE.name} Academy`}
         title="Short courses. Real psychology. No fluff."
-        description="Micro courses and certificate programs designed for busy people who want practical understanding — not jargon."
+        description="Micro courses and certificate programs designed for busy people who want practical understanding, not jargon."
       />
 
       <section className="mx-auto max-w-6xl px-5 py-16">
@@ -103,7 +103,7 @@ function Page() {
             Deeper programs. Coming soon.
           </h2>
           <p className="mt-3 text-muted-foreground max-w-2xl">
-            Multi-week certificate courses in applied psychology — for self-growth and for
+            Multi-week certificate courses in applied psychology, for self-growth and for
             professionals who want to understand people better.
           </p>
           <Button asChild className="mt-6">

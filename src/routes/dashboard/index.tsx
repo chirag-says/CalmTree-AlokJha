@@ -17,7 +17,7 @@ import { formatDistanceToNow } from "date-fns";
 
 export const Route = createFileRoute("/dashboard/")({
   head: () => ({
-    meta: [{ title: "Dashboard — CalmTree" }],
+    meta: [{ title: "Dashboard | CalmTree" }],
   }),
   component: Page,
 });

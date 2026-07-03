@@ -57,11 +57,11 @@ const LANDING_CATEGORY_CHIPS: { label: string; value: ProductCategory }[] = [
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: `${SITE.name} — Understand Your Mind. Improve Your Life.` },
+      { title: `${SITE.name} | Understand Your Mind. Improve Your Life.` },
       { name: "description", content: SITE.description },
       {
         property: "og:title",
-        content: `${SITE.name} — Practical Psychology for Everyday Life`,
+        content: `${SITE.name} | Practical Psychology for Everyday Life`,
       },
       {
         property: "og:description",
@@ -162,7 +162,7 @@ function Index() {
 
           {/* Subtitle */}
           <p className="mt-4 md:mt-8 text-sm md:text-lg text-[#4a6b5e] max-w-sm md:max-w-lg mx-auto leading-relaxed">
-            A calm, credible place to learn applied psychology — for self-awareness, emotional
+            A calm, credible place to learn applied psychology, for self-awareness, emotional
             wellness, relationships, and personal growth. Not therapy. Just useful psychology for
             everyday life.
           </p>
@@ -174,7 +174,7 @@ function Index() {
                 icon: Play,
                 title: "Decode Your Mind",
                 body: "Psychology explained simply.",
-                bodyFull: "Psychology explained simply — on YouTube and Instagram.",
+                bodyFull: "Psychology explained simply, on YouTube and Instagram.",
               },
               {
                 icon: GraduationCap,
@@ -347,7 +347,7 @@ function Index() {
             },
             {
               t: "Emotional Intelligence",
-              d: "Foundations of EI — for work and relationships.",
+              d: "Foundations of EI, for work and relationships.",
               icon: HeartPulse,
             },
           ].map((c) => (
@@ -389,7 +389,7 @@ function Index() {
               <h2 className="text-2xl md:text-3xl font-semibold">{SITE.founder}</h2>
               <p className="mt-4 text-muted-foreground leading-relaxed">
                 MBA and Master's in Psychology. {SITE.founder} founded {SITE.name} to make
-                psychology simple, practical and useful in everyday life — not as therapy, but as
+                psychology simple, practical and useful in everyday life, not as therapy, but as
                 education that helps you understand yourself and the people around you.
               </p>
               <Button asChild variant="outline" className="mt-6 rounded-full">
@@ -414,7 +414,7 @@ function Index() {
             One thoughtful psychology read, each week.
           </h2>
           <p className="mt-3 text-muted-foreground max-w-md mx-auto">
-            Join the {SITE.name} newsletter — no noise, no spam. Just useful psychology that helps
+            Join the {SITE.name} newsletter. No noise, no spam. Just useful psychology that helps
             you understand yourself better.
           </p>
           <div className="mt-8 max-w-sm mx-auto">

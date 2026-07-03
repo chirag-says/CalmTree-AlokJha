@@ -5,13 +5,13 @@ import { SITE } from "@/data/constants";
 export const Route = createFileRoute("/privacy-policy")({
   head: () => ({
     meta: [
-      { title: `Privacy Policy — ${SITE.name}` },
+      { title: `Privacy Policy | ${SITE.name}` },
       {
         name: "description",
         content:
           "CalmTree's privacy policy explains how we collect, use, and protect your personal information on our psychology education platform.",
       },
-      { property: "og:title", content: `Privacy Policy — ${SITE.name}` },
+      { property: "og:title", content: `Privacy Policy | ${SITE.name}` },
       {
         property: "og:description",
         content: "How CalmTree handles your data. Transparent, simple, and respectful.",
@@ -123,10 +123,10 @@ function Page() {
             Depending on your location, you may have the right to access, correct, delete, or
             restrict processing of your personal data. To exercise these rights, email us at{" "}
             <a
-              href="mailto:hello@calmtree.in"
+              href="mailto:alok@calmtree.in"
               className="text-primary underline underline-offset-2"
             >
-              hello@calmtree.in
+              alok@calmtree.in
             </a>
             .
           </p>
@@ -152,10 +152,10 @@ function Page() {
             If you have questions about this Privacy Policy or our data practices, please contact us
             at:{" "}
             <a
-              href="mailto:hello@calmtree.in"
+              href="mailto:alok@calmtree.in"
               className="text-primary underline underline-offset-2"
             >
-              hello@calmtree.in
+              alok@calmtree.in
             </a>
             .
           </p>

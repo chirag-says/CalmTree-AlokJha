@@ -8,7 +8,7 @@ import { SITE } from "@/data/constants";
 export const Route = createFileRoute("/_authed/assessments/$slug")({
   head: ({ params }) => {
     const config = getAssessment(params.slug);
-    const title = config ? `${config.meta.title} — ${SITE.name}` : `Assessment — ${SITE.name}`;
+    const title = config ? `${config.meta.title} | ${SITE.name}` : `Assessment | ${SITE.name}`;
     const description = config?.meta.description ?? "Take a psychology self-check.";
     return {
       meta: [

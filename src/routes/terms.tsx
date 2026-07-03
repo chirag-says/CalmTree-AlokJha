@@ -5,13 +5,13 @@ import { SITE } from "@/data/constants";
 export const Route = createFileRoute("/terms")({
   head: () => ({
     meta: [
-      { title: `Terms of Use — ${SITE.name}` },
+      { title: `Terms of Use | ${SITE.name}` },
       {
         name: "description",
         content:
           "Terms and conditions for using CalmTree's psychology education platform, including disclaimers, intellectual property, and user responsibilities.",
       },
-      { property: "og:title", content: `Terms of Use — ${SITE.name}` },
+      { property: "og:title", content: `Terms of Use | ${SITE.name}` },
       {
         property: "og:description",
         content: "The rules and responsibilities for using CalmTree's platform and content.",
@@ -50,7 +50,7 @@ function Page() {
         <Section title="2. Nature of Our Services">
           <p>
             CalmTree is a <strong>psychology education and self-discovery platform</strong>. Our
-            content — including videos, articles, courses, assessments, and workbooks — is designed
+            content, including videos, articles, courses, assessments, and workbooks, is designed
             for educational and informational purposes only.
           </p>
           <p>
@@ -94,8 +94,8 @@ function Page() {
 
         <Section title="5. Intellectual Property">
           <p>
-            All content on CalmTree — including text, graphics, logos, videos, courses, assessments,
-            workbooks, and software — is the property of CalmTree or its content creators and is
+            All content on CalmTree, including text, graphics, logos, videos, courses, assessments,
+            workbooks, and software, is the property of CalmTree or its content creators and is
             protected by copyright, trademark, and other intellectual property laws.
           </p>
           <p>
@@ -163,10 +163,10 @@ function Page() {
           <p>
             For questions about these Terms, please contact us at:{" "}
             <a
-              href="mailto:hello@calmtree.in"
+              href="mailto:alok@calmtree.in"
               className="text-primary underline underline-offset-2"
             >
-              hello@calmtree.in
+              alok@calmtree.in
             </a>
             .
           </p>

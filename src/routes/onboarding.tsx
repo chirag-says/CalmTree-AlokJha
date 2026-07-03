@@ -51,7 +51,7 @@ const searchSchema = z.object({
 export const Route = createFileRoute("/onboarding")({
   validateSearch: searchSchema,
   head: () => ({
-    meta: [{ title: "Welcome to CalmTree — Personalize Your Experience" }],
+    meta: [{ title: "Welcome to CalmTree | Personalize Your Experience" }],
   }),
   component: OnboardingPage,
 });
@@ -176,7 +176,7 @@ function FocusAreasStep({
       <div>
         <h2 className="text-2xl font-semibold">What areas interest you most?</h2>
         <p className="mt-2 text-sm text-muted-foreground">
-          Select all that apply — we'll show you relevant assessments.
+          Select all that apply. We'll show you relevant assessments.
         </p>
       </div>
 

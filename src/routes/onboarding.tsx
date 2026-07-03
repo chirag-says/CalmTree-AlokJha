@@ -422,7 +422,15 @@ function OnboardingPage() {
       </div>
     );
   }
-  if (profile?.onboarding_completed) return <Navigate to={redirect as "/dashboard"} />;
+  // Redirect an already-onboarded user who lands here. Suppressed while we're
+  // mid-completion (`submitting`): completeAndThen() refreshes the profile —
+  // flipping onboarding_completed to true — *before* it navigates. Without this
+  // guard, that refresh would re-render and fire this declarative <Navigate to
+  // "/dashboard">, which overrides our own imperative navigation to the chosen
+  // assessment (the "Start" buttons all bounced to the dashboard).
+  if (profile?.onboarding_completed && !submitting) {
+    return <Navigate to={redirect as "/dashboard"} />;
+  }
 
   // Persist onboarding, then run `after()` once state is consistent. Single
   // navigation — no Link/onClick race, no bounce back to /onboarding.

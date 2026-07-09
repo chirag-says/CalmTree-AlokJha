@@ -8,7 +8,7 @@
  */
 
 import crypto from "crypto";
-import { getAdminClient } from "../supabase-admin";
+import { fulfillPayment } from "../payments/fulfillment";
 
 function verifySignature(body: string, signature: string, secret: string): boolean {
   const expected = crypto.createHmac("sha256", secret).update(body).digest("hex");
@@ -80,48 +80,23 @@ export async function handleRazorpayWebhook(request: Request): Promise<Response>
   const { productType, userId } = notes;
   const amountInr = Math.round(amountPaise / 100);
 
-  const supabase = getAdminClient();
+  const result = await fulfillPayment({
+    notes,
+    userId,
+    amountInr,
+    razorpayOrderId,
+    razorpayPaymentId,
+  });
 
-  if (productType === "assessment_category") {
-    if (!notes.tier || !notes.productCategory) {
-      console.error("[razorpay-webhook] Missing tier/productCategory in notes:", notes);
-      return new Response("Missing order notes", { status: 400 });
+  if (!result.ok) {
+    // Malformed payload → 400. Unknown product type → 200 (ack; nothing to do,
+    // don't make Razorpay retry forever). Anything else is a DB failure → 500
+    // so Razorpay retries the delivery.
+    if (result.error.startsWith("Unknown productType")) {
+      return new Response("OK", { status: 200 });
     }
-
-    const { error } = await supabase.from("entitlements").insert({
-      user_id: userId,
-      access_type: "category",
-      product_category: notes.productCategory,
-      expires_at: null,
-      payment_reference: razorpayPaymentId,
-    });
-
-    if (error && error.code !== "23505") {
-      console.error("[razorpay-webhook] Error inserting entitlement:", error);
-      return new Response("DB error", { status: 500 });
-    }
-  } else if (productType === "ebook") {
-    if (!notes.productRef) {
-      console.error("[razorpay-webhook] Missing productRef in notes:", notes);
-      return new Response("Missing order notes", { status: 400 });
-    }
-
-    const { error } = await supabase.from("purchases").insert({
-      user_id: userId,
-      product_type: "ebook",
-      product_id: notes.productRef,
-      amount_paid_inr: amountInr,
-      razorpay_order_id: razorpayOrderId,
-      razorpay_payment_id: razorpayPaymentId,
-      status: "completed",
-    });
-
-    if (error && error.code !== "23505") {
-      console.error("[razorpay-webhook] Error inserting purchase:", error);
-      return new Response("DB error", { status: 500 });
-    }
-  } else {
-    console.warn("[razorpay-webhook] Unknown productType:", productType);
+    const status = result.error === "Missing order notes" ? 400 : 500;
+    return new Response(result.error, { status });
   }
 
   console.log(

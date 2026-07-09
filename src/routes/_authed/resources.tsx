@@ -18,6 +18,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { getActiveEbooks, getMyPurchasedEbookIds } from "@/server/functions/ebooks.functions";
 import { RazorpayCheckoutButton } from "@/components/payments/RazorpayCheckoutButton";
 import { EbookDownloadButton } from "@/components/ebooks/EbookDownloadButton";
+import { EbookReadButton } from "@/components/ebooks/EbookReadButton";
 
 export const Route = createFileRoute("/_authed/resources")({
   head: () => ({
@@ -86,10 +87,12 @@ function Page() {
     return () => timers.forEach(clearTimeout);
   }, []);
 
-  // The webhook writes the purchase row asynchronously — poll a few times so
-  // the buy button flips to a download button without a manual refresh.
+  // Verification writes the purchase row synchronously before this fires, so
+  // refetch immediately to flip the buy button to a download button. The delayed
+  // retries are a safety net in case a backup webhook is the one that wrote it.
   function handlePurchaseSuccess() {
-    for (const delay of [2500, 6000, 12000]) {
+    void fetchOwned();
+    for (const delay of [2500, 6000]) {
       refetchTimers.current.push(setTimeout(() => void fetchOwned(), delay));
     }
   }
@@ -124,12 +127,12 @@ function Page() {
                   key={e.id}
                   className="rounded-2xl border border-border bg-card p-6 flex flex-col hover:shadow-[var(--shadow-soft)] transition-shadow"
                 >
-                  <div className="h-32 rounded-xl bg-gradient-to-br from-accent/40 to-primary/15 flex items-center justify-center overflow-hidden">
+                  <div className="aspect-[2/3] w-full rounded-xl bg-gradient-to-br from-accent/40 to-primary/15 flex items-center justify-center overflow-hidden">
                     {e.cover_image_url ? (
                       <img
                         src={e.cover_image_url}
                         alt={e.title}
-                        className="h-full w-full object-cover rounded-xl"
+                        className="h-full w-full object-contain"
                       />
                     ) : (
                       <FileText className="h-10 w-10 text-primary" />
@@ -141,7 +144,7 @@ function Page() {
                     {e.description ?? "Print-ready PDF."}
                     {e.page_count ? ` · ${e.page_count} pages` : ""}
                   </p>
-                  <div className="mt-5 flex items-center justify-between gap-3">
+                  <div className="mt-5 flex items-center justify-between gap-2">
                     {owned ? (
                       <>
                         <span className="inline-flex items-center gap-1.5 text-sm font-medium text-primary">
@@ -149,7 +152,17 @@ function Page() {
                           Owned
                         </span>
                         {session?.access_token && (
-                          <EbookDownloadButton ebookId={e.id} accessToken={session.access_token} />
+                          <div className="flex flex-wrap items-center justify-end gap-2">
+                            <EbookReadButton
+                              ebookId={e.id}
+                              accessToken={session.access_token}
+                              title={e.title}
+                            />
+                            <EbookDownloadButton
+                              ebookId={e.id}
+                              accessToken={session.access_token}
+                            />
+                          </div>
                         )}
                       </>
                     ) : (

@@ -10,6 +10,7 @@ import { getMyPurchasedEbookIds, getActiveEbooks } from "@/server/functions/eboo
 import { FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { EbookDownloadButton } from "@/components/ebooks/EbookDownloadButton";
+import { EbookReadButton } from "@/components/ebooks/EbookReadButton";
 
 export const Route = createFileRoute("/dashboard/ebooks")({
   head: () => ({ meta: [{ title: "My Ebooks | CalmTree Dashboard" }] }),
@@ -76,12 +77,12 @@ function Page() {
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {ebooks.map((e) => (
             <div key={e.id} className="rounded-2xl border border-border bg-card p-5 flex flex-col">
-              <div className="h-28 rounded-xl bg-gradient-to-br from-accent/40 to-primary/15 flex items-center justify-center mb-4">
+              <div className="aspect-[2/3] w-full rounded-xl bg-gradient-to-br from-accent/40 to-primary/15 flex items-center justify-center overflow-hidden mb-4">
                 {e.cover_image_url ? (
                   <img
                     src={e.cover_image_url}
                     alt={e.title}
-                    className="h-full w-full object-cover rounded-xl"
+                    className="h-full w-full object-contain"
                   />
                 ) : (
                   <FileText className="h-10 w-10 text-primary" />
@@ -92,9 +93,16 @@ function Page() {
               {e.page_count && (
                 <p className="text-xs text-muted-foreground mt-1">{e.page_count} pages</p>
               )}
-              <div className="mt-auto pt-4">
+              <div className="mt-auto flex flex-wrap gap-2 pt-4">
                 {session?.access_token && (
-                  <EbookDownloadButton ebookId={e.id} accessToken={session.access_token} />
+                  <>
+                    <EbookReadButton
+                      ebookId={e.id}
+                      accessToken={session.access_token}
+                      title={e.title}
+                    />
+                    <EbookDownloadButton ebookId={e.id} accessToken={session.access_token} />
+                  </>
                 )}
               </div>
             </div>

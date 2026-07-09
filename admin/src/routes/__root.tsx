@@ -12,16 +12,21 @@ import appCss from "../styles.css?url";
 import { SITE } from "@/data/constants";
 import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider } from "@/context/AuthContext";
+import { ThemeProvider, THEME_STORAGE_KEY } from "@/context/ThemeContext";
+
+// Runs before paint so a stored "light" preference never flashes dark (and
+// vice versa). Must mirror ThemeContext's storage key and dark-default.
+const themeInitScript = `try{document.documentElement.classList.toggle("dark",localStorage.getItem(${JSON.stringify(THEME_STORAGE_KEY)})!=="light")}catch(e){}`;
 
 // ─── Not Found / Error ───────────────────────────────────────────────────────
 
 function NotFoundComponent() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#060f18] px-4 text-white">
+    <div className="flex min-h-screen items-center justify-center bg-background px-4 text-foreground">
       <div className="max-w-md text-center">
         <h1 className="text-7xl font-bold">404</h1>
-        <p className="mt-4 text-sm text-white/60">This admin page doesn't exist.</p>
-        <Link to="/admin" className="mt-6 inline-block text-cyan-400 hover:underline">
+        <p className="mt-4 text-sm text-muted-foreground">This admin page doesn't exist.</p>
+        <Link to="/admin" className="mt-6 inline-block text-primary hover:underline">
           Back to overview
         </Link>
       </div>
@@ -32,10 +37,10 @@ function NotFoundComponent() {
 function ErrorComponent({ error }: { error: Error }) {
   console.error("[CalmTree Admin] Unhandled error:", error);
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#060f18] px-4 text-white">
+    <div className="flex min-h-screen items-center justify-center bg-background px-4 text-foreground">
       <div className="max-w-md text-center">
         <h1 className="text-xl font-semibold">Something went wrong</h1>
-        <p className="mt-2 text-sm text-white/60">Try refreshing the page.</p>
+        <p className="mt-2 text-sm text-muted-foreground">Try refreshing the page.</p>
       </div>
     </div>
   );
@@ -70,8 +75,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className="dark" suppressHydrationWarning>
       <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
         <HeadContent />
       </head>
       <body>
@@ -86,10 +92,12 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <Outlet />
-        <Toaster richColors position="top-center" />
-      </AuthProvider>
+      <ThemeProvider>
+        <AuthProvider>
+          <Outlet />
+          <Toaster richColors position="top-center" />
+        </AuthProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }

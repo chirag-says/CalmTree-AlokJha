@@ -1,4 +1,12 @@
-import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import type { Session, User } from "@supabase/supabase-js";
 import { usePostHog } from "@posthog/react";
 import { supabase } from "@/lib/supabase";
@@ -62,6 +70,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [profileError, setProfileError] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
   const posthog = usePostHog();
+  // Tracks whose profile we've already fetched, so re-emitted SIGNED_IN events
+  // (Supabase fires one on every tab focus) don't reload the profile.
+  const lastFetchedUserId = useRef<string | null>(null);
 
   // Fetch the profile row for a given userId.
   // Resilient: retries once, and self-heals a missing row (PGRST116) by upserting
@@ -130,6 +141,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setSession(data.session);
       setUser(sessionUser);
       if (sessionUser) {
+        lastFetchedUserId.current = sessionUser.id;
         posthog.identify(sessionUser.id);
         // Kick off profile fetch immediately — profileLoading covers the gap.
         void fetchProfile(sessionUser.id);
@@ -140,15 +152,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Keep state in sync with Supabase auth events.
     const { data: listener } = supabase.auth.onAuthStateChange((event, newSession) => {
       const newUser = newSession?.user ?? null;
-      setSession(newSession);
-      setUser(newUser);
+
+      // Supabase re-emits SIGNED_IN / TOKEN_REFRESHED with fresh object
+      // references on every tab focus. Preserve the previous reference when the
+      // token/user id is unchanged — otherwise each tab switch churns state and
+      // re-runs every page's data effect (skeletons flash, scroll resets).
+      setSession((prev) =>
+        prev?.access_token === newSession?.access_token ? prev : newSession,
+      );
+      setUser((prev) => (prev?.id === newUser?.id ? prev : newUser));
 
       if (event === "SIGNED_IN" && newUser) {
         setSigningOut(false);
         posthog.identify(newUser.id);
-        posthog.capture("user_signed_in");
-        void fetchProfile(newUser.id);
+        // Only fetch the profile the first time we see this user. A re-emitted
+        // SIGNED_IN for the same user must not reload the profile.
+        if (lastFetchedUserId.current !== newUser.id) {
+          lastFetchedUserId.current = newUser.id;
+          posthog.capture("user_signed_in");
+          void fetchProfile(newUser.id);
+        }
       } else if (event === "SIGNED_OUT") {
+        lastFetchedUserId.current = null;
         setProfile(null);
         setProfileLoading(false);
         setProfileError(false);
@@ -159,7 +184,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => listener.subscription.unsubscribe();
   }, [posthog, fetchProfile]);
 
-  const isReady = !loading && !(user && profileLoading);
+  // Block only on the *first* profile load (profile === null). Background
+  // refreshes triggered by token renewal on tab focus must not flip isReady
+  // back to false — that would blank the page with a spinner mid-session.
+  const isReady = !loading && !(user && profileLoading && profile === null);
 
   const value: AuthContextValue = {
     user,

@@ -1,35 +1,69 @@
 /**
- * AdminLayout.tsx — Admin sidebar shell + is_admin guard.
- * Distinct dark-teal accent to differentiate from the user dashboard.
+ * AdminLayout.tsx — Admin shell (shadcn sidebar + top bar) + is_admin guard.
+ *
+ * The guard order is load-bearing: wait for auth → require sign-in →
+ * treat profile errors as not-authorized (safe default) → require is_admin.
  */
 
-import { Link, Navigate, Outlet } from "@tanstack/react-router";
+import { Link, Navigate, Outlet, useRouterState } from "@tanstack/react-router";
 import { useState } from "react";
 import {
-  LayoutDashboard,
-  Users,
-  ShoppingBag,
-  ClipboardList,
+  BarChart3,
   BookOpen,
-  Menu,
-  X,
+  ChevronsUpDown,
+  ClipboardList,
+  LayoutDashboard,
   LogOut,
+  Search,
   Shield,
+  ShoppingBag,
+  Users,
 } from "lucide-react";
+import { toast } from "sonner";
 import { Logo } from "@/components/shared/Logo";
 import { useAuth } from "@/hooks/useAuth";
-import { toast } from "sonner";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarInset,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarProvider,
+  SidebarRail,
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { ThemeToggle } from "@/components/admin/ThemeToggle";
+import { CommandPalette } from "@/components/admin/CommandPalette";
 
 const ADMIN_NAV = [
   { to: "/admin", label: "Overview", icon: LayoutDashboard, exact: true },
+  { to: "/admin/analytics", label: "Analytics", icon: BarChart3, exact: false },
   { to: "/admin/users", label: "Users", icon: Users, exact: false },
   { to: "/admin/purchases", label: "Purchases", icon: ShoppingBag, exact: false },
   { to: "/admin/results", label: "Results", icon: ClipboardList, exact: false },
   { to: "/admin/ebooks", label: "Ebooks", icon: BookOpen, exact: false },
 ] as const;
 
-function AdminSidebar({ onClose }: { onClose?: () => void }) {
+function AdminSidebar() {
   const { user, signOut } = useAuth();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   async function handleSignOut() {
     await signOut();
@@ -42,76 +76,79 @@ function AdminSidebar({ onClose }: { onClose?: () => void }) {
     : (user?.email?.[0].toUpperCase() ?? "A");
 
   return (
-    <aside className="flex flex-col h-full bg-[#0a1f2e] text-white min-w-[220px] max-w-[260px] w-full border-r border-white/10">
-      {/* Logo */}
-      <div className="px-5 py-5 border-b border-white/10 flex items-center justify-between">
-        <Logo static />
-        {onClose && (
-          <button onClick={onClose} className="lg:hidden p-1 hover:text-white/60">
-            <X className="h-5 w-5" />
-          </button>
-        )}
-      </div>
-
-      {/* Admin badge */}
-      <div className="px-5 py-3 border-b border-white/10">
-        <div className="flex items-center gap-2 text-xs font-medium text-cyan-400 tracking-wide uppercase">
+    <Sidebar collapsible="icon">
+      <SidebarHeader>
+        <div className="flex items-center gap-2 px-2 py-1.5 group-data-[collapsible=icon]:justify-center">
+          <Logo static />
+        </div>
+        <div className="flex items-center gap-2 px-2 pb-1 text-xs font-medium uppercase tracking-wide text-primary group-data-[collapsible=icon]:hidden">
           <Shield className="h-3.5 w-3.5" />
           Admin Panel
         </div>
-      </div>
+      </SidebarHeader>
 
-      {/* User chip */}
-      <div className="px-4 py-4 border-b border-white/10">
-        <div className="flex items-center gap-2.5">
-          <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-cyan-500/20 text-cyan-300 text-sm font-semibold shrink-0">
-            {initial}
-          </span>
-          <div className="min-w-0">
-            <p className="text-sm font-medium truncate">{displayName ?? "Admin"}</p>
-            <p className="text-xs text-white/50 truncate">{user?.email}</p>
-          </div>
-        </div>
-      </div>
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupLabel>Manage</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {ADMIN_NAV.map((item) => {
+                const isActive = item.exact ? pathname === item.to : pathname.startsWith(item.to);
+                return (
+                  <SidebarMenuItem key={item.to}>
+                    <SidebarMenuButton asChild isActive={isActive} tooltip={item.label}>
+                      <Link to={item.to}>
+                        <item.icon />
+                        <span>{item.label}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
 
-      {/* Nav */}
-      <nav className="flex-1 px-3 py-4 flex flex-col gap-1">
-        {ADMIN_NAV.map((item) => {
-          const Icon = item.icon;
-          return (
-            <Link
-              key={item.to}
-              to={item.to}
-              onClick={onClose}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-white/60 hover:bg-white/10 hover:text-white transition-colors"
-              activeProps={{ className: "bg-cyan-500/15 text-cyan-200 font-medium" }}
-              activeOptions={{ exact: item.exact }}
-            >
-              <Icon className="h-4 w-4 shrink-0" />
-              {item.label}
-            </Link>
-          );
-        })}
-      </nav>
-
-      {/* Sign out */}
-      <div className="px-3 pb-5">
-        <button
-          onClick={handleSignOut}
-          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-white/40 hover:bg-white/10 hover:text-white/80 transition-colors"
-        >
-          <LogOut className="h-4 w-4" />
-          Sign out
-        </button>
-      </div>
-    </aside>
+      <SidebarFooter>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <SidebarMenuButton size="lg">
+                  <Avatar className="h-8 w-8">
+                    <AvatarFallback className="bg-primary/15 text-primary text-sm font-semibold">
+                      {initial}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="grid flex-1 text-left leading-tight">
+                    <span className="truncate text-sm font-medium">{displayName ?? "Admin"}</span>
+                    <span className="truncate text-xs text-muted-foreground">{user?.email}</span>
+                  </div>
+                  <ChevronsUpDown className="ml-auto h-4 w-4" />
+                </SidebarMenuButton>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent side="top" align="start" className="w-56">
+                <DropdownMenuLabel className="truncate">{user?.email}</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => void handleSignOut()}>
+                  <LogOut className="h-4 w-4" />
+                  Sign out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarFooter>
+      <SidebarRail />
+    </Sidebar>
   );
 }
 
 function FullPageSpinner() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#060f18]">
-      <div className="h-8 w-8 rounded-full border-2 border-cyan-500 border-t-transparent animate-spin" />
+    <div className="flex min-h-screen items-center justify-center bg-background">
+      <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
     </div>
   );
 }
@@ -119,25 +156,24 @@ function FullPageSpinner() {
 function NotAuthorized() {
   const { user, signOut } = useAuth();
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-[#060f18] px-4 text-center text-white">
-      <Shield className="h-10 w-10 text-cyan-400/70" />
+    <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4 text-center text-foreground">
+      <Shield className="h-10 w-10 text-primary/70" />
       <h1 className="mt-4 text-xl font-semibold">Not authorized</h1>
-      <p className="mt-2 max-w-sm text-sm text-white/60">
-        The account <span className="text-white/80">{user?.email}</span> doesn't have admin access.
+      <p className="mt-2 max-w-sm text-sm text-muted-foreground">
+        The account <span className="text-foreground">{user?.email}</span> doesn't have admin
+        access.
       </p>
-      <button
-        onClick={() => void signOut()}
-        className="mt-6 rounded-full border border-white/20 px-5 py-2 text-sm hover:bg-white/10"
-      >
+      <Button variant="outline" className="mt-6 rounded-full" onClick={() => void signOut()}>
         Sign in with a different account
-      </button>
+      </Button>
     </div>
   );
 }
 
 export function AdminLayout() {
   const { user, isReady, profile, profileError } = useAuth();
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [paletteOpen, setPaletteOpen] = useState(false);
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   // Wait for auth + profile to resolve.
   if (!isReady) return <FullPageSpinner />;
@@ -148,71 +184,41 @@ export function AdminLayout() {
   // Signed in but not an admin → turn them away (no redirect loop).
   if (!profile?.is_admin) return <NotAuthorized />;
 
+  const currentNav = [...ADMIN_NAV]
+    .reverse()
+    .find((item) => (item.exact ? pathname === item.to : pathname.startsWith(item.to)));
+
   return (
-    <div className="min-h-screen flex bg-[#060f18] text-white">
-      {/* Desktop sidebar */}
-      <div className="hidden lg:flex lg:flex-col lg:w-[240px] lg:shrink-0">
-        <div className="sticky top-0 h-screen overflow-y-auto">
-          <AdminSidebar />
-        </div>
-      </div>
-
-      {/* Mobile sidebar overlay */}
-      {sidebarOpen && (
-        <div className="fixed inset-0 z-50 flex lg:hidden">
-          <div
-            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-            onClick={() => setSidebarOpen(false)}
-          />
-          <div className="relative z-10 flex flex-col h-full">
-            <AdminSidebar onClose={() => setSidebarOpen(false)} />
+    <SidebarProvider>
+      <AdminSidebar />
+      <SidebarInset>
+        <header className="sticky top-0 z-30 flex h-14 items-center gap-2 border-b border-border bg-background/80 px-4 backdrop-blur">
+          <SidebarTrigger />
+          <Separator orientation="vertical" className="mr-1 h-4" />
+          <span className="text-sm font-medium text-foreground">
+            {currentNav?.label ?? "Admin"}
+          </span>
+          <div className="ml-auto flex items-center gap-1.5">
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-2 text-muted-foreground"
+              onClick={() => setPaletteOpen(true)}
+            >
+              <Search className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">Search</span>
+              <kbd className="pointer-events-none hidden rounded border border-border bg-muted px-1.5 font-mono text-[10px] text-muted-foreground sm:inline-block">
+                ⌘K
+              </kbd>
+            </Button>
+            <ThemeToggle />
           </div>
-        </div>
-      )}
-
-      {/* Main content */}
-      <div className="flex-1 flex flex-col min-w-0">
-        {/* Mobile top bar */}
-        <header className="sticky top-0 z-30 lg:hidden h-14 flex items-center px-4 bg-[#0a1f2e] border-b border-white/10">
-          <button
-            onClick={() => setSidebarOpen(true)}
-            className="p-2 rounded-lg hover:bg-white/10"
-            aria-label="Open navigation"
-          >
-            <Menu className="h-5 w-5" />
-          </button>
-          <span className="ml-3 text-sm font-semibold text-cyan-300">Admin</span>
         </header>
-
-        <main className="flex-1 px-5 py-8 md:px-8 md:py-10 max-w-6xl w-full mx-auto">
+        <main className="mx-auto w-full max-w-6xl flex-1 px-5 py-8 md:px-8 md:py-10">
           <Outlet />
         </main>
-      </div>
-    </div>
-  );
-}
-
-// ─── Reusable stat card ───────────────────────────────────────────────────────
-
-export function StatCard({
-  label,
-  value,
-  sub,
-  icon: Icon,
-}: {
-  label: string;
-  value: string | number;
-  sub?: string;
-  icon?: React.ComponentType<{ className?: string }>;
-}) {
-  return (
-    <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
-      <div className="flex items-center justify-between mb-2">
-        <p className="text-xs text-white/50 uppercase tracking-wider">{label}</p>
-        {Icon && <Icon className="h-4 w-4 text-cyan-400/60" />}
-      </div>
-      <p className="text-3xl font-bold text-white">{value}</p>
-      {sub && <p className="text-xs text-white/40 mt-1">{sub}</p>}
-    </div>
+      </SidebarInset>
+      <CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} />
+    </SidebarProvider>
   );
 }

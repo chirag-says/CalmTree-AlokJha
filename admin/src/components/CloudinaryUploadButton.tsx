@@ -89,7 +89,7 @@ export function CloudinaryUploadButton({
         type="button"
         disabled={uploading}
         onClick={() => inputRef.current?.click()}
-        className="shrink-0 inline-flex items-center gap-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-medium px-3 py-2 disabled:opacity-40 transition-colors"
+        className="shrink-0 inline-flex items-center gap-1.5 rounded-lg bg-secondary hover:bg-secondary/80 text-secondary-foreground text-xs font-medium px-3 py-2 disabled:opacity-40 transition-colors"
       >
         {uploading ? (
           <>

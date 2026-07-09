@@ -19,7 +19,7 @@ import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
-import { createRazorpayOrder } from "@/server/functions/payments.functions";
+import { createRazorpayOrder, verifyRazorpayPayment } from "@/server/functions/payments.functions";
 import { invalidateEntitlementCache } from "@/hooks/useEntitlement";
 
 // Razorpay checkout.js type declaration
@@ -135,22 +135,46 @@ export function RazorpayCheckoutButton(props: RazorpayCheckoutButtonProps) {
         description: props.productType === "ebook" ? "Ebook Purchase" : "Assessment Tier Access",
         prefill: { email: user.email },
         theme: { color: "#166534" }, // matches CalmTree primary green
-        handler: (response) => {
+        handler: async (response) => {
+          // Verify the payment server-side and write the purchase/entitlement row
+          // synchronously. This is the source of truth — it needs only the key
+          // secret, so it works without any webhook configured.
+          const verifyRes = await verifyRazorpayPayment({
+            data: {
+              accessToken: session.access_token,
+              razorpayOrderId: response.razorpay_order_id,
+              razorpayPaymentId: response.razorpay_payment_id,
+              razorpaySignature: response.razorpay_signature,
+            },
+          });
+
+          if (!verifyRes.verified) {
+            posthog.capture("purchase_verification_failed", {
+              product_type: props.productType,
+              product_ref: analyticsRef,
+              razorpay_order_id: response.razorpay_order_id,
+            });
+            toast.error(
+              "We couldn't confirm your payment. If you were charged, contact support and we'll sort it out right away.",
+              { duration: 8000 },
+            );
+            return;
+          }
+
           posthog.capture("purchase_completed", {
             product_type: props.productType,
             product_ref: analyticsRef,
             currency,
             razorpay_order_id: response.razorpay_order_id,
           });
-          // Optimistic: show success immediately; webhook does the real DB write.
-          toast.success("Payment successful! Your access is being activated…", {
+          toast.success("Payment successful! Your access is now active.", {
             duration: 5000,
           });
           // Invalidate cache so next entitlement check goes to the server.
           invalidateEntitlementCache();
           onSuccess?.();
 
-          console.log("[razorpay] Payment captured:", response.razorpay_payment_id);
+          console.log("[razorpay] Payment captured & verified:", response.razorpay_payment_id);
         },
         modal: {
           ondismiss: () => {

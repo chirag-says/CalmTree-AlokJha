@@ -14,7 +14,7 @@ import { requireUser } from "../require-user";
 
 // ─── Admin gate helper ────────────────────────────────────────────────────────
 
-async function requireAdmin(accessToken: string): Promise<string> {
+export async function requireAdmin(accessToken: string): Promise<string> {
   const userId = await requireUser(accessToken);
   const supabase = getAdminClient();
   const { data, error } = await supabase

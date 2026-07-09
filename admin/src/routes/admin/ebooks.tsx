@@ -4,23 +4,27 @@
  */
 
 import { createFileRoute } from "@tanstack/react-router";
-import { useCallback, useEffect, useState } from "react";
-import { useAuth } from "@/hooks/useAuth";
-import {
-  listAllEbooks,
-  createEbook,
-  updateEbook,
-  deleteEbook,
-} from "@/server/functions/admin.functions";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { BookOpen, Loader2, Pencil, Plus, Trash2 } from "lucide-react";
+import { useCreateEbook, useDeleteEbook, useEbooks, useUpdateEbook } from "@/data/admin-queries";
+import { PageHeader } from "@/components/admin/PageHeader";
+import { AdminTable, type ColumnDef } from "@/components/admin/AdminTable";
+import { StatusPill, ebookStatusTone } from "@/components/admin/StatusPill";
+import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
+import { CloudinaryUploadButton } from "@/components/CloudinaryUploadButton";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { toast } from "sonner";
-import { Plus, Pencil, Trash2, Loader2, X } from "lucide-react";
-import { CloudinaryUploadButton } from "@/components/CloudinaryUploadButton";
 
 export const Route = createFileRoute("/admin/ebooks")({
   head: () => ({ meta: [{ title: "Ebooks — CalmTree Admin" }] }),
@@ -56,21 +60,23 @@ interface EbookRow {
   page_count?: number;
 }
 
-// ─── Form component ───────────────────────────────────────────────────────────
+// ─── Form dialog ──────────────────────────────────────────────────────────────
 
-function EbookForm({
+function EbookFormDialog({
   initial,
-  onSave,
-  onCancel,
+  open,
+  onOpenChange,
 }: {
-  initial?: EbookRow;
-  onSave: () => void;
-  onCancel: () => void;
+  initial: EbookRow | null;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }) {
-  const { session } = useAuth();
+  const create = useCreateEbook();
+  const update = useUpdateEbook();
+
   const form = useForm<EbookFormFields>({
     resolver: zodResolver(ebookFormSchema),
-    defaultValues: {
+    values: {
       title: initial?.title ?? "",
       subtitle: initial?.subtitle ?? "",
       description: initial?.description ?? "",
@@ -84,10 +90,7 @@ function EbookForm({
   });
 
   async function onSubmit(values: EbookFormFields) {
-    if (!session?.access_token) return;
-
     const payload = {
-      accessToken: session.access_token,
       ...values,
       subtitle: values.subtitle || undefined,
       description: values.description || undefined,
@@ -95,291 +98,250 @@ function EbookForm({
       cloudinary_public_id: values.cloudinary_public_id || undefined,
       page_count: values.page_count || undefined,
     };
-
-    let result;
-    if (initial) {
-      result = await updateEbook({ data: { ...payload, id: initial.id } });
-    } else {
-      result = await createEbook({ data: payload });
+    try {
+      if (initial) {
+        await update.mutateAsync({ ...payload, id: initial.id });
+      } else {
+        await create.mutateAsync(payload);
+      }
+      onOpenChange(false);
+      form.reset();
+    } catch {
+      // Mutation onError already toasts; keep the dialog open for fixes.
     }
-
-    if ("error" in result && result.error) {
-      toast.error(result.error);
-      return;
-    }
-
-    toast.success(initial ? "Ebook updated." : "Ebook created.");
-    onSave();
   }
 
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 mb-6">
-      <div className="flex items-center justify-between mb-5">
-        <h2 className="text-lg font-semibold text-white">{initial ? "Edit ebook" : "New ebook"}</h2>
-        <button onClick={onCancel} className="text-white/40 hover:text-white">
-          <X className="h-5 w-5" />
-        </button>
-      </div>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>{initial ? "Edit ebook" : "New ebook"}</DialogTitle>
+          <DialogDescription>
+            {initial ? "Update the ebook details." : "Add a new ebook to the storefront."}
+          </DialogDescription>
+        </DialogHeader>
 
-      <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4 sm:grid-cols-2">
-        <div className="sm:col-span-2 space-y-1.5">
-          <Label className="text-white/60 text-xs">Title *</Label>
-          <Input {...form.register("title")} className="bg-white/5 border-white/10 text-white" />
-          {form.formState.errors.title && (
-            <p className="text-xs text-red-400">{form.formState.errors.title.message}</p>
-          )}
-        </div>
-
-        <div className="space-y-1.5">
-          <Label className="text-white/60 text-xs">Slug *</Label>
-          <Input
-            {...form.register("slug")}
-            className="bg-white/5 border-white/10 text-white font-mono text-sm"
-            placeholder="e.g. burnout-recovery"
-          />
-          {form.formState.errors.slug && (
-            <p className="text-xs text-red-400">{form.formState.errors.slug.message}</p>
-          )}
-        </div>
-
-        <div className="space-y-1.5">
-          <Label className="text-white/60 text-xs">Price (INR) *</Label>
-          <Input
-            type="number"
-            {...form.register("price_inr")}
-            className="bg-white/5 border-white/10 text-white"
-          />
-        </div>
-
-        <div className="space-y-1.5">
-          <Label className="text-white/60 text-xs">Status *</Label>
-          <select
-            {...form.register("status")}
-            className="w-full rounded-md bg-white/5 border border-white/10 text-white text-sm px-3 py-2"
-          >
-            <option value="draft">Draft</option>
-            <option value="active">Active</option>
-            <option value="inactive">Inactive</option>
-          </select>
-        </div>
-
-        <div className="space-y-1.5">
-          <Label className="text-white/60 text-xs">Page count</Label>
-          <Input
-            type="number"
-            {...form.register("page_count")}
-            className="bg-white/5 border-white/10 text-white"
-          />
-        </div>
-
-        <div className="sm:col-span-2 space-y-1.5">
-          <Label className="text-white/60 text-xs">Subtitle</Label>
-          <Input {...form.register("subtitle")} className="bg-white/5 border-white/10 text-white" />
-        </div>
-
-        <div className="sm:col-span-2 space-y-1.5">
-          <Label className="text-white/60 text-xs">Cover image</Label>
-          <div className="flex gap-2">
-            <Input
-              {...form.register("cover_image_url")}
-              placeholder="Upload an image or paste a URL"
-              className="bg-white/5 border-white/10 text-white font-mono text-sm"
-            />
-            <CloudinaryUploadButton
-              kind="cover"
-              onUploaded={(url) => form.setValue("cover_image_url", url, { shouldDirty: true })}
-            />
-          </div>
-        </div>
-
-        <div className="sm:col-span-2 space-y-1.5">
-          <Label className="text-white/60 text-xs">Ebook PDF (Cloudinary public ID)</Label>
-          <div className="flex gap-2">
-            <Input
-              {...form.register("cloudinary_public_id")}
-              placeholder="Upload the PDF or paste a public ID"
-              className="bg-white/5 border-white/10 text-white font-mono text-sm"
-            />
-            <CloudinaryUploadButton
-              kind="pdf"
-              onUploaded={(publicId) =>
-                form.setValue("cloudinary_public_id", publicId, { shouldDirty: true })
-              }
-            />
-          </div>
-          <p className="text-xs text-white/30">
-            The PDF is stored privately — buyers get short-lived signed links.
-          </p>
-        </div>
-
-        <div className="sm:col-span-2 flex gap-3 justify-end">
-          <Button type="button" variant="ghost" onClick={onCancel} className="text-white/50">
-            Cancel
-          </Button>
-          <Button
-            type="submit"
-            disabled={form.formState.isSubmitting}
-            className="bg-cyan-600 hover:bg-cyan-500 text-white"
-          >
-            {form.formState.isSubmitting ? (
-              <>
-                <Loader2 className="h-4 w-4 animate-spin" />
-                Saving…
-              </>
-            ) : initial ? (
-              "Save changes"
-            ) : (
-              "Create ebook"
+        <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-1.5 sm:col-span-2">
+            <Label className="text-xs">Title *</Label>
+            <Input {...form.register("title")} />
+            {form.formState.errors.title && (
+              <p className="text-xs text-destructive">{form.formState.errors.title.message}</p>
             )}
-          </Button>
-        </div>
-      </form>
-    </div>
+          </div>
+
+          <div className="space-y-1.5">
+            <Label className="text-xs">Slug *</Label>
+            <Input
+              {...form.register("slug")}
+              className="font-mono text-sm"
+              placeholder="e.g. burnout-recovery"
+            />
+            {form.formState.errors.slug && (
+              <p className="text-xs text-destructive">{form.formState.errors.slug.message}</p>
+            )}
+          </div>
+
+          <div className="space-y-1.5">
+            <Label className="text-xs">Price (INR) *</Label>
+            <Input type="number" {...form.register("price_inr")} />
+            {form.formState.errors.price_inr && (
+              <p className="text-xs text-destructive">{form.formState.errors.price_inr.message}</p>
+            )}
+          </div>
+
+          <div className="space-y-1.5">
+            <Label className="text-xs">Status *</Label>
+            <select
+              {...form.register("status")}
+              className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm text-foreground"
+            >
+              <option value="draft">Draft</option>
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+            </select>
+          </div>
+
+          <div className="space-y-1.5">
+            <Label className="text-xs">Page count</Label>
+            <Input type="number" {...form.register("page_count")} />
+          </div>
+
+          <div className="space-y-1.5 sm:col-span-2">
+            <Label className="text-xs">Subtitle</Label>
+            <Input {...form.register("subtitle")} />
+          </div>
+
+          <div className="space-y-1.5 sm:col-span-2">
+            <Label className="text-xs">Cover image</Label>
+            <div className="flex gap-2">
+              <Input
+                {...form.register("cover_image_url")}
+                placeholder="Upload an image or paste a URL"
+                className="font-mono text-sm"
+              />
+              <CloudinaryUploadButton
+                kind="cover"
+                onUploaded={(url) => form.setValue("cover_image_url", url, { shouldDirty: true })}
+              />
+            </div>
+          </div>
+
+          <div className="space-y-1.5 sm:col-span-2">
+            <Label className="text-xs">Ebook PDF (Cloudinary public ID)</Label>
+            <div className="flex gap-2">
+              <Input
+                {...form.register("cloudinary_public_id")}
+                placeholder="Upload the PDF or paste a public ID"
+                className="font-mono text-sm"
+              />
+              <CloudinaryUploadButton
+                kind="pdf"
+                onUploaded={(publicId) =>
+                  form.setValue("cloudinary_public_id", publicId, { shouldDirty: true })
+                }
+              />
+            </div>
+            <p className="text-xs text-muted-foreground">
+              The PDF is stored privately — buyers get short-lived signed links.
+            </p>
+          </div>
+
+          <div className="flex justify-end gap-3 sm:col-span-2">
+            <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>
+              Cancel
+            </Button>
+            <Button type="submit" disabled={form.formState.isSubmitting}>
+              {form.formState.isSubmitting ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Saving…
+                </>
+              ) : initial ? (
+                "Save changes"
+              ) : (
+                "Create ebook"
+              )}
+            </Button>
+          </div>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
 }
 
 // ─── Main page ────────────────────────────────────────────────────────────────
 
 function AdminEbooksPage() {
-  const { session } = useAuth();
-  const [ebooks, setEbooks] = useState<EbookRow[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [showForm, setShowForm] = useState(false);
+  const ebooks = useEbooks();
+  const deleteMutation = useDeleteEbook();
+  const [formOpen, setFormOpen] = useState(false);
   const [editTarget, setEditTarget] = useState<EbookRow | null>(null);
 
-  const fetchEbooks = useCallback(() => {
-    if (!session?.access_token) return;
-    setLoading(true);
-    listAllEbooks({ data: { accessToken: session.access_token } })
-      .then((res) => {
-        if (!("error" in res)) setEbooks(res.ebooks as EbookRow[]);
-      })
-      .catch((e) => console.error("[admin-ebooks] fetch failed:", e))
-      .finally(() => setLoading(false));
-  }, [session]);
+  const rows = (ebooks.data?.ebooks ?? []) as EbookRow[];
 
-  useEffect(() => {
-    fetchEbooks();
-  }, [fetchEbooks]);
-
-  async function handleDelete(id: string) {
-    if (!session?.access_token) return;
-    if (!confirm("Delete this ebook? This cannot be undone.")) return;
-
-    const res = await deleteEbook({ data: { accessToken: session.access_token, id } });
-    if ("error" in res && res.error) {
-      toast.error(res.error);
-    } else {
-      toast.success("Ebook deleted.");
-      fetchEbooks();
-    }
-  }
+  const columns: ColumnDef<EbookRow>[] = [
+    {
+      key: "title",
+      header: "Title",
+      cell: (e) => (
+        <div>
+          <p className="font-medium text-foreground">{e.title}</p>
+          <p className="font-mono text-xs text-muted-foreground/70">{e.slug}</p>
+        </div>
+      ),
+    },
+    {
+      key: "price",
+      header: "Price",
+      className: "text-foreground",
+      cell: (e) => `₹${e.price_inr.toLocaleString("en-IN")}`,
+    },
+    {
+      key: "status",
+      header: "Status",
+      cell: (e) => <StatusPill tone={ebookStatusTone(e.status)}>{e.status}</StatusPill>,
+    },
+    {
+      key: "actions",
+      header: <span className="block text-right">Actions</span>,
+      cell: (e) => (
+        <div className="flex items-center justify-end gap-1">
+          <Button
+            variant="ghost"
+            size="icon"
+            title="Edit"
+            className="text-muted-foreground hover:text-foreground"
+            onClick={() => {
+              setEditTarget(e);
+              setFormOpen(true);
+            }}
+          >
+            <Pencil className="h-3.5 w-3.5" />
+          </Button>
+          <ConfirmDialog
+            title={`Delete "${e.title}"?`}
+            description="This cannot be undone. Buyers keep their entitlements but the ebook disappears from the storefront."
+            confirmLabel="Delete"
+            destructive
+            onConfirm={() => deleteMutation.mutateAsync({ id: e.id }).then(() => undefined)}
+            trigger={
+              <Button
+                variant="ghost"
+                size="icon"
+                title="Delete"
+                className="text-muted-foreground hover:text-destructive"
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+              </Button>
+            }
+          />
+        </div>
+      ),
+    },
+  ];
 
   return (
     <div>
-      <div className="mb-8 flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold text-white">Ebooks</h1>
-          <p className="text-sm text-white/40 mt-1">All ebooks including drafts and inactive.</p>
-        </div>
-        {!showForm && !editTarget && (
+      <PageHeader
+        title="Ebooks"
+        description="All ebooks including drafts and inactive."
+        actions={
           <Button
-            onClick={() => setShowForm(true)}
-            className="bg-cyan-600 hover:bg-cyan-500 text-white"
+            onClick={() => {
+              setEditTarget(null);
+              setFormOpen(true);
+            }}
           >
             <Plus className="h-4 w-4" />
             New ebook
           </Button>
-        )}
-      </div>
+        }
+      />
 
-      {(showForm || editTarget) && (
-        <EbookForm
-          initial={editTarget ?? undefined}
-          onSave={() => {
-            setShowForm(false);
-            setEditTarget(null);
-            fetchEbooks();
-          }}
-          onCancel={() => {
-            setShowForm(false);
-            setEditTarget(null);
-          }}
-        />
-      )}
+      <AdminTable
+        columns={columns}
+        data={rows}
+        rowKey={(e) => e.id}
+        isLoading={ebooks.isPending}
+        error={ebooks.error?.message}
+        onRetry={() => void ebooks.refetch()}
+        skeletonRows={3}
+        emptyState={{
+          icon: BookOpen,
+          title: "No ebooks yet",
+          description: "Create your first ebook to populate the storefront.",
+        }}
+      />
 
-      <div className="rounded-2xl border border-white/10 overflow-hidden">
-        <table className="w-full text-sm">
-          <thead className="bg-white/5">
-            <tr>
-              <th className="px-4 py-3 text-left text-xs text-white/40 uppercase tracking-wider">
-                Title
-              </th>
-              <th className="px-4 py-3 text-left text-xs text-white/40 uppercase tracking-wider">
-                Price
-              </th>
-              <th className="px-4 py-3 text-left text-xs text-white/40 uppercase tracking-wider">
-                Status
-              </th>
-              <th className="px-4 py-3 text-right text-xs text-white/40 uppercase tracking-wider">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-white/5">
-            {loading
-              ? Array.from({ length: 3 }).map((_, i) => (
-                  <tr key={i}>
-                    <td colSpan={4} className="px-4 py-3">
-                      <div className="h-4 bg-white/5 rounded animate-pulse" />
-                    </td>
-                  </tr>
-                ))
-              : ebooks.map((e) => (
-                  <tr key={e.id} className="hover:bg-white/[0.03] transition-colors">
-                    <td className="px-4 py-3">
-                      <p className="text-white font-medium">{e.title}</p>
-                      <p className="text-xs text-white/30 font-mono">{e.slug}</p>
-                    </td>
-                    <td className="px-4 py-3 text-white/70">
-                      ₹{e.price_inr.toLocaleString("en-IN")}
-                    </td>
-                    <td className="px-4 py-3">
-                      <span
-                        className={`text-xs font-medium px-2 py-0.5 rounded-full ${
-                          e.status === "active"
-                            ? "bg-emerald-400/10 text-emerald-400"
-                            : e.status === "draft"
-                              ? "bg-amber-400/10 text-amber-400"
-                              : "bg-white/5 text-white/30"
-                        }`}
-                      >
-                        {e.status}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center justify-end gap-2">
-                        <button
-                          onClick={() => setEditTarget(e)}
-                          className="p-1.5 rounded-lg hover:bg-white/10 text-white/40 hover:text-white transition-colors"
-                          title="Edit"
-                        >
-                          <Pencil className="h-3.5 w-3.5" />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(e.id)}
-                          className="p-1.5 rounded-lg hover:bg-red-500/10 text-white/40 hover:text-red-400 transition-colors"
-                          title="Delete"
-                        >
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-          </tbody>
-        </table>
-      </div>
+      <EbookFormDialog
+        initial={editTarget}
+        open={formOpen}
+        onOpenChange={(open) => {
+          setFormOpen(open);
+          if (!open) setEditTarget(null);
+        }}
+      />
     </div>
   );
 }

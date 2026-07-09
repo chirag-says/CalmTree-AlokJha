@@ -29,6 +29,7 @@ import { Route as AuthedAcademyRouteImport } from './routes/_authed/academy'
 import { Route as AuthedAssessmentsIndexRouteImport } from './routes/_authed/assessments/index'
 import { Route as ApiWebhooksRazorpayRouteImport } from './routes/api/webhooks/razorpay'
 import { Route as AuthedAssessmentsSlugRouteImport } from './routes/_authed/assessments/$slug'
+import { Route as ApiEbooksEbookIdPdfRouteImport } from './routes/api/ebooks/$ebookId/pdf'
 
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
@@ -129,6 +130,11 @@ const AuthedAssessmentsSlugRoute = AuthedAssessmentsSlugRouteImport.update({
   path: '/assessments/$slug',
   getParentRoute: () => AuthedRouteRoute,
 } as any)
+const ApiEbooksEbookIdPdfRoute = ApiEbooksEbookIdPdfRouteImport.update({
+  id: '/api/ebooks/$ebookId/pdf',
+  path: '/api/ebooks/$ebookId/pdf',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -150,6 +156,7 @@ export interface FileRoutesByFullPath {
   '/assessments/$slug': typeof AuthedAssessmentsSlugRoute
   '/api/webhooks/razorpay': typeof ApiWebhooksRazorpayRoute
   '/assessments/': typeof AuthedAssessmentsIndexRoute
+  '/api/ebooks/$ebookId/pdf': typeof ApiEbooksEbookIdPdfRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -170,6 +177,7 @@ export interface FileRoutesByTo {
   '/assessments/$slug': typeof AuthedAssessmentsSlugRoute
   '/api/webhooks/razorpay': typeof ApiWebhooksRazorpayRoute
   '/assessments': typeof AuthedAssessmentsIndexRoute
+  '/api/ebooks/$ebookId/pdf': typeof ApiEbooksEbookIdPdfRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -193,6 +201,7 @@ export interface FileRoutesById {
   '/_authed/assessments/$slug': typeof AuthedAssessmentsSlugRoute
   '/api/webhooks/razorpay': typeof ApiWebhooksRazorpayRoute
   '/_authed/assessments/': typeof AuthedAssessmentsIndexRoute
+  '/api/ebooks/$ebookId/pdf': typeof ApiEbooksEbookIdPdfRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -216,6 +225,7 @@ export interface FileRouteTypes {
     | '/assessments/$slug'
     | '/api/webhooks/razorpay'
     | '/assessments/'
+    | '/api/ebooks/$ebookId/pdf'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -236,6 +246,7 @@ export interface FileRouteTypes {
     | '/assessments/$slug'
     | '/api/webhooks/razorpay'
     | '/assessments'
+    | '/api/ebooks/$ebookId/pdf'
   id:
     | '__root__'
     | '/'
@@ -258,6 +269,7 @@ export interface FileRouteTypes {
     | '/_authed/assessments/$slug'
     | '/api/webhooks/razorpay'
     | '/_authed/assessments/'
+    | '/api/ebooks/$ebookId/pdf'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -273,6 +285,7 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermsRoute: typeof TermsRoute
   ApiWebhooksRazorpayRoute: typeof ApiWebhooksRazorpayRoute
+  ApiEbooksEbookIdPdfRoute: typeof ApiEbooksEbookIdPdfRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -417,6 +430,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedAssessmentsSlugRouteImport
       parentRoute: typeof AuthedRouteRoute
     }
+    '/api/ebooks/$ebookId/pdf': {
+      id: '/api/ebooks/$ebookId/pdf'
+      path: '/api/ebooks/$ebookId/pdf'
+      fullPath: '/api/ebooks/$ebookId/pdf'
+      preLoaderRoute: typeof ApiEbooksEbookIdPdfRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -469,6 +489,7 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermsRoute: TermsRoute,
   ApiWebhooksRazorpayRoute: ApiWebhooksRazorpayRoute,
+  ApiEbooksEbookIdPdfRoute: ApiEbooksEbookIdPdfRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

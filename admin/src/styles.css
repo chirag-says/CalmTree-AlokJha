@@ -42,6 +42,12 @@
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
@@ -80,14 +86,21 @@
   --accent-foreground: oklch(0.24 0.018 160);
   --destructive: oklch(0.55 0.18 30);
   --destructive-foreground: oklch(0.985 0.008 95);
+  --success: oklch(0.52 0.11 155); /* sage green — readable as text on light */
+  --success-foreground: oklch(0.985 0.008 95);
+  --warning: oklch(0.6 0.13 75); /* amber */
+  --warning-foreground: oklch(0.985 0.008 95);
+  --info: oklch(0.52 0.11 240); /* calm blue */
+  --info-foreground: oklch(0.985 0.008 95);
   --border: oklch(0.9 0.015 110);
   --input: oklch(0.92 0.015 110);
   --ring: oklch(0.46 0.07 155);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
+  /* Chart ramp: teal → sage → amber → blue → coral, tuned for light surfaces */
+  --chart-1: oklch(0.55 0.11 190);
+  --chart-2: oklch(0.52 0.1 155);
+  --chart-3: oklch(0.65 0.13 75);
+  --chart-4: oklch(0.5 0.1 240);
+  --chart-5: oklch(0.6 0.12 25);
   --sidebar: oklch(0.97 0.012 95);
   --sidebar-foreground: oklch(0.24 0.018 160);
   --sidebar-primary: oklch(0.46 0.07 155);
@@ -102,41 +115,67 @@
   --shadow-soft: 0 10px 30px -12px oklch(0.46 0.07 155 / 0.18);
 }
 
-/* CalmTree dark mode — deep forest greens, warm neutrals, sage accents.
-   Maintains brand identity across both themes. */
+/* Admin dark mode — deep navy cockpit with luminous teal accents.
+   Distinct from the calm client site: this is the operations console. */
 .dark {
-  --background: oklch(0.14 0.015 155); /* deep forest */
-  --foreground: oklch(0.94 0.008 95); /* warm off-white */
-  --card: oklch(0.19 0.018 155);
-  --card-foreground: oklch(0.94 0.008 95);
-  --popover: oklch(0.19 0.018 155);
-  --popover-foreground: oklch(0.94 0.008 95);
-  --primary: oklch(0.65 0.09 155); /* brighter sage for dark bg */
-  --primary-foreground: oklch(0.14 0.015 155);
-  --secondary: oklch(0.22 0.015 155);
-  --secondary-foreground: oklch(0.94 0.008 95);
-  --muted: oklch(0.22 0.015 155);
-  --muted-foreground: oklch(0.6 0.02 155);
-  --accent: oklch(0.26 0.025 145);
-  --accent-foreground: oklch(0.94 0.008 95);
-  --destructive: oklch(0.65 0.2 25);
-  --destructive-foreground: oklch(0.94 0.008 95);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 12%);
-  --ring: oklch(0.65 0.09 155);
-  --chart-1: oklch(0.65 0.09 155);
-  --chart-2: oklch(0.6 0.12 185);
-  --chart-3: oklch(0.7 0.1 90);
-  --chart-4: oklch(0.65 0.15 45);
-  --chart-5: oklch(0.55 0.08 200);
-  --sidebar: oklch(0.16 0.015 155);
-  --sidebar-foreground: oklch(0.94 0.008 95);
-  --sidebar-primary: oklch(0.65 0.09 155);
-  --sidebar-primary-foreground: oklch(0.94 0.008 95);
-  --sidebar-accent: oklch(0.22 0.015 155);
-  --sidebar-accent-foreground: oklch(0.94 0.008 95);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.65 0.09 155);
+  --background: oklch(0.145 0.02 235); /* deep navy */
+  --foreground: oklch(0.93 0.01 220); /* cool off-white */
+  --card: oklch(0.185 0.022 232);
+  --card-foreground: oklch(0.93 0.01 220);
+  --popover: oklch(0.19 0.022 232);
+  --popover-foreground: oklch(0.93 0.01 220);
+  --primary: oklch(0.78 0.11 190); /* luminous teal */
+  --primary-foreground: oklch(0.15 0.02 235);
+  --secondary: oklch(0.22 0.02 232);
+  --secondary-foreground: oklch(0.93 0.01 220);
+  --muted: oklch(0.22 0.02 232);
+  --muted-foreground: oklch(0.62 0.02 220);
+  --accent: oklch(0.25 0.03 220);
+  --accent-foreground: oklch(0.93 0.01 220);
+  --destructive: oklch(0.66 0.19 25);
+  --destructive-foreground: oklch(0.96 0.01 220);
+  --success: oklch(0.75 0.13 165); /* bright teal-green */
+  --success-foreground: oklch(0.15 0.02 235);
+  --warning: oklch(0.8 0.13 80);
+  --warning-foreground: oklch(0.15 0.02 235);
+  --info: oklch(0.72 0.1 240);
+  --info-foreground: oklch(0.15 0.02 235);
+  --border: oklch(1 0 0 / 8%);
+  --input: oklch(1 0 0 / 10%);
+  --ring: oklch(0.78 0.11 190);
+  /* Chart ramp: teal → sage → amber → blue → coral, brightened for dark surfaces */
+  --chart-1: oklch(0.78 0.11 190);
+  --chart-2: oklch(0.7 0.1 155);
+  --chart-3: oklch(0.8 0.12 80);
+  --chart-4: oklch(0.68 0.09 240);
+  --chart-5: oklch(0.7 0.12 25);
+  --sidebar: oklch(0.125 0.018 236); /* darker than background for layered depth */
+  --sidebar-foreground: oklch(0.93 0.01 220);
+  --sidebar-primary: oklch(0.78 0.11 190);
+  --sidebar-primary-foreground: oklch(0.15 0.02 235);
+  --sidebar-accent: oklch(0.21 0.022 232);
+  --sidebar-accent-foreground: oklch(0.93 0.01 220);
+  --sidebar-border: oklch(1 0 0 / 7%);
+  --sidebar-ring: oklch(0.78 0.11 190);
+}
+
+/* ── Surface helpers (static classes — Tailwind v4 detects them via @utility) ── */
+
+@utility glass {
+  background: color-mix(in oklab, var(--card) 72%, transparent);
+  backdrop-filter: blur(14px);
+  border: 1px solid var(--border);
+  box-shadow:
+    inset 0 1px 0 0 oklch(1 0 0 / 6%),
+    0 8px 32px -12px oklch(0 0 0 / 25%);
+}
+
+@utility surface-raised {
+  background: var(--card);
+  border: 1px solid var(--border);
+  box-shadow:
+    0 1px 2px oklch(0 0 0 / 6%),
+    0 8px 24px -16px oklch(0 0 0 / 18%);
 }
 
 @layer base {

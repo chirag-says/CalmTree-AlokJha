@@ -3,12 +3,17 @@
  */
 
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { useAuth } from "@/hooks/useAuth";
-import { listPurchases, exportPurchases } from "@/server/functions/admin.functions";
+import { useState } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { toast } from "sonner";
-import { Download, Loader2 } from "lucide-react";
+import { Download, Loader2, ShoppingBag } from "lucide-react";
+import { useExportPurchases, usePurchases } from "@/data/admin-queries";
+import { PageHeader } from "@/components/admin/PageHeader";
+import { AdminTable, type ColumnDef } from "@/components/admin/AdminTable";
+import { TablePagination } from "@/components/admin/TablePagination";
+import { StatusPill, purchaseStatusTone } from "@/components/admin/StatusPill";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
 // ─── CSV helpers ──────────────────────────────────────────────────────────────
 
@@ -63,48 +68,38 @@ function buildCsv(rows: ExportRow[]): string {
 }
 
 function ExportCsvButton() {
-  const { session } = useAuth();
-  const [exporting, setExporting] = useState(false);
+  const exportMutation = useExportPurchases();
 
   async function handleExport() {
-    if (!session?.access_token || exporting) return;
-    setExporting(true);
-    try {
-      const res = await exportPurchases({ data: { accessToken: session.access_token } });
-      if ("error" in res && res.error) {
-        toast.error(res.error);
-        return;
-      }
-      const rows = res.purchases as ExportRow[];
-      if (rows.length === 0) {
-        toast("No purchases to export yet.");
-        return;
-      }
-      const blob = new Blob([buildCsv(rows)], { type: "text/csv;charset=utf-8" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `calmtree-purchases-${new Date().toISOString().slice(0, 10)}.csv`;
-      a.click();
-      URL.revokeObjectURL(url);
-      toast.success(`Exported ${rows.length} purchases.`);
-    } catch (e) {
-      console.error("[export-csv] failed:", e);
-      toast.error("Export failed. Please try again.");
-    } finally {
-      setExporting(false);
+    const res = await exportMutation.mutateAsync();
+    const rows = res.purchases as ExportRow[];
+    if (rows.length === 0) {
+      toast("No purchases to export yet.");
+      return;
     }
+    const blob = new Blob([buildCsv(rows)], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `calmtree-purchases-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success(`Exported ${rows.length} purchases.`);
   }
 
   return (
-    <button
-      onClick={handleExport}
-      disabled={exporting}
-      className="inline-flex items-center gap-2 rounded-lg bg-white/10 hover:bg-white/20 text-white text-sm px-3 py-2 disabled:opacity-40 transition-colors"
+    <Button
+      variant="secondary"
+      onClick={() => void handleExport().catch(() => undefined)}
+      disabled={exportMutation.isPending}
     >
-      {exporting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
+      {exportMutation.isPending ? (
+        <Loader2 className="h-4 w-4 animate-spin" />
+      ) : (
+        <Download className="h-4 w-4" />
+      )}
       Export CSV
-    </button>
+    </Button>
   );
 }
 
@@ -123,125 +118,68 @@ interface PurchaseRow {
   purchased_at: string;
 }
 
+const columns: ColumnDef<PurchaseRow>[] = [
+  {
+    key: "type",
+    header: "Type",
+    cell: (p) => <Badge variant="secondary">{p.product_type}</Badge>,
+  },
+  {
+    key: "amount",
+    header: "Amount",
+    className: "font-medium text-foreground",
+    cell: (p) => `₹${(p.amount_paid_inr ?? 0).toLocaleString("en-IN")}`,
+  },
+  {
+    key: "status",
+    header: "Status",
+    cell: (p) => <StatusPill tone={purchaseStatusTone(p.status)}>{p.status}</StatusPill>,
+  },
+  {
+    key: "payment",
+    header: "Payment ID",
+    className: "font-mono text-xs text-muted-foreground/70",
+    cell: (p) => (p.razorpay_payment_id ? `${p.razorpay_payment_id.slice(0, 14)}…` : "—"),
+  },
+  {
+    key: "date",
+    header: "Date",
+    className: "text-xs text-muted-foreground",
+    cell: (p) => formatDistanceToNow(new Date(p.purchased_at), { addSuffix: true }),
+  },
+];
+
 function AdminPurchasesPage() {
-  const { session } = useAuth();
-  const [purchases, setPurchases] = useState<PurchaseRow[]>([]);
-  const [total, setTotal] = useState(0);
-  const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
+  const purchases = usePurchases(page);
 
-  useEffect(() => {
-    if (!session?.access_token) return;
-    setLoading(true);
-    listPurchases({ data: { accessToken: session.access_token, page, pageSize: 20 } }).then(
-      (res) => {
-        if (!("error" in res)) {
-          setPurchases(res.purchases as PurchaseRow[]);
-          setTotal(res.total);
-        }
-        setLoading(false);
-      },
-    );
-  }, [session, page]);
-
-  const totalRevenue = purchases.reduce((s, p) => s + (p.amount_paid_inr ?? 0), 0);
+  const rows = (purchases.data?.purchases ?? []) as PurchaseRow[];
+  const total = purchases.data?.total ?? 0;
+  const pageRevenue = rows.reduce((s, p) => s + (p.amount_paid_inr ?? 0), 0);
 
   return (
     <div>
-      <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-semibold text-white">Purchases</h1>
-          <p className="text-sm text-white/40 mt-1">
-            {total} purchases · ₹{totalRevenue.toLocaleString("en-IN")} shown
-          </p>
-        </div>
-        <ExportCsvButton />
-      </div>
+      <PageHeader
+        title="Purchases"
+        description={`${total.toLocaleString("en-IN")} purchases · ₹${pageRevenue.toLocaleString("en-IN")} on this page`}
+        actions={<ExportCsvButton />}
+      />
 
-      <div className="rounded-2xl border border-white/10 overflow-hidden">
-        <table className="w-full text-sm">
-          <thead className="bg-white/5">
-            <tr>
-              <th className="px-4 py-3 text-left text-xs text-white/40 uppercase tracking-wider">
-                Type
-              </th>
-              <th className="px-4 py-3 text-left text-xs text-white/40 uppercase tracking-wider">
-                Amount
-              </th>
-              <th className="px-4 py-3 text-left text-xs text-white/40 uppercase tracking-wider">
-                Status
-              </th>
-              <th className="px-4 py-3 text-left text-xs text-white/40 uppercase tracking-wider">
-                Payment ID
-              </th>
-              <th className="px-4 py-3 text-left text-xs text-white/40 uppercase tracking-wider">
-                Date
-              </th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-white/5">
-            {loading
-              ? Array.from({ length: 5 }).map((_, i) => (
-                  <tr key={i}>
-                    <td colSpan={5} className="px-4 py-3">
-                      <div className="h-4 bg-white/5 rounded animate-pulse" />
-                    </td>
-                  </tr>
-                ))
-              : purchases.map((p) => (
-                  <tr key={p.id} className="hover:bg-white/[0.03] transition-colors">
-                    <td className="px-4 py-3">
-                      <span className="text-xs font-medium bg-white/10 px-2 py-0.5 rounded-full text-white/70">
-                        {p.product_type}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-white font-medium">
-                      ₹{(p.amount_paid_inr ?? 0).toLocaleString("en-IN")}
-                    </td>
-                    <td className="px-4 py-3">
-                      <span
-                        className={`text-xs font-medium px-2 py-0.5 rounded-full ${
-                          p.status === "completed"
-                            ? "bg-emerald-400/10 text-emerald-400"
-                            : "bg-white/10 text-white/40"
-                        }`}
-                      >
-                        {p.status}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-xs text-white/30 font-mono">
-                      {p.razorpay_payment_id?.slice(0, 14) ?? "—"}…
-                    </td>
-                    <td className="px-4 py-3 text-xs text-white/40">
-                      {formatDistanceToNow(new Date(p.purchased_at), { addSuffix: true })}
-                    </td>
-                  </tr>
-                ))}
-          </tbody>
-        </table>
-      </div>
+      <AdminTable
+        columns={columns}
+        data={rows}
+        rowKey={(p) => p.id}
+        isLoading={purchases.isPending}
+        error={purchases.error?.message}
+        onRetry={() => void purchases.refetch()}
+        emptyState={{
+          icon: ShoppingBag,
+          title: "No purchases yet",
+          description: "Completed Razorpay payments will appear here.",
+        }}
+      />
 
-      {total > 20 && (
-        <div className="mt-4 flex items-center gap-3">
-          <button
-            disabled={page === 1}
-            onClick={() => setPage((p) => p - 1)}
-            className="px-3 py-1.5 text-xs rounded-lg bg-white/5 hover:bg-white/10 disabled:opacity-30 text-white"
-          >
-            Previous
-          </button>
-          <span className="text-xs text-white/40">
-            Page {page} of {Math.ceil(total / 20)}
-          </span>
-          <button
-            disabled={page >= Math.ceil(total / 20)}
-            onClick={() => setPage((p) => p + 1)}
-            className="px-3 py-1.5 text-xs rounded-lg bg-white/5 hover:bg-white/10 disabled:opacity-30 text-white"
-          >
-            Next
-          </button>
-        </div>
-      )}
+      <TablePagination page={page} pageSize={20} total={total} onPageChange={setPage} />
     </div>
   );
 }

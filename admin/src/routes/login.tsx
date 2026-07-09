@@ -7,11 +7,13 @@
 import { createFileRoute, Navigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { Loader2, KeyRound } from "lucide-react";
+import { motion, useReducedMotion } from "motion/react";
 import { toast } from "sonner";
 import { Logo } from "@/components/shared/Logo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { ThemeToggle } from "@/components/admin/ThemeToggle";
 import { useAuth } from "@/hooks/useAuth";
 
 export const Route = createFileRoute("/login")({
@@ -24,6 +26,7 @@ function AdminLoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
+  const reducedMotion = useReducedMotion();
 
   // Once authenticated, go to the panel. RequireAdmin there gates non-admins.
   if (isReady && user) return <Navigate to="/admin" />;
@@ -38,24 +41,40 @@ function AdminLoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-4 bg-[#060f18] text-white">
-      <div className="w-full max-w-sm">
+    <div className="relative flex min-h-screen flex-col items-center justify-center bg-background px-4 text-foreground">
+      {/* Subtle radial glow behind the card */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(600px circle at 50% 35%, color-mix(in oklab, var(--primary) 10%, transparent), transparent 70%)",
+        }}
+      />
+      <div className="absolute right-4 top-4">
+        <ThemeToggle />
+      </div>
+
+      <motion.div
+        initial={reducedMotion ? false : { opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
+        className="relative w-full max-w-sm"
+      >
         <div className="mb-8 flex justify-center">
           <Logo static />
         </div>
-        <div className="rounded-2xl border border-white/10 bg-white/5 p-8 shadow-sm">
+        <div className="glass rounded-2xl p-8">
           <div className="mb-6 text-center">
             <h1 className="text-2xl font-semibold">Admin sign in</h1>
-            <p className="mt-2 text-sm text-white/60">
+            <p className="mt-2 text-sm text-muted-foreground">
               Enter your admin email and password.
             </p>
           </div>
 
           <form onSubmit={submit} className="space-y-4">
             <div className="space-y-1.5">
-              <Label htmlFor="admin-email" className="text-white/70">
-                Email
-              </Label>
+              <Label htmlFor="admin-email">Email</Label>
               <Input
                 id="admin-email"
                 type="email"
@@ -65,13 +84,10 @@ function AdminLoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@calmtree.in"
-                className="bg-white/5 border-white/10 text-white"
               />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="admin-password" className="text-white/70">
-                Password
-              </Label>
+              <Label htmlFor="admin-password">Password</Label>
               <Input
                 id="admin-password"
                 type="password"
@@ -80,7 +96,6 @@ function AdminLoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="bg-white/5 border-white/10 text-white"
               />
             </div>
             <Button type="submit" disabled={busy} className="w-full">
@@ -93,10 +108,10 @@ function AdminLoginPage() {
             </Button>
           </form>
         </div>
-        <p className="mt-6 text-center text-xs text-white/30">
+        <p className="mt-6 text-center text-xs text-muted-foreground/70">
           Admin access is provisioned manually — there is no self-signup.
         </p>
-      </div>
+      </motion.div>
     </div>
   );
 }

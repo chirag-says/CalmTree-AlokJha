@@ -47,7 +47,7 @@ interface StashedPayload {
 /**
  * Maps a typed AssessmentResult into a flat payload suitable for the DB insert.
  */
-function buildPayload(
+export function buildPayload(
   config: AssessmentConfig | ProfileAssessmentConfig,
   result: AssessmentResult,
   answers: Record<string, number>,

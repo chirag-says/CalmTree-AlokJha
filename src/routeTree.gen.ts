@@ -24,6 +24,7 @@ import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
 import { Route as DashboardSettingsRouteImport } from './routes/dashboard/settings'
 import { Route as DashboardResultsRouteImport } from './routes/dashboard/results'
 import { Route as DashboardEbooksRouteImport } from './routes/dashboard/ebooks'
+import { Route as ATokenRouteImport } from './routes/a.$token'
 import { Route as AuthedResourcesRouteImport } from './routes/_authed/resources'
 import { Route as AuthedAcademyRouteImport } from './routes/_authed/academy'
 import { Route as AuthedAssessmentsIndexRouteImport } from './routes/_authed/assessments/index'
@@ -105,6 +106,11 @@ const DashboardEbooksRoute = DashboardEbooksRouteImport.update({
   path: '/ebooks',
   getParentRoute: () => DashboardRouteRoute,
 } as any)
+const ATokenRoute = ATokenRouteImport.update({
+  id: '/a/$token',
+  path: '/a/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthedResourcesRoute = AuthedResourcesRouteImport.update({
   id: '/resources',
   path: '/resources',
@@ -149,6 +155,7 @@ export interface FileRoutesByFullPath {
   '/terms': typeof TermsRoute
   '/academy': typeof AuthedAcademyRoute
   '/resources': typeof AuthedResourcesRoute
+  '/a/$token': typeof ATokenRoute
   '/dashboard/ebooks': typeof DashboardEbooksRoute
   '/dashboard/results': typeof DashboardResultsRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
@@ -170,6 +177,7 @@ export interface FileRoutesByTo {
   '/terms': typeof TermsRoute
   '/academy': typeof AuthedAcademyRoute
   '/resources': typeof AuthedResourcesRoute
+  '/a/$token': typeof ATokenRoute
   '/dashboard/ebooks': typeof DashboardEbooksRoute
   '/dashboard/results': typeof DashboardResultsRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
@@ -194,6 +202,7 @@ export interface FileRoutesById {
   '/terms': typeof TermsRoute
   '/_authed/academy': typeof AuthedAcademyRoute
   '/_authed/resources': typeof AuthedResourcesRoute
+  '/a/$token': typeof ATokenRoute
   '/dashboard/ebooks': typeof DashboardEbooksRoute
   '/dashboard/results': typeof DashboardResultsRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
@@ -218,6 +227,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/academy'
     | '/resources'
+    | '/a/$token'
     | '/dashboard/ebooks'
     | '/dashboard/results'
     | '/dashboard/settings'
@@ -239,6 +249,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/academy'
     | '/resources'
+    | '/a/$token'
     | '/dashboard/ebooks'
     | '/dashboard/results'
     | '/dashboard/settings'
@@ -262,6 +273,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/_authed/academy'
     | '/_authed/resources'
+    | '/a/$token'
     | '/dashboard/ebooks'
     | '/dashboard/results'
     | '/dashboard/settings'
@@ -284,6 +296,7 @@ export interface RootRouteChildren {
   PrivacyPolicyRoute: typeof PrivacyPolicyRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermsRoute: typeof TermsRoute
+  ATokenRoute: typeof ATokenRoute
   ApiWebhooksRazorpayRoute: typeof ApiWebhooksRazorpayRoute
   ApiEbooksEbookIdPdfRoute: typeof ApiEbooksEbookIdPdfRoute
 }
@@ -395,6 +408,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardEbooksRouteImport
       parentRoute: typeof DashboardRouteRoute
     }
+    '/a/$token': {
+      id: '/a/$token'
+      path: '/a/$token'
+      fullPath: '/a/$token'
+      preLoaderRoute: typeof ATokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authed/resources': {
       id: '/_authed/resources'
       path: '/resources'
@@ -488,6 +508,7 @@ const rootRouteChildren: RootRouteChildren = {
   PrivacyPolicyRoute: PrivacyPolicyRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermsRoute: TermsRoute,
+  ATokenRoute: ATokenRoute,
   ApiWebhooksRazorpayRoute: ApiWebhooksRazorpayRoute,
   ApiEbooksEbookIdPdfRoute: ApiEbooksEbookIdPdfRoute,
 }

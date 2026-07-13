@@ -14,13 +14,22 @@ import { ArrowLeft, ArrowRight, Clock, Lock, Sparkles } from "lucide-react";
 import { TIER_BADGE } from "./TierBadge";
 import { useResultPersistence } from "@/hooks/useResultPersistence";
 import type { ProfileAssessmentConfig } from "@/data/assessments/types";
-import type { ProfileResult } from "@/data/assessments/types";
+import type { ProfileResult, AssessmentResult } from "@/data/assessments/types";
 
 interface ProfileRunnerProps {
   config: ProfileAssessmentConfig;
+  /**
+   * Optional completion override — replaces the default account-save / stash.
+   * Used by the B2B employee runner to persist against an invite token.
+   */
+  onComplete?: (
+    config: ProfileAssessmentConfig,
+    result: AssessmentResult,
+    answers: Record<string, number>,
+  ) => void | Promise<void>;
 }
 
-export function ProfileRunner({ config }: ProfileRunnerProps) {
+export function ProfileRunner({ config, onComplete }: ProfileRunnerProps) {
   const [started, setStarted] = useState(false);
   // answers: questionId -> option index (0-based)
   const [answers, setAnswers] = useState<Record<string, number>>({});
@@ -51,8 +60,12 @@ export function ProfileRunner({ config }: ProfileRunnerProps) {
     if (isLast) {
       const scored = scoreAssessment(config, answers) as ProfileResult;
       setResult(scored);
-      // Save immediately if logged in, stash in sessionStorage if anonymous.
-      void saveIfAuthed(config, scored, answers);
+      // B2B employee runner overrides persistence; otherwise save-if-authed.
+      if (onComplete) {
+        void onComplete(config, scored, answers);
+      } else {
+        void saveIfAuthed(config, scored, answers);
+      }
       posthog.capture("assessment_completed", {
         assessment: config.meta.title,
         slug: config.slug,
@@ -63,7 +76,7 @@ export function ProfileRunner({ config }: ProfileRunnerProps) {
     } else {
       setCurrentIndex((i) => i + 1);
     }
-  }, [isLast, config, answers, saveIfAuthed, posthog]);
+  }, [isLast, config, answers, saveIfAuthed, onComplete, posthog]);
 
   const goPrev = useCallback(() => {
     if (!isFirst) setCurrentIndex((i) => i - 1);

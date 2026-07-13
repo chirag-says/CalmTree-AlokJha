@@ -24,9 +24,20 @@ import type {
 
 interface AssessmentRunnerProps {
   config: AssessmentConfig;
+  /**
+   * Optional override for what happens when the assessment is completed.
+   * When provided, it replaces the default "save to my account / stash"
+   * behaviour — used by the B2B employee runner to persist against an invite
+   * token instead of a logged-in user.
+   */
+  onComplete?: (
+    config: AssessmentConfig,
+    result: AssessmentResult,
+    answers: Record<string, number>,
+  ) => void | Promise<void>;
 }
 
-export function AssessmentRunner({ config }: AssessmentRunnerProps) {
+export function AssessmentRunner({ config, onComplete }: AssessmentRunnerProps) {
   const [state, setState] = useState<AssessmentState>({
     currentIndex: 0,
     answers: {},
@@ -62,8 +73,13 @@ export function AssessmentRunner({ config }: AssessmentRunnerProps) {
       const scored = scoreAssessment(config, state.answers);
       setResult(scored);
       setState((prev) => ({ ...prev, completed: true }));
-      // Save immediately if logged in, stash in sessionStorage if anonymous.
-      void saveIfAuthed(config, scored, state.answers);
+      // B2B employee runner overrides persistence; otherwise save if logged in
+      // or stash in sessionStorage when anonymous.
+      if (onComplete) {
+        void onComplete(config, scored, state.answers);
+      } else {
+        void saveIfAuthed(config, scored, state.answers);
+      }
       posthog.capture("assessment_completed", {
         assessment: config.meta.title,
         slug: config.slug,
@@ -77,7 +93,7 @@ export function AssessmentRunner({ config }: AssessmentRunnerProps) {
         currentIndex: prev.currentIndex + 1,
       }));
     }
-  }, [isLast, config, state.answers, saveIfAuthed, posthog]);
+  }, [isLast, config, state.answers, saveIfAuthed, onComplete, posthog]);
 
   const goPrev = useCallback(() => {
     if (!isFirst) {

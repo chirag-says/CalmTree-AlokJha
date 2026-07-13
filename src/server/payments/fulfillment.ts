@@ -56,6 +56,32 @@ export async function fulfillPayment(input: FulfillmentInput): Promise<Fulfillme
     return { ok: true };
   }
 
+  if (productType === "credit_pack") {
+    const credits = Number(notes.credits);
+    if (!notes.orgId || !Number.isFinite(credits) || credits <= 0) {
+      console.error("[fulfillPayment] invalid credit_pack notes:", notes);
+      return { ok: false, error: "Missing order notes" };
+    }
+
+    // Idempotent via the UNIQUE index on credit_ledger.payment_reference
+    // (migration 010) — a duplicate delivery surfaces as 23505 and is a no-op,
+    // so credits are never granted twice for the same payment.
+    const { error } = await supabase.from("credit_ledger").insert({
+      org_id: notes.orgId,
+      delta: credits,
+      reason: "grant",
+      note: `Purchased ${credits} credits (${notes.packId ?? "pack"})`,
+      created_by: userId,
+      payment_reference: razorpayPaymentId,
+    });
+
+    if (error && error.code !== "23505") {
+      console.error("[fulfillPayment] credit_ledger insert error:", error);
+      return { ok: false, error: "DB error" };
+    }
+    return { ok: true };
+  }
+
   if (productType === "ebook") {
     if (!notes.productRef) {
       console.error("[fulfillPayment] missing productRef in notes:", notes);

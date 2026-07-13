@@ -10,6 +10,7 @@ import { useState } from "react";
 import {
   BarChart3,
   BookOpen,
+  Building2,
   ChevronsUpDown,
   ClipboardList,
   LayoutDashboard,
@@ -58,6 +59,7 @@ const ADMIN_NAV = [
   { to: "/admin/users", label: "Users", icon: Users, exact: false },
   { to: "/admin/purchases", label: "Purchases", icon: ShoppingBag, exact: false },
   { to: "/admin/results", label: "Results", icon: ClipboardList, exact: false },
+  { to: "/admin/orgs", label: "Organizations", icon: Building2, exact: false },
   { to: "/admin/ebooks", label: "Ebooks", icon: BookOpen, exact: false },
 ] as const;
 

@@ -13,17 +13,23 @@ import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tansta
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 import {
+  addOrgMember,
   createEbook,
+  createOrg,
   deleteEbook,
   exportPurchases,
   getAdminOverview,
+  getOrgDetail,
   getOverviewTimeSeries,
   getUserDetail,
   grantEntitlement,
+  grantOrgCredits,
   listAllEbooks,
+  listOrgs,
   listPurchases,
   listResults,
   listUsers,
+  removeOrgMember,
   revokeEntitlement,
   setUserAdmin,
   updateEbook,
@@ -37,6 +43,8 @@ export const adminKeys = {
   purchases: (page: number) => ["admin", "purchases", page] as const,
   results: (page: number, userId?: string) => ["admin", "results", page, userId] as const,
   ebooks: ["admin", "ebooks"] as const,
+  orgs: ["admin", "orgs"] as const,
+  orgDetail: (id: string) => ["admin", "org", id] as const,
 };
 
 function useAccessToken() {
@@ -237,5 +245,62 @@ export function useExportPurchases() {
       return unwrap(await exportPurchases({ data: { accessToken: token } }));
     },
     onError: (err: Error) => toast.error(err.message),
+  });
+}
+
+// ─── B2B Org Queries & Mutations ──────────────────────────────────────────────
+
+export function useOrgs() {
+  const token = useAccessToken();
+  return useQuery({
+    queryKey: adminKeys.orgs,
+    enabled: !!token,
+    queryFn: async () => unwrap(await listOrgs({ data: { accessToken: token! } })),
+  });
+}
+
+export function useOrgDetail(orgId: string | null) {
+  const token = useAccessToken();
+  return useQuery({
+    queryKey: adminKeys.orgDetail(orgId ?? "none"),
+    enabled: !!token && !!orgId,
+    queryFn: async () =>
+      unwrap(await getOrgDetail({ data: { accessToken: token!, orgId: orgId! } })),
+  });
+}
+
+export function useCreateOrg() {
+  return useAdminMutation({
+    fn: (accessToken, args: { name: string; slug: string }) =>
+      createOrg({ data: { accessToken, ...args } }),
+    invalidate: () => [adminKeys.orgs],
+    successMessage: "Organization created.",
+  });
+}
+
+export function useAddOrgMember() {
+  return useAdminMutation({
+    fn: (accessToken, args: { orgId: string; email: string; role: string }) =>
+      addOrgMember({ data: { accessToken, ...args } as Parameters<typeof addOrgMember>[0]["data"] }),
+    invalidate: (args) => [adminKeys.orgDetail(args.orgId)],
+    successMessage: "Member added.",
+  });
+}
+
+export function useRemoveOrgMember() {
+  return useAdminMutation({
+    fn: (accessToken, args: { memberId: string; orgId: string }) =>
+      removeOrgMember({ data: { accessToken, memberId: args.memberId } }),
+    invalidate: (args) => [adminKeys.orgDetail(args.orgId)],
+    successMessage: "Member removed.",
+  });
+}
+
+export function useGrantOrgCredits() {
+  return useAdminMutation({
+    fn: (accessToken, args: { orgId: string; amount: number; note?: string }) =>
+      grantOrgCredits({ data: { accessToken, ...args } }),
+    invalidate: (args) => [adminKeys.orgDetail(args.orgId), adminKeys.orgs],
+    successMessage: "Credits granted.",
   });
 }

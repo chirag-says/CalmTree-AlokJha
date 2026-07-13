@@ -70,6 +70,7 @@ function loadRazorpayScript(): Promise<boolean> {
 type RazorpayCheckoutButtonProps = (
   | { productType: "assessment_category"; tier: "growth" | "professional"; productCategory: string }
   | { productType: "ebook"; productRef: string }
+  | { productType: "credit_pack"; packId: string; orgId: string }
 ) & {
   label: string;
   onSuccess?: () => void;
@@ -84,7 +85,12 @@ export function RazorpayCheckoutButton(props: RazorpayCheckoutButtonProps) {
   const [loading, setLoading] = useState(false);
 
   // A stable identifier for analytics, regardless of which product shape this is.
-  const analyticsRef = props.productType === "ebook" ? props.productRef : props.productCategory;
+  const analyticsRef =
+    props.productType === "ebook"
+      ? props.productRef
+      : props.productType === "credit_pack"
+        ? props.packId
+        : props.productCategory;
 
   const handleCheckout = useCallback(async () => {
     if (!user || !session?.access_token) {
@@ -103,12 +109,19 @@ export function RazorpayCheckoutButton(props: RazorpayCheckoutButtonProps) {
                 productType: "ebook",
                 productRef: props.productRef,
               }
-            : {
-                accessToken: session.access_token,
-                productType: "assessment_category",
-                tier: props.tier,
-                productCategory: props.productCategory,
-              },
+            : props.productType === "credit_pack"
+              ? {
+                  accessToken: session.access_token,
+                  productType: "credit_pack",
+                  packId: props.packId,
+                  orgId: props.orgId,
+                }
+              : {
+                  accessToken: session.access_token,
+                  productType: "assessment_category",
+                  tier: props.tier,
+                  productCategory: props.productCategory,
+                },
       });
 
       if ("error" in result) {
@@ -132,7 +145,12 @@ export function RazorpayCheckoutButton(props: RazorpayCheckoutButtonProps) {
         currency,
         order_id: orderId,
         name: "CalmTree",
-        description: props.productType === "ebook" ? "Ebook Purchase" : "Assessment Tier Access",
+        description:
+          props.productType === "ebook"
+            ? "Ebook Purchase"
+            : props.productType === "credit_pack"
+              ? "Assessment Credits"
+              : "Assessment Tier Access",
         prefill: { email: user.email },
         theme: { color: "#166534" }, // matches CalmTree primary green
         handler: async (response) => {

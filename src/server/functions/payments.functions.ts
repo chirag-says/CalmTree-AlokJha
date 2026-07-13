@@ -8,8 +8,10 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import crypto from "crypto";
 import { TIER_INFO } from "@/data/assessments";
+import { getCreditPack } from "@/data/credit-packs";
 import { getAdminClient } from "../supabase-admin";
 import { requireUser } from "../require-user";
+import { requireOrgRole } from "../b2b/authz";
 import { fulfillPayment } from "../payments/fulfillment";
 
 async function getEbookPrice(ebookId: string): Promise<number> {
@@ -42,6 +44,12 @@ const CreateOrderSchema = z.discriminatedUnion("productType", [
     productType: z.literal("ebook"),
     productRef: z.string(),
   }),
+  z.object({
+    accessToken: z.string(),
+    productType: z.literal("credit_pack"),
+    packId: z.string(),
+    orgId: z.string().uuid(),
+  }),
 ]);
 
 export const createRazorpayOrder = createServerFn({ method: "POST" })
@@ -66,6 +74,28 @@ export const createRazorpayOrder = createServerFn({ method: "POST" })
       if (data.productType === "ebook") {
         amountInr = await getEbookPrice(data.productRef);
         notes = { productType: "ebook", productRef: data.productRef, userId };
+      } else if (data.productType === "credit_pack") {
+        // Only an owner/admin of the org may buy credits for it. This is the
+        // authorization gate — the notes set here are re-read at fulfilment
+        // (Razorpay is the source of truth), so a forged client can't reroute
+        // credits to another org.
+        try {
+          await requireOrgRole(data.accessToken, data.orgId, "admin");
+        } catch (e) {
+          return {
+            error: e instanceof Error ? e.message : "Not authorized for this organization.",
+          };
+        }
+        const pack = getCreditPack(data.packId);
+        if (!pack) return { error: "Unknown credit pack." };
+        amountInr = pack.priceInr;
+        notes = {
+          productType: "credit_pack",
+          packId: pack.id,
+          credits: String(pack.credits),
+          orgId: data.orgId,
+          userId,
+        };
       } else {
         amountInr = getTierPrice(data.tier);
         notes = {

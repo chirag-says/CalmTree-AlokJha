@@ -403,6 +403,43 @@ function Index() {
       </section>
 
       {/* ═══════════════════════════════════════════════
+          FOR ORGANIZATIONS — B2B entry point
+         ═══════════════════════════════════════════════ */}
+      <section className="mx-auto max-w-6xl px-5 py-16 md:py-20">
+        <div className="rounded-3xl border border-border bg-card p-8 md:p-12">
+          <div className="grid gap-8 md:grid-cols-[2fr_1fr] items-center">
+            <div>
+              <p className="text-xs font-medium tracking-[0.18em] uppercase text-primary mb-3">
+                For Organizations
+              </p>
+              <h2 className="text-2xl md:text-3xl font-semibold">
+                Bring {SITE.name} to your whole team.
+              </h2>
+              <p className="mt-4 text-muted-foreground leading-relaxed max-w-xl">
+                Buy assessment credits, invite employees by email, and get aggregated, anonymised
+                wellbeing insights — never individual answers. Built for HR, team leads, and
+                founders.
+              </p>
+              <div className="mt-6 flex flex-wrap gap-3">
+                <Button asChild className="rounded-full">
+                  <Link to="/for-organizations">
+                    Explore for organizations
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
+                </Button>
+                <Button asChild variant="outline" className="rounded-full">
+                  <Link to="/org">Get started</Link>
+                </Button>
+              </div>
+            </div>
+            <div className="hidden md:flex justify-center">
+              <Briefcase className="h-24 w-24 text-primary/25" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════
           NEWSLETTER
          ═══════════════════════════════════════════════ */}
       <section className="mx-auto max-w-6xl px-5 pb-24">

@@ -16,8 +16,10 @@ import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as AdminUsersRouteImport } from './routes/admin/users'
 import { Route as AdminResultsRouteImport } from './routes/admin/results'
 import { Route as AdminPurchasesRouteImport } from './routes/admin/purchases'
+import { Route as AdminOrgsRouteImport } from './routes/admin/orgs'
 import { Route as AdminEbooksRouteImport } from './routes/admin/ebooks'
 import { Route as AdminAnalyticsRouteImport } from './routes/admin/analytics'
+import { Route as AdminOrgsOrgIdRouteImport } from './routes/admin/orgs.$orgId'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
@@ -54,6 +56,11 @@ const AdminPurchasesRoute = AdminPurchasesRouteImport.update({
   path: '/purchases',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const AdminOrgsRoute = AdminOrgsRouteImport.update({
+  id: '/orgs',
+  path: '/orgs',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 const AdminEbooksRoute = AdminEbooksRouteImport.update({
   id: '/ebooks',
   path: '/ebooks',
@@ -64,6 +71,11 @@ const AdminAnalyticsRoute = AdminAnalyticsRouteImport.update({
   path: '/analytics',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const AdminOrgsOrgIdRoute = AdminOrgsOrgIdRouteImport.update({
+  id: '/$orgId',
+  path: '/$orgId',
+  getParentRoute: () => AdminOrgsRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -71,20 +83,24 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/ebooks': typeof AdminEbooksRoute
+  '/admin/orgs': typeof AdminOrgsRouteWithChildren
   '/admin/purchases': typeof AdminPurchasesRoute
   '/admin/results': typeof AdminResultsRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin/': typeof AdminIndexRoute
+  '/admin/orgs/$orgId': typeof AdminOrgsOrgIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/ebooks': typeof AdminEbooksRoute
+  '/admin/orgs': typeof AdminOrgsRouteWithChildren
   '/admin/purchases': typeof AdminPurchasesRoute
   '/admin/results': typeof AdminResultsRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin': typeof AdminIndexRoute
+  '/admin/orgs/$orgId': typeof AdminOrgsOrgIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -93,10 +109,12 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/ebooks': typeof AdminEbooksRoute
+  '/admin/orgs': typeof AdminOrgsRouteWithChildren
   '/admin/purchases': typeof AdminPurchasesRoute
   '/admin/results': typeof AdminResultsRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin/': typeof AdminIndexRoute
+  '/admin/orgs/$orgId': typeof AdminOrgsOrgIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -106,20 +124,24 @@ export interface FileRouteTypes {
     | '/login'
     | '/admin/analytics'
     | '/admin/ebooks'
+    | '/admin/orgs'
     | '/admin/purchases'
     | '/admin/results'
     | '/admin/users'
     | '/admin/'
+    | '/admin/orgs/$orgId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/login'
     | '/admin/analytics'
     | '/admin/ebooks'
+    | '/admin/orgs'
     | '/admin/purchases'
     | '/admin/results'
     | '/admin/users'
     | '/admin'
+    | '/admin/orgs/$orgId'
   id:
     | '__root__'
     | '/'
@@ -127,10 +149,12 @@ export interface FileRouteTypes {
     | '/login'
     | '/admin/analytics'
     | '/admin/ebooks'
+    | '/admin/orgs'
     | '/admin/purchases'
     | '/admin/results'
     | '/admin/users'
     | '/admin/'
+    | '/admin/orgs/$orgId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -190,6 +214,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminPurchasesRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/admin/orgs': {
+      id: '/admin/orgs'
+      path: '/orgs'
+      fullPath: '/admin/orgs'
+      preLoaderRoute: typeof AdminOrgsRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/admin/ebooks': {
       id: '/admin/ebooks'
       path: '/ebooks'
@@ -204,12 +235,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAnalyticsRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/admin/orgs/$orgId': {
+      id: '/admin/orgs/$orgId'
+      path: '/$orgId'
+      fullPath: '/admin/orgs/$orgId'
+      preLoaderRoute: typeof AdminOrgsOrgIdRouteImport
+      parentRoute: typeof AdminOrgsRoute
+    }
   }
 }
+
+interface AdminOrgsRouteChildren {
+  AdminOrgsOrgIdRoute: typeof AdminOrgsOrgIdRoute
+}
+
+const AdminOrgsRouteChildren: AdminOrgsRouteChildren = {
+  AdminOrgsOrgIdRoute: AdminOrgsOrgIdRoute,
+}
+
+const AdminOrgsRouteWithChildren = AdminOrgsRoute._addFileChildren(
+  AdminOrgsRouteChildren,
+)
 
 interface AdminRouteRouteChildren {
   AdminAnalyticsRoute: typeof AdminAnalyticsRoute
   AdminEbooksRoute: typeof AdminEbooksRoute
+  AdminOrgsRoute: typeof AdminOrgsRouteWithChildren
   AdminPurchasesRoute: typeof AdminPurchasesRoute
   AdminResultsRoute: typeof AdminResultsRoute
   AdminUsersRoute: typeof AdminUsersRoute
@@ -219,6 +270,7 @@ interface AdminRouteRouteChildren {
 const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminAnalyticsRoute: AdminAnalyticsRoute,
   AdminEbooksRoute: AdminEbooksRoute,
+  AdminOrgsRoute: AdminOrgsRouteWithChildren,
   AdminPurchasesRoute: AdminPurchasesRoute,
   AdminResultsRoute: AdminResultsRoute,
   AdminUsersRoute: AdminUsersRoute,

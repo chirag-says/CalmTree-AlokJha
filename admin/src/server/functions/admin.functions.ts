@@ -667,3 +667,272 @@ export const getOverviewTimeSeries = createServerFn({ method: "POST" })
 
     return { days: [...days.values()] };
   });
+
+// ─── B2B Organization Management ──────────────────────────────────────────────
+
+/** List all organizations with member count and credit balance. */
+export const listOrgs = createServerFn({ method: "POST" })
+  .inputValidator(AdminAuthSchema)
+  .handler(async ({ data }) => {
+    try {
+      await requireAdmin(data.accessToken);
+    } catch {
+      return { error: "Forbidden", orgs: [] };
+    }
+
+    const supabase = getAdminClient();
+    const { data: orgs, error } = await supabase
+      .from("organizations")
+      .select("id, name, slug, individual_results_unlocked, min_aggregate_group_size, created_at")
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error("[listOrgs] error:", error);
+      return { error: "Failed to fetch organizations.", orgs: [] };
+    }
+
+    // Enrich with member count + credit balance
+    const enriched = await Promise.all(
+      (orgs ?? []).map(async (org) => {
+        const { count: memberCount } = await supabase
+          .from("org_members")
+          .select("id", { count: "exact", head: true })
+          .eq("org_id", org.id);
+        const { count: campaignCount } = await supabase
+          .from("campaigns")
+          .select("id", { count: "exact", head: true })
+          .eq("org_id", org.id);
+        const { data: bal } = await supabase.rpc("org_credit_balance", { p_org_id: org.id });
+        return {
+          ...org,
+          memberCount: memberCount ?? 0,
+          campaignCount: campaignCount ?? 0,
+          creditBalance: (bal as number) ?? 0,
+        };
+      }),
+    );
+
+    return { orgs: enriched };
+  });
+
+/** Full detail for one org: settings, members, campaigns, ledger. */
+export const getOrgDetail = createServerFn({ method: "POST" })
+  .inputValidator(z.object({ accessToken: z.string(), orgId: z.string().uuid() }))
+  .handler(async ({ data }) => {
+    try {
+      await requireAdmin(data.accessToken);
+    } catch {
+      return { error: "Forbidden" };
+    }
+
+    const supabase = getAdminClient();
+
+    const [orgRes, membersRes, campaignsRes, ledgerRes, balRes] = await Promise.all([
+      supabase
+        .from("organizations")
+        .select("id, name, slug, individual_results_unlocked, min_aggregate_group_size, created_at")
+        .eq("id", data.orgId)
+        .single(),
+      supabase
+        .from("org_members")
+        .select("id, user_id, role, created_at")
+        .eq("org_id", data.orgId)
+        .order("created_at"),
+      supabase
+        .from("campaigns")
+        .select("id, title, assessment_slug, status, launched_at, created_at")
+        .eq("org_id", data.orgId)
+        .order("created_at", { ascending: false })
+        .limit(50),
+      supabase
+        .from("credit_ledger")
+        .select("id, delta, reason, note, campaign_id, created_at")
+        .eq("org_id", data.orgId)
+        .order("created_at", { ascending: false })
+        .limit(100),
+      supabase.rpc("org_credit_balance", { p_org_id: data.orgId }),
+    ]);
+
+    if (orgRes.error || !orgRes.data) return { error: "Organization not found." };
+
+    // Enrich members with email from auth
+    const membersWithEmail = await Promise.all(
+      (membersRes.data ?? []).map(async (m) => {
+        const { data: authUser } = await supabase.auth.admin.getUserById(m.user_id as string);
+        return {
+          ...m,
+          email: authUser?.user?.email ?? null,
+          fullName: authUser?.user?.user_metadata?.full_name ?? null,
+        };
+      }),
+    );
+
+    return {
+      org: orgRes.data,
+      members: membersWithEmail,
+      campaigns: campaignsRes.data ?? [],
+      ledger: ledgerRes.data ?? [],
+      creditBalance: (balRes.data as number) ?? 0,
+    };
+  });
+
+/** Create a new organization. */
+export const createOrg = createServerFn({ method: "POST" })
+  .inputValidator(
+    z.object({
+      accessToken: z.string(),
+      name: z.string().min(1),
+      slug: z.string().min(1).regex(/^[a-z0-9-]+$/),
+    }),
+  )
+  .handler(async ({ data }) => {
+    let adminId: string;
+    try {
+      adminId = await requireAdmin(data.accessToken);
+    } catch {
+      return { error: "Forbidden" };
+    }
+
+    const supabase = getAdminClient();
+    const { data: org, error } = await supabase
+      .from("organizations")
+      .insert({ name: data.name, slug: data.slug })
+      .select("id")
+      .single();
+
+    if (error) {
+      if (error.code === "23505") return { error: "An org with this slug already exists." };
+      console.error("[createOrg] error:", error);
+      return { error: error.message };
+    }
+
+    console.log(`[admin-audit] ${adminId} created org ${org.id} (${data.name})`);
+    return { orgId: org.id as string };
+  });
+
+/** Add a user to an org by email. Creates the membership row. */
+export const addOrgMember = createServerFn({ method: "POST" })
+  .inputValidator(
+    z.object({
+      accessToken: z.string(),
+      orgId: z.string().uuid(),
+      email: z.string().email(),
+      role: z.enum(["owner", "admin", "viewer"]),
+    }),
+  )
+  .handler(async ({ data }) => {
+    let adminId: string;
+    try {
+      adminId = await requireAdmin(data.accessToken);
+    } catch {
+      return { error: "Forbidden" };
+    }
+
+    const supabase = getAdminClient();
+
+    // Find the user by email via the auth admin API
+    const { data: usersResult } = await supabase.auth.admin.listUsers({ perPage: 1 });
+    // The admin API doesn't support email filter directly, so search users by email
+    let targetUserId: string | null = null;
+
+    // More reliable: use a direct approach to find user by email
+    const { data: authUsers } = await supabase.rpc("get_user_id_by_email", {
+      p_email: data.email,
+    });
+
+    // If the RPC doesn't exist, fall back to iterating (admin API)
+    if (authUsers) {
+      targetUserId = authUsers as unknown as string;
+    } else {
+      // Fallback: list users and find by email
+      const allUsers = usersResult?.users ?? [];
+      const match = allUsers.find(
+        (u) => u.email?.toLowerCase() === data.email.toLowerCase(),
+      );
+      targetUserId = match?.id ?? null;
+    }
+
+    if (!targetUserId) {
+      return { error: `No user found with email ${data.email}. They must sign up first.` };
+    }
+
+    const { error } = await supabase.from("org_members").insert({
+      org_id: data.orgId,
+      user_id: targetUserId,
+      role: data.role,
+    });
+
+    if (error) {
+      if (error.code === "23505") return { error: "This user is already a member of this org." };
+      console.error("[addOrgMember] error:", error);
+      return { error: error.message };
+    }
+
+    console.log(
+      `[admin-audit] ${adminId} added ${targetUserId} as ${data.role} to org ${data.orgId}`,
+    );
+    return { ok: true };
+  });
+
+/** Remove a member from an org. */
+export const removeOrgMember = createServerFn({ method: "POST" })
+  .inputValidator(
+    z.object({ accessToken: z.string(), memberId: z.string().uuid() }),
+  )
+  .handler(async ({ data }) => {
+    let adminId: string;
+    try {
+      adminId = await requireAdmin(data.accessToken);
+    } catch {
+      return { error: "Forbidden" };
+    }
+
+    const supabase = getAdminClient();
+    const { error } = await supabase.from("org_members").delete().eq("id", data.memberId);
+
+    if (error) {
+      console.error("[removeOrgMember] error:", error);
+      return { error: error.message };
+    }
+
+    console.log(`[admin-audit] ${adminId} removed org member ${data.memberId}`);
+    return { ok: true };
+  });
+
+/** Grant credits to an org (admin-only manual credit grant). */
+export const grantOrgCredits = createServerFn({ method: "POST" })
+  .inputValidator(
+    z.object({
+      accessToken: z.string(),
+      orgId: z.string().uuid(),
+      amount: z.number().int().positive(),
+      note: z.string().optional(),
+    }),
+  )
+  .handler(async ({ data }) => {
+    let adminId: string;
+    try {
+      adminId = await requireAdmin(data.accessToken);
+    } catch {
+      return { error: "Forbidden" };
+    }
+
+    const supabase = getAdminClient();
+    const { error } = await supabase.from("credit_ledger").insert({
+      org_id: data.orgId,
+      delta: data.amount,
+      reason: "grant",
+      note: data.note || `Manual grant by admin`,
+      created_by: adminId,
+    });
+
+    if (error) {
+      console.error("[grantOrgCredits] error:", error);
+      return { error: error.message };
+    }
+
+    console.log(
+      `[admin-audit] ${adminId} granted ${data.amount} credits to org ${data.orgId}`,
+    );
+    return { ok: true };
+  });

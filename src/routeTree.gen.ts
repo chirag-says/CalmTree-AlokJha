@@ -14,20 +14,27 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as PrivacyPolicyRouteImport } from './routes/privacy-policy'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as ForOrganizationsRouteImport } from './routes/for-organizations'
 import { Route as DecodeYourMindRouteImport } from './routes/decode-your-mind'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as AboutRouteImport } from './routes/about'
+import { Route as OrgRouteRouteImport } from './routes/org/route'
 import { Route as DashboardRouteRouteImport } from './routes/dashboard/route'
 import { Route as AuthedRouteRouteImport } from './routes/_authed/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as OrgIndexRouteImport } from './routes/org/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
+import { Route as OrgCreditsRouteImport } from './routes/org/credits'
 import { Route as DashboardSettingsRouteImport } from './routes/dashboard/settings'
 import { Route as DashboardResultsRouteImport } from './routes/dashboard/results'
 import { Route as DashboardEbooksRouteImport } from './routes/dashboard/ebooks'
 import { Route as ATokenRouteImport } from './routes/a.$token'
 import { Route as AuthedResourcesRouteImport } from './routes/_authed/resources'
 import { Route as AuthedAcademyRouteImport } from './routes/_authed/academy'
+import { Route as OrgCampaignsIndexRouteImport } from './routes/org/campaigns/index'
 import { Route as AuthedAssessmentsIndexRouteImport } from './routes/_authed/assessments/index'
+import { Route as OrgCampaignsNewRouteImport } from './routes/org/campaigns/new'
+import { Route as OrgCampaignsCampaignIdRouteImport } from './routes/org/campaigns/$campaignId'
 import { Route as ApiWebhooksRazorpayRouteImport } from './routes/api/webhooks/razorpay'
 import { Route as AuthedAssessmentsSlugRouteImport } from './routes/_authed/assessments/$slug'
 import { Route as ApiEbooksEbookIdPdfRouteImport } from './routes/api/ebooks/$ebookId/pdf'
@@ -57,6 +64,11 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ForOrganizationsRoute = ForOrganizationsRouteImport.update({
+  id: '/for-organizations',
+  path: '/for-organizations',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DecodeYourMindRoute = DecodeYourMindRouteImport.update({
   id: '/decode-your-mind',
   path: '/decode-your-mind',
@@ -70,6 +82,11 @@ const ContactRoute = ContactRouteImport.update({
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OrgRouteRoute = OrgRouteRouteImport.update({
+  id: '/org',
+  path: '/org',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardRouteRoute = DashboardRouteRouteImport.update({
@@ -86,10 +103,20 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const OrgIndexRoute = OrgIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => OrgRouteRoute,
+} as any)
 const DashboardIndexRoute = DashboardIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => DashboardRouteRoute,
+} as any)
+const OrgCreditsRoute = OrgCreditsRouteImport.update({
+  id: '/credits',
+  path: '/credits',
+  getParentRoute: () => OrgRouteRoute,
 } as any)
 const DashboardSettingsRoute = DashboardSettingsRouteImport.update({
   id: '/settings',
@@ -121,10 +148,25 @@ const AuthedAcademyRoute = AuthedAcademyRouteImport.update({
   path: '/academy',
   getParentRoute: () => AuthedRouteRoute,
 } as any)
+const OrgCampaignsIndexRoute = OrgCampaignsIndexRouteImport.update({
+  id: '/campaigns/',
+  path: '/campaigns/',
+  getParentRoute: () => OrgRouteRoute,
+} as any)
 const AuthedAssessmentsIndexRoute = AuthedAssessmentsIndexRouteImport.update({
   id: '/assessments/',
   path: '/assessments/',
   getParentRoute: () => AuthedRouteRoute,
+} as any)
+const OrgCampaignsNewRoute = OrgCampaignsNewRouteImport.update({
+  id: '/campaigns/new',
+  path: '/campaigns/new',
+  getParentRoute: () => OrgRouteRoute,
+} as any)
+const OrgCampaignsCampaignIdRoute = OrgCampaignsCampaignIdRouteImport.update({
+  id: '/campaigns/$campaignId',
+  path: '/campaigns/$campaignId',
+  getParentRoute: () => OrgRouteRoute,
 } as any)
 const ApiWebhooksRazorpayRoute = ApiWebhooksRazorpayRouteImport.update({
   id: '/api/webhooks/razorpay',
@@ -145,9 +187,11 @@ const ApiEbooksEbookIdPdfRoute = ApiEbooksEbookIdPdfRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRouteRouteWithChildren
+  '/org': typeof OrgRouteRouteWithChildren
   '/about': typeof AboutRoute
   '/contact': typeof ContactRoute
   '/decode-your-mind': typeof DecodeYourMindRoute
+  '/for-organizations': typeof ForOrganizationsRoute
   '/login': typeof LoginRoute
   '/onboarding': typeof OnboardingRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
@@ -159,10 +203,15 @@ export interface FileRoutesByFullPath {
   '/dashboard/ebooks': typeof DashboardEbooksRoute
   '/dashboard/results': typeof DashboardResultsRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
+  '/org/credits': typeof OrgCreditsRoute
   '/dashboard/': typeof DashboardIndexRoute
+  '/org/': typeof OrgIndexRoute
   '/assessments/$slug': typeof AuthedAssessmentsSlugRoute
   '/api/webhooks/razorpay': typeof ApiWebhooksRazorpayRoute
+  '/org/campaigns/$campaignId': typeof OrgCampaignsCampaignIdRoute
+  '/org/campaigns/new': typeof OrgCampaignsNewRoute
   '/assessments/': typeof AuthedAssessmentsIndexRoute
+  '/org/campaigns/': typeof OrgCampaignsIndexRoute
   '/api/ebooks/$ebookId/pdf': typeof ApiEbooksEbookIdPdfRoute
 }
 export interface FileRoutesByTo {
@@ -170,6 +219,7 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/contact': typeof ContactRoute
   '/decode-your-mind': typeof DecodeYourMindRoute
+  '/for-organizations': typeof ForOrganizationsRoute
   '/login': typeof LoginRoute
   '/onboarding': typeof OnboardingRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
@@ -181,10 +231,15 @@ export interface FileRoutesByTo {
   '/dashboard/ebooks': typeof DashboardEbooksRoute
   '/dashboard/results': typeof DashboardResultsRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
+  '/org/credits': typeof OrgCreditsRoute
   '/dashboard': typeof DashboardIndexRoute
+  '/org': typeof OrgIndexRoute
   '/assessments/$slug': typeof AuthedAssessmentsSlugRoute
   '/api/webhooks/razorpay': typeof ApiWebhooksRazorpayRoute
+  '/org/campaigns/$campaignId': typeof OrgCampaignsCampaignIdRoute
+  '/org/campaigns/new': typeof OrgCampaignsNewRoute
   '/assessments': typeof AuthedAssessmentsIndexRoute
+  '/org/campaigns': typeof OrgCampaignsIndexRoute
   '/api/ebooks/$ebookId/pdf': typeof ApiEbooksEbookIdPdfRoute
 }
 export interface FileRoutesById {
@@ -192,9 +247,11 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authed': typeof AuthedRouteRouteWithChildren
   '/dashboard': typeof DashboardRouteRouteWithChildren
+  '/org': typeof OrgRouteRouteWithChildren
   '/about': typeof AboutRoute
   '/contact': typeof ContactRoute
   '/decode-your-mind': typeof DecodeYourMindRoute
+  '/for-organizations': typeof ForOrganizationsRoute
   '/login': typeof LoginRoute
   '/onboarding': typeof OnboardingRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
@@ -206,10 +263,15 @@ export interface FileRoutesById {
   '/dashboard/ebooks': typeof DashboardEbooksRoute
   '/dashboard/results': typeof DashboardResultsRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
+  '/org/credits': typeof OrgCreditsRoute
   '/dashboard/': typeof DashboardIndexRoute
+  '/org/': typeof OrgIndexRoute
   '/_authed/assessments/$slug': typeof AuthedAssessmentsSlugRoute
   '/api/webhooks/razorpay': typeof ApiWebhooksRazorpayRoute
+  '/org/campaigns/$campaignId': typeof OrgCampaignsCampaignIdRoute
+  '/org/campaigns/new': typeof OrgCampaignsNewRoute
   '/_authed/assessments/': typeof AuthedAssessmentsIndexRoute
+  '/org/campaigns/': typeof OrgCampaignsIndexRoute
   '/api/ebooks/$ebookId/pdf': typeof ApiEbooksEbookIdPdfRoute
 }
 export interface FileRouteTypes {
@@ -217,9 +279,11 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/dashboard'
+    | '/org'
     | '/about'
     | '/contact'
     | '/decode-your-mind'
+    | '/for-organizations'
     | '/login'
     | '/onboarding'
     | '/privacy-policy'
@@ -231,10 +295,15 @@ export interface FileRouteTypes {
     | '/dashboard/ebooks'
     | '/dashboard/results'
     | '/dashboard/settings'
+    | '/org/credits'
     | '/dashboard/'
+    | '/org/'
     | '/assessments/$slug'
     | '/api/webhooks/razorpay'
+    | '/org/campaigns/$campaignId'
+    | '/org/campaigns/new'
     | '/assessments/'
+    | '/org/campaigns/'
     | '/api/ebooks/$ebookId/pdf'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -242,6 +311,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/contact'
     | '/decode-your-mind'
+    | '/for-organizations'
     | '/login'
     | '/onboarding'
     | '/privacy-policy'
@@ -253,19 +323,26 @@ export interface FileRouteTypes {
     | '/dashboard/ebooks'
     | '/dashboard/results'
     | '/dashboard/settings'
+    | '/org/credits'
     | '/dashboard'
+    | '/org'
     | '/assessments/$slug'
     | '/api/webhooks/razorpay'
+    | '/org/campaigns/$campaignId'
+    | '/org/campaigns/new'
     | '/assessments'
+    | '/org/campaigns'
     | '/api/ebooks/$ebookId/pdf'
   id:
     | '__root__'
     | '/'
     | '/_authed'
     | '/dashboard'
+    | '/org'
     | '/about'
     | '/contact'
     | '/decode-your-mind'
+    | '/for-organizations'
     | '/login'
     | '/onboarding'
     | '/privacy-policy'
@@ -277,10 +354,15 @@ export interface FileRouteTypes {
     | '/dashboard/ebooks'
     | '/dashboard/results'
     | '/dashboard/settings'
+    | '/org/credits'
     | '/dashboard/'
+    | '/org/'
     | '/_authed/assessments/$slug'
     | '/api/webhooks/razorpay'
+    | '/org/campaigns/$campaignId'
+    | '/org/campaigns/new'
     | '/_authed/assessments/'
+    | '/org/campaigns/'
     | '/api/ebooks/$ebookId/pdf'
   fileRoutesById: FileRoutesById
 }
@@ -288,9 +370,11 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthedRouteRoute: typeof AuthedRouteRouteWithChildren
   DashboardRouteRoute: typeof DashboardRouteRouteWithChildren
+  OrgRouteRoute: typeof OrgRouteRouteWithChildren
   AboutRoute: typeof AboutRoute
   ContactRoute: typeof ContactRoute
   DecodeYourMindRoute: typeof DecodeYourMindRoute
+  ForOrganizationsRoute: typeof ForOrganizationsRoute
   LoginRoute: typeof LoginRoute
   OnboardingRoute: typeof OnboardingRoute
   PrivacyPolicyRoute: typeof PrivacyPolicyRoute
@@ -338,6 +422,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/for-organizations': {
+      id: '/for-organizations'
+      path: '/for-organizations'
+      fullPath: '/for-organizations'
+      preLoaderRoute: typeof ForOrganizationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/decode-your-mind': {
       id: '/decode-your-mind'
       path: '/decode-your-mind'
@@ -357,6 +448,13 @@ declare module '@tanstack/react-router' {
       path: '/about'
       fullPath: '/about'
       preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/org': {
+      id: '/org'
+      path: '/org'
+      fullPath: '/org'
+      preLoaderRoute: typeof OrgRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dashboard': {
@@ -380,12 +478,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/org/': {
+      id: '/org/'
+      path: '/'
+      fullPath: '/org/'
+      preLoaderRoute: typeof OrgIndexRouteImport
+      parentRoute: typeof OrgRouteRoute
+    }
     '/dashboard/': {
       id: '/dashboard/'
       path: '/'
       fullPath: '/dashboard/'
       preLoaderRoute: typeof DashboardIndexRouteImport
       parentRoute: typeof DashboardRouteRoute
+    }
+    '/org/credits': {
+      id: '/org/credits'
+      path: '/credits'
+      fullPath: '/org/credits'
+      preLoaderRoute: typeof OrgCreditsRouteImport
+      parentRoute: typeof OrgRouteRoute
     }
     '/dashboard/settings': {
       id: '/dashboard/settings'
@@ -429,12 +541,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedAcademyRouteImport
       parentRoute: typeof AuthedRouteRoute
     }
+    '/org/campaigns/': {
+      id: '/org/campaigns/'
+      path: '/campaigns'
+      fullPath: '/org/campaigns/'
+      preLoaderRoute: typeof OrgCampaignsIndexRouteImport
+      parentRoute: typeof OrgRouteRoute
+    }
     '/_authed/assessments/': {
       id: '/_authed/assessments/'
       path: '/assessments'
       fullPath: '/assessments/'
       preLoaderRoute: typeof AuthedAssessmentsIndexRouteImport
       parentRoute: typeof AuthedRouteRoute
+    }
+    '/org/campaigns/new': {
+      id: '/org/campaigns/new'
+      path: '/campaigns/new'
+      fullPath: '/org/campaigns/new'
+      preLoaderRoute: typeof OrgCampaignsNewRouteImport
+      parentRoute: typeof OrgRouteRoute
+    }
+    '/org/campaigns/$campaignId': {
+      id: '/org/campaigns/$campaignId'
+      path: '/campaigns/$campaignId'
+      fullPath: '/org/campaigns/$campaignId'
+      preLoaderRoute: typeof OrgCampaignsCampaignIdRouteImport
+      parentRoute: typeof OrgRouteRoute
     }
     '/api/webhooks/razorpay': {
       id: '/api/webhooks/razorpay'
@@ -496,13 +629,35 @@ const DashboardRouteRouteWithChildren = DashboardRouteRoute._addFileChildren(
   DashboardRouteRouteChildren,
 )
 
+interface OrgRouteRouteChildren {
+  OrgCreditsRoute: typeof OrgCreditsRoute
+  OrgIndexRoute: typeof OrgIndexRoute
+  OrgCampaignsCampaignIdRoute: typeof OrgCampaignsCampaignIdRoute
+  OrgCampaignsNewRoute: typeof OrgCampaignsNewRoute
+  OrgCampaignsIndexRoute: typeof OrgCampaignsIndexRoute
+}
+
+const OrgRouteRouteChildren: OrgRouteRouteChildren = {
+  OrgCreditsRoute: OrgCreditsRoute,
+  OrgIndexRoute: OrgIndexRoute,
+  OrgCampaignsCampaignIdRoute: OrgCampaignsCampaignIdRoute,
+  OrgCampaignsNewRoute: OrgCampaignsNewRoute,
+  OrgCampaignsIndexRoute: OrgCampaignsIndexRoute,
+}
+
+const OrgRouteRouteWithChildren = OrgRouteRoute._addFileChildren(
+  OrgRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthedRouteRoute: AuthedRouteRouteWithChildren,
   DashboardRouteRoute: DashboardRouteRouteWithChildren,
+  OrgRouteRoute: OrgRouteRouteWithChildren,
   AboutRoute: AboutRoute,
   ContactRoute: ContactRoute,
   DecodeYourMindRoute: DecodeYourMindRoute,
+  ForOrganizationsRoute: ForOrganizationsRoute,
   LoginRoute: LoginRoute,
   OnboardingRoute: OnboardingRoute,
   PrivacyPolicyRoute: PrivacyPolicyRoute,

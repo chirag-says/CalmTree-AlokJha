@@ -1,7 +1,7 @@
 /**
- * A28. Workload Recovery Capacity
- * Tier: Professional
- * Measures how effectively a person restores mental, emotional and physical functioning after periods of high workload.
+ * W13. Workload Recovery Capacity
+ * Measures whether energy, concentration and emotional balance return
+ * adequately between demanding work periods.
  */
 
 import type { AssessmentConfig } from "./types";
@@ -12,129 +12,46 @@ export const workloadRecoveryCapacity: AssessmentConfig = {
   order: 28,
   type: "standard",
   tier: "professional",
-  category: "Professional",
+  category: "Mental Wellness",
   status: "active",
   meta: {
     title: "Workload Recovery Capacity",
-    subtitle: "How well do you recover after intense work periods?",
-    description:
-      "Measure how effectively you restore mental, emotional and physical functioning after high workload. Ten honest questions, instant private results.",
-    purpose:
-      "Measures how effectively a person restores mental, emotional and physical functioning after periods of high workload.",
-    duration: "3–5 minutes",
-    questionCount: 10,
-    icon: "activity",
-    productCategory: "Emotional Strength & Everyday Mind",
-    isFree: false,
+    subtitle: "Can you recover between demanding periods?",
+    description: "Measure whether your energy and concentration return adequately between demanding work periods.",
+    purpose: "Measures whether energy, concentration and emotional balance return adequately between demanding work periods.",
+    duration: "3–5 minutes", questionCount: 10, icon: "activity",
+    productCategory: "Emotional Strength & Everyday Mind", isFree: false,
   },
-  instructions:
-    "Rate each statement according to your typical experience during the past four weeks. 1 = Never; 2 = Rarely; 3 = Sometimes; 4 = Often; 5 = Almost always.",
+  instructions: "Rate each statement according to your typical experience during the past four weeks. 1 = Almost Never; 2 = Rarely; 3 = Sometimes; 4 = Often; 5 = Almost Always.",
   questions: [
-    {
-      id: "wrc1",
-      text: "After a demanding workday, I can regain a sense of calm within a reasonable time.",
-      options: [...LIKERT_5],
-      dimension: "switch-off",
-    },
-    {
-      id: "wrc2",
-      text: "I begin the next workday still carrying much of the previous day's strain.",
-      options: [...LIKERT_5],
-      reverse: true,
-      dimension: "rebound",
-    },
-    {
-      id: "wrc3",
-      text: "Short breaks help me return with better concentration.",
-      options: [...LIKERT_5],
-      dimension: "replenishment",
-    },
-    {
-      id: "wrc4",
-      text: "Even on lighter days, I feel as though my energy reserve remains low.",
-      options: [...LIKERT_5],
-      reverse: true,
-      dimension: "rebound",
-    },
-    {
-      id: "wrc5",
-      text: "I have at least one reliable routine that helps me recover after work.",
-      options: [...LIKERT_5],
-      dimension: "replenishment",
-    },
-    {
-      id: "wrc6",
-      text: "I continue mentally solving work problems during most of my personal time.",
-      options: [...LIKERT_5],
-      reverse: true,
-      dimension: "switch-off",
-    },
-    {
-      id: "wrc7",
-      text: "After a demanding week, rest usually restores my motivation.",
-      options: [...LIKERT_5],
-      dimension: "rebound",
-    },
-    {
-      id: "wrc8",
-      text: "I postpone rest until I am already exhausted.",
-      options: [...LIKERT_5],
-      reverse: true,
-      dimension: "replenishment",
-    },
-    {
-      id: "wrc9",
-      text: "I can notice early signs that I need to slow down or reset.",
-      options: [...LIKERT_5],
-      dimension: "self-monitoring",
-    },
-    {
-      id: "wrc10",
-      text: "When work becomes intense, I abandon the habits that normally support me.",
-      options: [...LIKERT_5],
-      reverse: true,
-      dimension: "self-monitoring",
-    },
+    { id: "w13q1", text: "A normal night of rest usually restores enough energy for the next day.", options: [...LIKERT_5], dimension: "physical-recovery" },
+    { id: "w13q2", text: "I continue feeling mentally overloaded long after a demanding period ends.", options: [...LIKERT_5], reverse: true, dimension: "mental-recovery" },
+    { id: "w13q3", text: "I take short breaks before concentration collapses.", options: [...LIKERT_5], dimension: "micro-recovery" },
+    { id: "w13q4", text: "Weekends or leave are often used mainly to recover from work exhaustion.", options: [...LIKERT_5], reverse: true, dimension: "recovery-debt" },
+    { id: "w13q5", text: "I have routines that help me move from work mode into personal time.", options: [...LIKERT_5], dimension: "transition" },
+    { id: "w13q6", text: "My patience returns after a difficult day.", options: [...LIKERT_5], dimension: "emotional-recovery" },
+    { id: "w13q7", text: "I rely heavily on stimulation, food or scrolling to keep going.", options: [...LIKERT_5], reverse: true, dimension: "compensatory-coping" },
+    { id: "w13q8", text: "I can reduce effort temporarily without feeling that I am failing.", options: [...LIKERT_5], dimension: "recovery-permission" },
+    { id: "w13q9", text: "After a busy phase, I review and rebalance rather than continuing at the same pace.", options: [...LIKERT_5], dimension: "reset-behaviour" },
+    { id: "w13q10", text: "My present work rhythm allows regular restoration.", options: [...LIKERT_5], dimension: "sustainability" },
   ],
   scoring: { method: "sum", min: 10, max: 50 },
   dimensions: [
-    { id: "switch-off", label: "Switch-Off", questionIds: ["wrc1", "wrc6"] },
-    { id: "rebound", label: "Rebound", questionIds: ["wrc2", "wrc4", "wrc7"] },
-    { id: "replenishment", label: "Replenishment", questionIds: ["wrc3", "wrc5", "wrc8"] },
-    { id: "self-monitoring", label: "Self-Monitoring", questionIds: ["wrc9", "wrc10"] },
+    { id: "physical-recovery", label: "Physical Recovery", questionIds: ["w13q1"] },
+    { id: "mental-recovery", label: "Mental Recovery", questionIds: ["w13q2"] },
+    { id: "micro-recovery", label: "Micro-recovery", questionIds: ["w13q3"] },
+    { id: "recovery-debt", label: "Recovery Debt", questionIds: ["w13q4"] },
+    { id: "transition", label: "Transition", questionIds: ["w13q5"] },
+    { id: "emotional-recovery", label: "Emotional Recovery", questionIds: ["w13q6"] },
+    { id: "compensatory-coping", label: "Compensatory Coping", questionIds: ["w13q7"] },
+    { id: "recovery-permission", label: "Recovery Permission", questionIds: ["w13q8"] },
+    { id: "reset-behaviour", label: "Reset Behaviour", questionIds: ["w13q9"] },
+    { id: "sustainability", label: "Sustainability", questionIds: ["w13q10"] },
   ],
   archetypes: [
-    {
-      min: 10,
-      max: 20,
-      label: "Depleted Recovery Capacity",
-      color: "red",
-      interpretation:
-        "Your current recovery pattern may not be restoring the energy used by work. Reducing non-essential demand and restoring basic routines can help — seek professional support if strain is persistent.",
-    },
-    {
-      min: 21,
-      max: 30,
-      label: "Strained Recovery Capacity",
-      color: "orange",
-      interpretation:
-        "You recover partially, but pressure may be accumulating faster than you replenish it. Protecting predictable recovery periods can help.",
-    },
-    {
-      min: 31,
-      max: 40,
-      label: "Functional but Inconsistent Recovery",
-      color: "yellow",
-      interpretation:
-        "You have useful recovery habits, though they may weaken during intense periods. Identify your two most effective routines and protect them.",
-    },
-    {
-      min: 41,
-      max: 50,
-      label: "Strong Recovery Capacity",
-      color: "green",
-      interpretation:
-        "You generally switch off, replenish energy and return with reasonable resilience. Maintain the practices that work and monitor changes during workload peaks.",
-    },
+    { min: 10, max: 19, label: "Recovery Debt", color: "red", interpretation: "Your responses suggest that workload recovery is currently limited or inconsistent. The pattern may depend heavily on reassurance or favourable conditions.", nextStep: "Choose one small behaviour to practise repeatedly rather than trying to change everything at once." },
+    { min: 20, max: 29, label: "Fragile Recovery", color: "orange", interpretation: "You show some foundations of workload recovery, although they may become less reliable under pressure or uncertainty.", nextStep: "Identify situations where the skill already works and deliberately transfer that behaviour to one harder context." },
+    { min: 30, max: 39, label: "Functional Recovery", color: "yellow", interpretation: "Your responses suggest a generally steady level of workload recovery, with a few areas that could become more consistent.", nextStep: "Strengthen the lowest subdomain while continuing to use your existing strengths." },
+    { min: 40, max: 50, label: "Strong Recovery Capacity", color: "green", interpretation: "Your responses indicate a strong and broadly reliable pattern of workload recovery. You are likely to use it across many situations.", nextStep: "Protect the strength from becoming overused and practise adapting it to people and contexts that need a different approach." },
   ],
 };

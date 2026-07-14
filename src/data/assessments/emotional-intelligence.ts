@@ -1,7 +1,8 @@
 /**
- * A4. Emotional Intelligence™
- * Tier: Growth (₹99-299)
- * Measures emotional awareness, empathy, emotional regulation, and relationship awareness.
+ * A4. Emotional Intelligence Snapshot
+ * Pack 1 — Self-Awareness and Personality
+ * Explores emotional awareness, regulation, empathy, expression and repair
+ * in everyday situations.
  */
 
 import type { AssessmentConfig } from "./types";
@@ -15,90 +16,92 @@ export const emotionalIntelligence: AssessmentConfig = {
   category: "Personal Growth",
   status: "active",
   meta: {
-    title: "Emotional Intelligence™",
+    title: "Emotional Intelligence Snapshot",
     subtitle: "How well do you read and manage emotions?",
     description:
-      "Explore your emotional awareness, empathy, and regulation. Situational questions, private results, under 2 minutes.",
+      "Explore your emotional awareness, regulation, empathy and expression. Ten honest questions, instant results, completely private.",
     purpose:
-      "Measures emotional awareness, empathy, emotional regulation, and relationship awareness.",
-    duration: "Under 2 minutes",
+      "Explores emotional awareness, regulation, empathy, expression and repair in everyday situations.",
+    duration: "3–5 minutes",
     questionCount: 10,
     icon: "heart",
-    productCategory: "Emotional Strength & Everyday Mind",
+    productCategory: "Self-Awareness & Personality",
     isFree: true,
   },
   instructions:
-    "Answer based on how you typically feel and behave — not what you think you should do. There are no right or wrong answers.",
+    "Rate each statement according to your typical experience during the past four weeks. 1 = Almost Never; 2 = Rarely; 3 = Sometimes; 4 = Often; 5 = Almost Always.",
   questions: [
     {
       id: "a4q1",
-      text: "During a disagreement, how often can you identify what you are feeling before responding?",
+      text: "I notice emotional changes in myself before they strongly affect my behaviour.",
       options: [...LIKERT_5],
-      dimension: "awareness",
+      dimension: "self-awareness",
     },
     {
       id: "a4q2",
-      text: "How easily do you notice when someone may be uncomfortable, even if they do not say so directly?",
+      text: "I can name what I am feeling with reasonable accuracy.",
       options: [...LIKERT_5],
-      dimension: "empathy",
+      dimension: "self-awareness",
     },
     {
       id: "a4q3",
-      text: "When frustrated, how often do you react before fully considering the situation?",
+      text: "I react first and understand my feelings only later.",
       options: [...LIKERT_5],
       reverse: true,
       dimension: "regulation",
     },
     {
       id: "a4q4",
-      text: "How comfortable are you discussing emotions with people you trust?",
+      text: "I can pause before responding when I feel criticised or provoked.",
       options: [...LIKERT_5],
-      dimension: "awareness",
+      dimension: "regulation",
     },
     {
       id: "a4q5",
-      text: "How often do you adjust your communication style based on the person you are speaking with?",
+      text: "I notice emotional signals that other people do not say directly.",
       options: [...LIKERT_5],
-      dimension: "relationship",
+      dimension: "empathy",
     },
     {
       id: "a4q6",
-      text: "When someone disagrees with you, how easy is it to understand their perspective?",
+      text: "I can listen to someone without immediately correcting, advising or defending.",
       options: [...LIKERT_5],
       dimension: "empathy",
     },
     {
       id: "a4q7",
-      text: "How often do strong emotions make it difficult to think clearly?",
+      text: "Difficult emotions regularly control my tone or decisions.",
       options: [...LIKERT_5],
       reverse: true,
       dimension: "regulation",
     },
     {
       id: "a4q8",
-      text: "How frequently do people describe you as a good listener?",
+      text: "I express needs and concerns without expecting others to guess them.",
       options: [...LIKERT_5],
-      dimension: "relationship",
+      dimension: "expression",
     },
     {
       id: "a4q9",
-      text: "How often do you recognize when stress is affecting your behavior?",
+      text: "After a misunderstanding, I can take steps to repair the interaction.",
       options: [...LIKERT_5],
-      dimension: "awareness",
+      dimension: "relationship-management",
     },
     {
       id: "a4q10",
-      text: "After an emotional situation, how likely are you to reflect on how you handled it?",
+      text: "I can care about another person while still maintaining my own boundaries.",
       options: [...LIKERT_5],
-      dimension: "relationship",
+      dimension: "balanced-empathy",
     },
   ],
   scoring: { method: "sum", min: 10, max: 50 },
   dimensions: [
-    { id: "awareness", label: "Self-Awareness", questionIds: ["a4q1", "a4q4", "a4q9"] },
-    { id: "empathy", label: "Empathy", questionIds: ["a4q2", "a4q6"] },
-    { id: "regulation", label: "Emotional Regulation", questionIds: ["a4q3", "a4q7"] },
-    { id: "relationship", label: "Relationship Awareness", questionIds: ["a4q5", "a4q8", "a4q10"] },
+    { id: "self-awareness", label: "Self-awareness", questionIds: ["a4q1", "a4q2"] },
+    { id: "regulation", label: "Regulation", questionIds: ["a4q3", "a4q4", "a4q7"] },
+    { id: "empathy", label: "Empathy", questionIds: ["a4q5", "a4q6"] },
+    { id: "expression", label: "Expression", questionIds: ["a4q8"] },
+    { id: "relationship-management", label: "Relationship Management", questionIds: ["a4q9"] },
+    { id: "balanced-empathy", label: "Balanced Empathy", questionIds: ["a4q10"] },
   ],
   archetypes: [
     {
@@ -107,7 +110,9 @@ export const emotionalIntelligence: AssessmentConfig = {
       label: "Emotional Observer",
       color: "blue",
       interpretation:
-        "You are beginning to develop emotional awareness. This is a learnable skill — and awareness is step one.",
+        "Your responses suggest that emotional intelligence is currently limited or inconsistent. The pattern may depend heavily on reassurance or favourable conditions.",
+      nextStep:
+        "Choose one small behaviour to practise repeatedly rather than trying to change everything at once.",
     },
     {
       min: 20,
@@ -115,7 +120,9 @@ export const emotionalIntelligence: AssessmentConfig = {
       label: "Compassionate Connector",
       color: "yellow",
       interpretation:
-        "You have a solid foundation of emotional intelligence with room to deepen specific areas.",
+        "You show some foundations of emotional intelligence, although they may become less reliable under pressure or uncertainty.",
+      nextStep:
+        "Identify situations where the skill already works and deliberately transfer that behaviour to one harder context.",
     },
     {
       min: 30,
@@ -123,7 +130,9 @@ export const emotionalIntelligence: AssessmentConfig = {
       label: "Balanced Communicator",
       color: "emerald",
       interpretation:
-        "You demonstrate strong emotional awareness and can navigate emotions effectively in most situations.",
+        "Your responses suggest a generally steady level of emotional intelligence, with a few areas that could become more consistent.",
+      nextStep:
+        "Strengthen the lowest subdomain while continuing to use your existing strengths.",
     },
     {
       min: 40,
@@ -131,7 +140,9 @@ export const emotionalIntelligence: AssessmentConfig = {
       label: "Emotional Leader",
       color: "green",
       interpretation:
-        "You show exceptional emotional intelligence — attuned to yourself and others, and skilled at managing emotional dynamics.",
+        "Your responses indicate a strong and broadly reliable pattern of emotional intelligence. You are likely to use it across many situations.",
+      nextStep:
+        "Protect the strength from becoming overused and practise adapting it to people and contexts that need a different approach.",
     },
   ],
 };

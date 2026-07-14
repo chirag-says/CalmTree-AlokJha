@@ -1,7 +1,6 @@
 /**
- * A30. Meeting Fatigue Check
- * Tier: Professional
- * Measures the degree to which meetings reduce concentration, energy and productive work capacity.
+ * W15. Meeting Fatigue Check
+ * Measures cognitive, social and schedule-related fatigue from meetings.
  */
 
 import type { AssessmentConfig } from "./types";
@@ -16,125 +15,42 @@ export const meetingFatigueCheck: AssessmentConfig = {
   status: "active",
   meta: {
     title: "Meeting Fatigue Check",
-    subtitle: "Are meetings draining your productive capacity?",
-    description:
-      "Measure the degree to which meetings reduce your concentration, energy and productive work capacity. Ten questions, instant private results.",
-    purpose:
-      "Measures the degree to which meetings reduce concentration, energy and productive work capacity.",
-    duration: "3–5 minutes",
-    questionCount: 10,
-    icon: "users",
-    productCategory: "Workplace Effectiveness",
-    isFree: false,
+    subtitle: "Are meetings draining your energy?",
+    description: "Measure cognitive, social and schedule-related fatigue created by meetings.",
+    purpose: "Measures cognitive, social and schedule-related fatigue created by the number, length and design of meetings.",
+    duration: "3–5 minutes", questionCount: 10, icon: "users",
+    productCategory: "Emotional Strength & Everyday Mind", isFree: false,
   },
-  instructions:
-    "Rate each statement according to your typical experience during the past four weeks. 1 = Never; 2 = Rarely; 3 = Sometimes; 4 = Often; 5 = Almost always.",
+  instructions: "Rate each statement according to your typical experience during the past four weeks. 1 = Almost Never; 2 = Rarely; 3 = Sometimes; 4 = Often; 5 = Almost Always.",
   questions: [
-    {
-      id: "mfc1",
-      text: "I attend meetings that do not require my direct contribution.",
-      options: [...LIKERT_5],
-      dimension: "relevance",
-    },
-    {
-      id: "mfc2",
-      text: "Back-to-back meetings reduce my ability to think clearly.",
-      options: [...LIKERT_5],
-      dimension: "density",
-    },
-    {
-      id: "mfc3",
-      text: "Meetings usually end with clear decisions, owners and next steps.",
-      options: [...LIKERT_5],
-      reverse: true,
-      dimension: "effectiveness",
-    },
-    {
-      id: "mfc4",
-      text: "I struggle to complete focused work because meetings divide the day.",
-      options: [...LIKERT_5],
-      dimension: "fragmentation",
-    },
-    {
-      id: "mfc5",
-      text: "Video meetings require more energy from me than their content justifies.",
-      options: [...LIKERT_5],
-      dimension: "format-load",
-    },
-    {
-      id: "mfc6",
-      text: "I have enough time between meetings to reset or prepare.",
-      options: [...LIKERT_5],
-      reverse: true,
-      dimension: "density",
-    },
-    {
-      id: "mfc7",
-      text: "The same issues are repeatedly discussed without resolution.",
-      options: [...LIKERT_5],
-      dimension: "effectiveness",
-    },
-    {
-      id: "mfc8",
-      text: "I often multitask during meetings because my involvement is limited.",
-      options: [...LIKERT_5],
-      dimension: "relevance",
-    },
-    {
-      id: "mfc9",
-      text: "Meeting schedules regularly extend beyond my most productive hours.",
-      options: [...LIKERT_5],
-      dimension: "fragmentation",
-    },
-    {
-      id: "mfc10",
-      text: "I can decline or leave meetings when my presence adds little value.",
-      options: [...LIKERT_5],
-      reverse: true,
-      dimension: "autonomy",
-    },
+    { id: "w15q1", text: "I have enough gaps between meetings to reset and prepare.", options: [...LIKERT_5], reverse: true, dimension: "recovery-gaps" },
+    { id: "w15q2", text: "Back-to-back meetings reduce my ability to think clearly.", options: [...LIKERT_5], dimension: "cognitive-load" },
+    { id: "w15q3", text: "Many meetings could be replaced by a short written update.", options: [...LIKERT_5], dimension: "meeting-necessity" },
+    { id: "w15q4", text: "Meeting agendas and expected decisions are usually clear.", options: [...LIKERT_5], reverse: true, dimension: "meeting-design" },
+    { id: "w15q5", text: "I struggle to complete focused work because meetings fragment the day.", options: [...LIKERT_5], dimension: "focus-interference" },
+    { id: "w15q6", text: "I can contribute meaningfully without feeling socially depleted.", options: [...LIKERT_5], reverse: true, dimension: "social-load" },
+    { id: "w15q7", text: "Meetings regularly continue longer than their useful purpose.", options: [...LIKERT_5], dimension: "duration" },
+    { id: "w15q8", text: "I know when my attendance is optional rather than expected.", options: [...LIKERT_5], reverse: true, dimension: "attendance-clarity" },
+    { id: "w15q9", text: "Video meetings create additional strain through constant screen presence.", options: [...LIKERT_5], dimension: "digital-load" },
+    { id: "w15q10", text: "At the end of a meeting-heavy day, I still have usable mental energy.", options: [...LIKERT_5], reverse: true, dimension: "energy" },
   ],
   scoring: { method: "sum", min: 10, max: 50 },
   dimensions: [
-    { id: "relevance", label: "Relevance", questionIds: ["mfc1", "mfc8"] },
-    { id: "density", label: "Density", questionIds: ["mfc2", "mfc6"] },
-    { id: "effectiveness", label: "Effectiveness", questionIds: ["mfc3", "mfc7"] },
-    { id: "fragmentation", label: "Fragmentation", questionIds: ["mfc4", "mfc9"] },
-    { id: "format-load", label: "Format Load", questionIds: ["mfc5"] },
-    { id: "autonomy", label: "Autonomy", questionIds: ["mfc10"] },
+    { id: "recovery-gaps", label: "Recovery Gaps", questionIds: ["w15q1"] },
+    { id: "cognitive-load", label: "Cognitive Load", questionIds: ["w15q2"] },
+    { id: "meeting-necessity", label: "Meeting Necessity", questionIds: ["w15q3"] },
+    { id: "meeting-design", label: "Meeting Design", questionIds: ["w15q4"] },
+    { id: "focus-interference", label: "Focus Interference", questionIds: ["w15q5"] },
+    { id: "social-load", label: "Social Load", questionIds: ["w15q6"] },
+    { id: "duration", label: "Duration", questionIds: ["w15q7"] },
+    { id: "attendance-clarity", label: "Attendance Clarity", questionIds: ["w15q8"] },
+    { id: "digital-load", label: "Digital Load", questionIds: ["w15q9"] },
+    { id: "energy", label: "Energy", questionIds: ["w15q10"] },
   ],
   archetypes: [
-    {
-      min: 10,
-      max: 20,
-      label: "Low Meeting Load",
-      color: "green",
-      interpretation:
-        "Meetings are generally relevant, manageable and reasonably effective. Protect the practices that keep meetings selective and outcome-focused.",
-    },
-    {
-      min: 21,
-      max: 30,
-      label: "Moderate Meeting Friction",
-      color: "yellow",
-      interpretation:
-        "Some meeting patterns reduce energy or fragment the day, but the impact remains manageable. Introduce agendas, decision notes and meeting-free focus blocks.",
-    },
-    {
-      min: 31,
-      max: 40,
-      label: "High Meeting Fatigue",
-      color: "orange",
-      interpretation:
-        "Meeting volume, relevance or quality is likely reducing concentration and productive capacity. Audit recurring meetings and shorten default durations.",
-    },
-    {
-      min: 41,
-      max: 50,
-      label: "Severe Meeting Overload",
-      color: "red",
-      interpretation:
-        "Meetings may be dominating the workday and creating sustained cognitive fatigue. Create no-meeting periods and replace status meetings with asynchronous updates.",
-    },
+    { min: 10, max: 19, label: "Low Meeting Strain", color: "green", interpretation: "Your responses currently show relatively few signs of meeting fatigue. Protective habits appear to be working reasonably well.", nextStep: "Maintain the routines that support recovery and notice early changes rather than waiting for strain to build." },
+    { min: 20, max: 29, label: "Manageable Meeting Load", color: "yellow", interpretation: "Some signs of meeting fatigue are present, especially during demanding periods, but they may still be manageable with deliberate adjustments.", nextStep: "Identify the two situations that raise your score most often and make one practical change this week." },
+    { min: 30, max: 39, label: "Meeting Fatigue", color: "orange", interpretation: "Your responses suggest a recurring pattern of meeting fatigue that may be affecting energy, concentration, relationships or performance.", nextStep: "Reduce avoidable load, strengthen boundaries and use a structured recovery or support plan." },
+    { min: 40, max: 50, label: "Meeting Saturation", color: "red", interpretation: "Your responses suggest a strong and persistent pattern of meeting fatigue. The present pace or environment may be difficult to sustain.", nextStep: "Prioritise immediate load reduction and consider speaking with a qualified professional if the experience is severe or persistent." },
   ],
 };

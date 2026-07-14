@@ -152,6 +152,8 @@ export interface Archetype {
   interpretation: string;
   /** Color for UI theming */
   color: "green" | "emerald" | "yellow" | "amber" | "orange" | "red" | "blue" | "purple";
+  /** Suggested next step for the user */
+  nextStep?: string;
 }
 
 // ─── Personality Compass Archetypes ─────────────────────────────────

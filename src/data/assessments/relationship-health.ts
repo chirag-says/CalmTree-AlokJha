@@ -1,7 +1,8 @@
 /**
- * A8. Relationship Health™ Check
- * Tier: Growth (₹99-299)
- * Measures trust, communication, emotional support, and mutual respect.
+ * A8. Relationship Health Check
+ * Pack 4 — Leadership, Relationships and Influence
+ * Reflects communication, trust, emotional safety, reciprocity, repair
+ * and respect for individuality in a close relationship.
  */
 
 import type { AssessmentConfig } from "./types";
@@ -15,87 +16,95 @@ export const relationshipHealth: AssessmentConfig = {
   category: "Relationships",
   status: "active",
   meta: {
-    title: "Relationship Health™",
-    subtitle: "How healthy are your closest relationships?",
+    title: "Relationship Health Check",
+    subtitle: "How healthy is your closest relationship?",
     description:
-      "Explore the quality of your important relationships — trust, communication, support, and boundaries. Quick and private.",
-    purpose: "Measures trust, communication, emotional support, and mutual respect.",
-    duration: "Under 2 minutes",
+      "Reflect on communication, trust, emotional safety and reciprocity. Ten honest questions, instant results, completely private.",
+    purpose:
+      "Reflects communication, trust, emotional safety, reciprocity, repair and respect for individuality in a close relationship.",
+    duration: "3–5 minutes",
     questionCount: 10,
     icon: "heart",
     productCategory: "Relationships & Emotional Connection",
-    isFree: false,
+    isFree: true,
   },
   instructions:
-    "Think about your closest relationships — partner, family, or close friends. Answer based on your general experience. There are no right or wrong answers.",
+    "Rate each statement according to your typical experience during the past four weeks. 1 = Almost Never; 2 = Rarely; 3 = Sometimes; 4 = Often; 5 = Almost Always.",
   questions: [
     {
       id: "a8q1",
-      text: "How comfortable are you discussing important issues with people close to you?",
+      text: "We can discuss difficult topics without repeated humiliation, threats or contempt.",
       options: [...LIKERT_5],
-      dimension: "communication",
+      dimension: "emotional-safety",
     },
     {
       id: "a8q2",
-      text: "How often do you feel heard when expressing your thoughts or feelings?",
+      text: "Both people can express needs without expecting the other to read their mind.",
       options: [...LIKERT_5],
       dimension: "communication",
     },
     {
       id: "a8q3",
-      text: "During disagreements, how often are issues resolved respectfully?",
+      text: "One person regularly carries most of the emotional or practical responsibility.",
       options: [...LIKERT_5],
-      dimension: "communication",
+      reverse: true,
+      dimension: "reciprocity",
     },
     {
       id: "a8q4",
-      text: "How comfortable are you asking for support when needed?",
+      text: "Disagreements can end with understanding or a workable next step.",
       options: [...LIKERT_5],
-      dimension: "support",
+      dimension: "repair",
     },
     {
       id: "a8q5",
-      text: "How often do you assume positive intentions from people close to you?",
+      text: "I can remain myself without constantly managing the other person's reactions.",
       options: [...LIKERT_5],
-      dimension: "trust",
+      dimension: "autonomy",
     },
     {
       id: "a8q6",
-      text: "How frequently do misunderstandings remain unresolved?",
+      text: "Trust is supported by consistent behaviour rather than only reassurance.",
       options: [...LIKERT_5],
-      reverse: true,
       dimension: "trust",
     },
     {
       id: "a8q7",
-      text: "How often do you express appreciation to important people in your life?",
+      text: "Problems are ignored until they become much larger.",
       options: [...LIKERT_5],
-      dimension: "support",
+      reverse: true,
+      dimension: "avoidance",
     },
     {
       id: "a8q8",
-      text: "How much trust do you generally have in your close relationships?",
+      text: "We can appreciate each other without using praise as control or obligation.",
       options: [...LIKERT_5],
-      dimension: "trust",
+      dimension: "respect",
     },
     {
       id: "a8q9",
-      text: "How often do you feel emotionally supported?",
+      text: "Both people can maintain friendships, interests and reasonable privacy.",
       options: [...LIKERT_5],
-      dimension: "support",
+      dimension: "individuality",
     },
     {
       id: "a8q10",
-      text: "How comfortable are you setting and respecting personal boundaries?",
+      text: "After tension, we are usually able to reconnect without pretending nothing happened.",
       options: [...LIKERT_5],
-      dimension: "trust",
+      dimension: "repair",
     },
   ],
   scoring: { method: "sum", min: 10, max: 50 },
   dimensions: [
-    { id: "trust", label: "Trust", questionIds: ["a8q5", "a8q6", "a8q8", "a8q10"] },
-    { id: "communication", label: "Communication", questionIds: ["a8q1", "a8q2", "a8q3"] },
-    { id: "support", label: "Support", questionIds: ["a8q4", "a8q7", "a8q9"] },
+    { id: "emotional-safety", label: "Emotional Safety", questionIds: ["a8q1"] },
+    { id: "communication", label: "Communication", questionIds: ["a8q2"] },
+    { id: "reciprocity", label: "Reciprocity", questionIds: ["a8q3"] },
+    { id: "repair", label: "Repair", questionIds: ["a8q4", "a8q10"] },
+    { id: "autonomy", label: "Autonomy", questionIds: ["a8q5"] },
+    { id: "trust", label: "Trust", questionIds: ["a8q6"] },
+    { id: "avoidance", label: "Avoidance", questionIds: ["a8q7"] },
+    { id: "respect", label: "Respect", questionIds: ["a8q8"] },
+    { id: "individuality", label: "Individuality", questionIds: ["a8q9"] },
   ],
   archetypes: [
     {
@@ -104,7 +113,9 @@ export const relationshipHealth: AssessmentConfig = {
       label: "Independent Navigator",
       color: "blue",
       interpretation:
-        "You may tend toward self-reliance in relationships. Building trust and openness takes time and is worth investing in.",
+        "Your responses suggest that relationship health is currently limited or inconsistent. The pattern may depend heavily on reassurance or favourable conditions.",
+      nextStep:
+        "Choose one small behaviour to practise repeatedly rather than trying to change everything at once.",
     },
     {
       min: 20,
@@ -112,7 +123,9 @@ export const relationshipHealth: AssessmentConfig = {
       label: "Caring Partner",
       color: "yellow",
       interpretation:
-        "Your relationships show care and effort. Some areas — like communication or vulnerability — may benefit from attention.",
+        "You show some foundations of relationship health, although they may become less reliable under pressure or uncertainty.",
+      nextStep:
+        "Identify situations where the skill already works and deliberately transfer that behaviour to one harder context.",
     },
     {
       min: 30,
@@ -120,7 +133,9 @@ export const relationshipHealth: AssessmentConfig = {
       label: "Trusted Companion",
       color: "emerald",
       interpretation:
-        "You maintain healthy, communicative relationships with a strong foundation of trust and mutual support.",
+        "Your responses suggest a generally steady level of relationship health, with a few areas that could become more consistent.",
+      nextStep:
+        "Strengthen the lowest subdomain while continuing to use your existing strengths.",
     },
     {
       min: 40,
@@ -128,7 +143,9 @@ export const relationshipHealth: AssessmentConfig = {
       label: "Deep Connector",
       color: "green",
       interpretation:
-        "Your relationships reflect deep trust, open communication, and genuine emotional support. This is a real strength.",
+        "Your responses indicate a strong and broadly reliable pattern of relationship health. You are likely to use it across many situations.",
+      nextStep:
+        "Protect the strength from becoming overused and practise adapting it to people and contexts that need a different approach.",
     },
   ],
 };

@@ -1,7 +1,8 @@
 /**
- * A11. Team Player Index™
- * Tier: Professional (₹299-999)
- * Measures collaboration, accountability, supportiveness, and respect for others.
+ * A11. Team Player Index
+ * Pack 3 — Workplace Effectiveness and Stress
+ * Reflects reliability, collaboration, openness, contribution, conflict
+ * behaviour and balance between individual and shared ownership.
  */
 
 import type { AssessmentConfig } from "./types";
@@ -15,119 +16,46 @@ export const teamPlayerIndex: AssessmentConfig = {
   category: "Professional",
   status: "active",
   meta: {
-    title: "Team Player Index™",
-    subtitle: "How strong a team player are you?",
-    description:
-      "Assess your collaboration style, accountability, and supportiveness within teams. Quick, private, and insightful.",
-    purpose: "Measures collaboration, accountability, supportiveness, and respect for others.",
-    duration: "Under 2 minutes",
+    title: "Team Player Index",
+    subtitle: "How effective are you as a team player?",
+    description: "Reflect on your reliability, collaboration, openness and conflict behaviour. Ten honest questions, instant results.",
+    purpose: "Reflects reliability, collaboration, openness, contribution, conflict behaviour and balance between individual and shared ownership.",
+    duration: "3–5 minutes",
     questionCount: 10,
     icon: "users",
-    productCategory: "Leadership & Teams",
+    productCategory: "Workplace Effectiveness",
     isFree: false,
   },
-  instructions:
-    "Think about how you typically behave when working in a team. Answer honestly — there are no right or wrong answers.",
+  instructions: "Rate each statement according to your typical experience during the past four weeks. 1 = Almost Never; 2 = Rarely; 3 = Sometimes; 4 = Often; 5 = Almost Always.",
   questions: [
-    {
-      id: "a11q1",
-      text: "When working in a group, how often do you actively contribute to shared goals?",
-      options: [...LIKERT_5],
-      dimension: "collaboration",
-    },
-    {
-      id: "a11q2",
-      text: "If a project faces challenges, how willing are you to take responsibility for your part?",
-      options: [...LIKERT_5],
-      dimension: "accountability",
-    },
-    {
-      id: "a11q3",
-      text: "How often do you offer help when a teammate appears overloaded?",
-      options: [...LIKERT_5],
-      dimension: "supportiveness",
-    },
-    {
-      id: "a11q4",
-      text: "How comfortable are you working with people who have different styles or opinions?",
-      options: [...LIKERT_5],
-      dimension: "collaboration",
-    },
-    {
-      id: "a11q5",
-      text: "How often do you listen to others before forming conclusions?",
-      options: [...LIKERT_5],
-      dimension: "respect",
-    },
-    {
-      id: "a11q6",
-      text: "How reliable are you in meeting commitments made to a team?",
-      options: [...LIKERT_5],
-      dimension: "accountability",
-    },
-    {
-      id: "a11q7",
-      text: "How often do you acknowledge the contributions of others?",
-      options: [...LIKERT_5],
-      dimension: "supportiveness",
-    },
-    {
-      id: "a11q8",
-      text: "When disagreements occur, how likely are you to focus on solutions?",
-      options: [...LIKERT_5],
-      dimension: "collaboration",
-    },
-    {
-      id: "a11q9",
-      text: "How often do you encourage participation from quieter team members?",
-      options: [...LIKERT_5],
-      dimension: "respect",
-    },
-    {
-      id: "a11q10",
-      text: "How willing are you to adapt your approach for the benefit of the team?",
-      options: [...LIKERT_5],
-      dimension: "respect",
-    },
+    { id: "a11q1", text: "I keep commitments that other people are depending on.", options: [...LIKERT_5], dimension: "reliability" },
+    { id: "a11q2", text: "I share useful information rather than protecting it for personal advantage.", options: [...LIKERT_5], dimension: "transparency" },
+    { id: "a11q3", text: "I ask for input when another person has relevant expertise.", options: [...LIKERT_5], dimension: "collaboration" },
+    { id: "a11q4", text: "I withdraw effort when my preferred idea is not selected.", options: [...LIKERT_5], reverse: true, dimension: "commitment" },
+    { id: "a11q5", text: "I can disagree with a teammate without attacking the person.", options: [...LIKERT_5], dimension: "conflict-skill" },
+    { id: "a11q6", text: "I notice when someone is overloaded and offer practical support.", options: [...LIKERT_5], dimension: "support" },
+    { id: "a11q7", text: "I take credit carefully and acknowledge other people's contribution.", options: [...LIKERT_5], dimension: "fairness" },
+    { id: "a11q8", text: "I avoid raising problems because I do not want discomfort.", options: [...LIKERT_5], reverse: true, dimension: "voice" },
+    { id: "a11q9", text: "I can work independently without losing alignment with the group.", options: [...LIKERT_5], dimension: "balanced-ownership" },
+    { id: "a11q10", text: "I help the team move from discussion to clear next steps.", options: [...LIKERT_5], dimension: "execution" },
   ],
   scoring: { method: "sum", min: 10, max: 50 },
   dimensions: [
-    { id: "collaboration", label: "Collaboration", questionIds: ["a11q1", "a11q4", "a11q8"] },
-    { id: "accountability", label: "Accountability", questionIds: ["a11q2", "a11q6"] },
-    { id: "supportiveness", label: "Supportiveness", questionIds: ["a11q3", "a11q7"] },
-    { id: "respect", label: "Respect & Inclusion", questionIds: ["a11q5", "a11q9", "a11q10"] },
+    { id: "reliability", label: "Reliability", questionIds: ["a11q1"] },
+    { id: "transparency", label: "Transparency", questionIds: ["a11q2"] },
+    { id: "collaboration", label: "Collaboration", questionIds: ["a11q3"] },
+    { id: "commitment", label: "Commitment", questionIds: ["a11q4"] },
+    { id: "conflict-skill", label: "Conflict Skill", questionIds: ["a11q5"] },
+    { id: "support", label: "Support", questionIds: ["a11q6"] },
+    { id: "fairness", label: "Fairness", questionIds: ["a11q7"] },
+    { id: "voice", label: "Voice", questionIds: ["a11q8"] },
+    { id: "balanced-ownership", label: "Balanced Ownership", questionIds: ["a11q9"] },
+    { id: "execution", label: "Execution", questionIds: ["a11q10"] },
   ],
   archetypes: [
-    {
-      min: 10,
-      max: 19,
-      label: "Independent Contributor",
-      color: "blue",
-      interpretation:
-        "You tend to work independently. Building collaborative habits can unlock new opportunities and relationships.",
-    },
-    {
-      min: 20,
-      max: 29,
-      label: "Cooperative Colleague",
-      color: "yellow",
-      interpretation:
-        "You contribute to teams effectively but may benefit from deeper engagement and accountability.",
-    },
-    {
-      min: 30,
-      max: 39,
-      label: "Trusted Collaborator",
-      color: "emerald",
-      interpretation: "You are a reliable and supportive team member who others can count on.",
-    },
-    {
-      min: 40,
-      max: 50,
-      label: "Team Catalyst",
-      color: "green",
-      interpretation:
-        "You actively elevate team performance through collaboration, accountability, and genuine support for others.",
-    },
+    { min: 10, max: 19, label: "Independent Contributor", color: "blue", interpretation: "Your responses suggest that team contribution is currently limited or inconsistent. The pattern may depend heavily on reassurance or favourable conditions.", nextStep: "Choose one small behaviour to practise repeatedly rather than trying to change everything at once." },
+    { min: 20, max: 29, label: "Cooperative Partner", color: "yellow", interpretation: "You show some foundations of team contribution, although they may become less reliable under pressure or uncertainty.", nextStep: "Identify situations where the skill already works and deliberately transfer that behaviour to one harder context." },
+    { min: 30, max: 39, label: "Team Catalyst", color: "emerald", interpretation: "Your responses suggest a generally steady level of team contribution, with a few areas that could become more consistent.", nextStep: "Strengthen the lowest subdomain while continuing to use your existing strengths." },
+    { min: 40, max: 50, label: "Collaborative Anchor", color: "green", interpretation: "Your responses indicate a strong and broadly reliable pattern of team contribution. You are likely to use it across many situations.", nextStep: "Protect the strength from becoming overused and practise adapting it to people and contexts that need a different approach." },
   ],
 };

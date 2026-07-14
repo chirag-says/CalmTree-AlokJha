@@ -1,7 +1,7 @@
 /**
- * A19. Risk-Taking at Work Profile
- * Tier: Professional
- * Identifies how a person approaches uncertainty, potential loss and untested opportunities at work.
+ * W4. Risk-Taking at Work Profile
+ * Profile-based: identifies how a person balances opportunity, uncertainty,
+ * evidence and downside when making work decisions.
  */
 
 import type { ProfileAssessmentConfig } from "./types";
@@ -15,165 +15,84 @@ export const riskTakingAtWork: ProfileAssessmentConfig = {
   status: "active",
   meta: {
     title: "Risk-Taking at Work Profile",
-    subtitle: "How do you approach uncertainty and opportunity?",
-    description:
-      "Identify how you approach uncertainty, potential loss and untested opportunities at work. Four profiles, ten situational questions.",
-    purpose:
-      "Identifies how a person approaches uncertainty, potential loss and untested opportunities at work.",
+    subtitle: "How do you handle risk at work?",
+    description: "Identify how you balance opportunity, uncertainty, evidence and downside when making work decisions.",
+    purpose: "Identifies how a person balances opportunity, uncertainty, evidence and downside when making work decisions.",
     duration: "3–5 minutes",
     questionCount: 10,
-    icon: "trending-up",
-    productCategory: "Founders & Entrepreneurship",
-    isFree: true,
+    icon: "target",
+    productCategory: "Workplace Effectiveness",
+    isFree: false,
   },
-  instructions:
-    "Select the option that most closely reflects what you would usually do, not what you believe is the ideal answer.",
-  tieBreakQuestionIds: ["rtw1", "rtw5", "rtw10"],
+  instructions: "Select the option that most closely reflects what you would usually do, not what you believe is the ideal answer.",
+  tieBreakQuestionIds: ["w4q1", "w4q5", "w4q9"],
   profileQuestions: [
-    {
-      id: "rtw1",
-      text: "A new tool could significantly improve productivity, but the evidence is limited. You would:",
-      options: [
-        { label: "Wait until the tool is proven and widely adopted", profileCode: "A" },
-        {
-          label: "Compare the expected benefits, costs and risks before deciding",
-          profileCode: "B",
-        },
-        { label: "Run a small pilot with limited scope", profileCode: "C" },
-        { label: "Adopt it early and solve problems as they arise", profileCode: "D" },
-      ],
-    },
-    {
-      id: "rtw2",
-      text: "A client offers a large project outside your team's usual expertise. You would:",
-      options: [
-        { label: "Decline unless the capabilities are already established", profileCode: "A" },
-        { label: "Assess the gaps, margins and risk protection carefully", profileCode: "B" },
-        { label: "Accept a limited first phase to test the fit", profileCode: "C" },
-        { label: "Accept quickly and build the capability in parallel", profileCode: "D" },
-      ],
-    },
-    {
-      id: "rtw3",
-      text: "When choosing between a reliable option and a high-upside uncertain option, you usually:",
-      options: [
-        { label: "Choose the reliable option", profileCode: "A" },
-        { label: "Choose based on evidence and downside limits", profileCode: "B" },
-        { label: "Split the approach or test both options", profileCode: "C" },
-        { label: "Choose the higher-upside option", profileCode: "D" },
-      ],
-    },
-    {
-      id: "rtw4",
-      text: "A senior leader proposes an ambitious target with no clear precedent. Your response is to:",
-      options: [
-        { label: "Highlight feasibility concerns clearly", profileCode: "A" },
-        { label: "Model scenarios and identify the conditions required", profileCode: "B" },
-        { label: "Suggest a smaller experiment to test the assumptions", profileCode: "C" },
-        { label: "Commit and mobilise the team immediately", profileCode: "D" },
-      ],
-    },
-    {
-      id: "rtw5",
-      text: "When a previous decision goes wrong, you tend to:",
-      options: [
-        { label: "Become more careful and strengthen safeguards", profileCode: "A" },
-        { label: "Review what information was missing or misjudged", profileCode: "B" },
-        { label: "Treat it as a learning and design a better test next time", profileCode: "C" },
-        { label: "Recover quickly and move on", profileCode: "D" },
-      ],
-    },
-    {
-      id: "rtw6",
-      text: "Which statement fits you best?",
-      options: [
-        {
-          label: "Avoiding a preventable loss matters more than capturing an uncertain gain",
-          profileCode: "A",
-        },
-        { label: "Risk is acceptable when it is understood and controlled", profileCode: "B" },
-        { label: "Small experiments are the safest way to discover what works", profileCode: "C" },
-        { label: "Progress requires moving before you have certainty", profileCode: "D" },
-      ],
-    },
-    {
-      id: "rtw7",
-      text: "When investing time in an unproven idea, you prefer to:",
-      options: [
-        { label: "Wait for stronger demand signals before committing", profileCode: "A" },
-        { label: "Set clear decision criteria and review the evidence", profileCode: "B" },
-        { label: "Build the smallest workable version first", profileCode: "C" },
-        { label: "Commit significant resources to establish an early lead", profileCode: "D" },
-      ],
-    },
-    {
-      id: "rtw8",
-      text: "Colleagues may sometimes see you as:",
-      options: [
-        { label: "Too cautious or slow to commit", profileCode: "A" },
-        { label: "Too analytical or deliberate", profileCode: "B" },
-        { label: "Always experimenting rather than deciding", profileCode: "C" },
-        { label: "Too willing to leap without enough preparation", profileCode: "D" },
-      ],
-    },
-    {
-      id: "rtw9",
-      text: "Under uncertainty, your confidence comes mainly from:",
-      options: [
-        { label: "Rules, safeguards and proven methods", profileCode: "A" },
-        { label: "Information, comparison and contingency planning", profileCode: "B" },
-        { label: "Your ability to test, learn and adjust", profileCode: "C" },
-        { label: "Personal conviction and speed of action", profileCode: "D" },
-      ],
-    },
-    {
-      id: "rtw10",
-      text: "Before making a risky decision, what do you most need?",
-      options: [
-        { label: "Evidence that the downside is minimal", profileCode: "A" },
-        { label: "A balanced understanding of probability and impact", profileCode: "B" },
-        { label: "A reversible first step", profileCode: "C" },
-        { label: "A compelling opportunity worth pursuing", profileCode: "D" },
-      ],
-    },
+    { id: "w4q1", text: "A new idea could create major value but evidence is limited. You:", options: [
+      { label: "Wait for stronger proof", profileCode: "A" },
+      { label: "Run a small, reversible pilot", profileCode: "B" },
+      { label: "Move early while tracking warning signs", profileCode: "C" },
+      { label: "Commit quickly before the opportunity closes", profileCode: "D" },
+    ]},
+    { id: "w4q2", text: "When choosing between a safe improvement and uncertain breakthrough, you:", options: [
+      { label: "Choose the safer improvement", profileCode: "A" },
+      { label: "Fund a limited experiment alongside the safe option", profileCode: "B" },
+      { label: "Lean towards the breakthrough if upside is meaningful", profileCode: "C" },
+      { label: "Back the breakthrough strongly", profileCode: "D" },
+    ]},
+    { id: "w4q3", text: "A proposal has a 30% chance of high reward. You first ask:", options: [
+      { label: "What could go wrong?", profileCode: "A" },
+      { label: "How can we cap the downside?", profileCode: "B" },
+      { label: "What is the expected value?", profileCode: "C" },
+      { label: "How fast can we move?", profileCode: "D" },
+    ]},
+    { id: "w4q4", text: "Your response to incomplete information is to:", options: [
+      { label: "Delay the decision", profileCode: "A" },
+      { label: "Identify the minimum evidence needed", profileCode: "B" },
+      { label: "Decide and review as information arrives", profileCode: "C" },
+      { label: "Trust judgement and act", profileCode: "D" },
+    ]},
+    { id: "w4q5", text: "People may describe you as:", options: [
+      { label: "Careful", profileCode: "A" },
+      { label: "Pragmatically experimental", profileCode: "B" },
+      { label: "Opportunity-oriented", profileCode: "C" },
+      { label: "Fearless or impulsive", profileCode: "D" },
+    ]},
+    { id: "w4q6", text: "When an experiment fails, you:", options: [
+      { label: "Become more cautious", profileCode: "A" },
+      { label: "Review the test and redesign it", profileCode: "B" },
+      { label: "Look quickly for the next option", profileCode: "C" },
+      { label: "Accept it as the cost of bold action", profileCode: "D" },
+    ]},
+    { id: "w4q7", text: "You are most uncomfortable with:", options: [
+      { label: "Unprotected downside", profileCode: "A" },
+      { label: "Risks that cannot be tested", profileCode: "B" },
+      { label: "Missing a promising window", profileCode: "C" },
+      { label: "Slow decision cycles", profileCode: "D" },
+    ]},
+    { id: "w4q8", text: "Before making a risky commitment, you need:", options: [
+      { label: "Strong assurance", profileCode: "A" },
+      { label: "A fallback plan", profileCode: "B" },
+      { label: "A persuasive opportunity case", profileCode: "C" },
+      { label: "Enough conviction to move", profileCode: "D" },
+    ]},
+    { id: "w4q9", text: "Your preferred portfolio is:", options: [
+      { label: "Mostly proven initiatives", profileCode: "A" },
+      { label: "Core stability plus controlled experiments", profileCode: "B" },
+      { label: "Several growth bets with review points", profileCode: "C" },
+      { label: "Concentrated bets on transformative possibilities", profileCode: "D" },
+    ]},
+    { id: "w4q10", text: "Your best growth step is to:", options: [
+      { label: "Test small risks", profileCode: "A" },
+      { label: "Act before every detail is known", profileCode: "B" },
+      { label: "Strengthen downside analysis", profileCode: "C" },
+      { label: "Use staged commitments and stop rules", profileCode: "D" },
+    ]},
   ],
   profiles: [
-    {
-      code: "A",
-      label: "Cautious Protector",
-      meaning: "Prioritises stability, safeguards and downside protection.",
-      interpretation:
-        "Your responses suggest you are careful and deliberate about risk. You protect what works, avoid preventable loss and ensure decisions are reversible where possible.",
-      nextStep: "Distinguish genuine danger from discomfort; test small reversible risks.",
-      color: "blue",
-    },
-    {
-      code: "B",
-      label: "Calculated Evaluator",
-      meaning: "Takes risk after comparing evidence, consequences and controls.",
-      interpretation:
-        "Your responses suggest you approach risk analytically. You neither avoid nor chase it — you weigh probability, impact and safeguards before deciding.",
-      nextStep: "Set a time limit for analysis so good opportunities are not missed.",
-      color: "emerald",
-    },
-    {
-      code: "C",
-      label: "Experimental Explorer",
-      meaning: "Learns through pilots, prototypes and manageable experimentation.",
-      interpretation:
-        "Your responses suggest you prefer to learn by doing. You use small, reversible experiments to test assumptions before committing fully.",
-      nextStep: "Define success measures and stop-loss points before beginning.",
-      color: "yellow",
-    },
-    {
-      code: "D",
-      label: "Bold Mover",
-      meaning: "Acts quickly when upside appears attractive and accepts uncertainty.",
-      interpretation:
-        "Your responses suggest you are energised by upside potential. You move quickly, accept uncertainty as normal and trust your ability to course-correct.",
-      nextStep: "Add a pre-mortem, seek dissent and separate courage from avoidable exposure.",
-      color: "orange",
-    },
+    { code: "A", label: "Cautious Protector", meaning: "Minimises downside and prefers proven options.", interpretation: "Your responses suggest you minimise downside and prefer proven options.", nextStep: "Use small reversible experiments to build evidence without taking uncontrolled risk.", color: "blue" },
+    { code: "B", label: "Calculated Experimenter", meaning: "Takes limited, testable risks with safeguards.", interpretation: "Your responses suggest you take limited, testable risks with safeguards.", nextStep: "Avoid making every experiment too small to reveal meaningful information.", color: "emerald" },
+    { code: "C", label: "Opportunity Seeker", meaning: "Moves towards promising possibilities with moderate analysis.", interpretation: "Your responses suggest you move towards promising possibilities with moderate analysis.", nextStep: "Set explicit downside limits and decision review points.", color: "yellow" },
+    { code: "D", label: "Bold Pioneer", meaning: "Accepts substantial uncertainty in pursuit of high potential.", interpretation: "Your responses suggest you accept substantial uncertainty in pursuit of high potential.", nextStep: "Use staged commitments, pre-mortems and stop rules before major bets.", color: "orange" },
   ],
   dimensions: [],
 };

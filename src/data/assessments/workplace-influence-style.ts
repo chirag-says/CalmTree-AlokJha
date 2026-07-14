@@ -1,194 +1,83 @@
 /**
- * A40. Workplace Influence Style
- * Tier: Professional
- * Identifies the primary way a person gains support, changes minds and moves stakeholders towards action.
+ * W25. Workplace Influence Style
+ * Profile-based: identifies the influence method most naturally used.
  */
 
 import type { ProfileAssessmentConfig } from "./types";
 
 export const workplaceInfluenceStyle: ProfileAssessmentConfig = {
   slug: "workplace-influence-style",
-  order: 40,
-  type: "profile-based",
-  tier: "professional",
-  category: "Professional",
-  status: "active",
-  meta: {
-    title: "Workplace Influence Style",
-    subtitle: "How do you naturally move people to action?",
-    description:
-      "Identify your primary way of gaining support, changing minds and moving stakeholders towards action. Five profiles, ten questions.",
-    purpose:
-      "Identifies the primary way a person gains support, changes minds and moves stakeholders towards action.",
-    duration: "3–5 minutes",
-    questionCount: 10,
-    icon: "trending-up",
-    productCategory: "Leadership & Teams",
-    isFree: false,
-  },
-  instructions:
-    "Select the option that most closely reflects what you would usually do, not what you believe is the ideal answer.",
-  tieBreakQuestionIds: ["wis25q1", "wis25q5", "wis25q9"],
+  order: 40, type: "profile-based", tier: "professional", category: "Professional", status: "active",
+  meta: { title: "Workplace Influence Style", subtitle: "How do you influence others at work?", description: "Identify the influence method you most naturally use when formal authority is absent.", purpose: "Identifies the influence method a person most naturally uses when formal authority is absent.", duration: "3–5 minutes", questionCount: 10, icon: "trending-up", productCategory: "Leadership & Teams", isFree: false },
+  instructions: "Select the option that most closely reflects what you would usually do, not what you believe is the ideal answer.",
+  tieBreakQuestionIds: ["w25q1", "w25q5", "w25q9"],
   profileQuestions: [
-    {
-      id: "wis25q1",
-      text: "To gain support for a new idea, you first:",
-      options: [
-        { label: "Build the evidence and reasoning", profileCode: "A" },
-        { label: "Understand the people and establish trust", profileCode: "B" },
-        { label: "Clarify who can decide and what standards apply", profileCode: "C" },
-        { label: "Start conversations and keep following up", profileCode: "D" },
-        { label: "Describe the opportunity and why it matters", profileCode: "E" },
-      ],
-    },
-    {
-      id: "wis25q2",
-      text: "When someone resists your proposal, you:",
-      options: [
-        { label: "Address their assumptions with facts", profileCode: "A" },
-        { label: "Explore their concerns and relationship context", profileCode: "B" },
-        { label: "Clarify expectations, responsibilities or consequences", profileCode: "C" },
-        { label: "Continue engaging and find another route forward", profileCode: "D" },
-        { label: "Reframe the proposal around a more compelling future", profileCode: "E" },
-      ],
-    },
-    {
-      id: "wis25q3",
-      text: "Your strongest persuasive asset is:",
-      options: [
-        { label: "Credibility of analysis", profileCode: "A" },
-        { label: "Personal trust and empathy", profileCode: "B" },
-        { label: "Position, mandate or procedural clarity", profileCode: "C" },
-        { label: "Energy, consistency and persistence", profileCode: "D" },
-        { label: "Story, purpose and possibility", profileCode: "E" },
-      ],
-    },
-    {
-      id: "wis25q4",
-      text: "In a stakeholder meeting, you naturally focus on:",
-      options: [
-        { label: "The argument and supporting data", profileCode: "A" },
-        { label: "The people, concerns and alliances", profileCode: "B" },
-        { label: "The decision process and authority", profileCode: "C" },
-        { label: "What action can be secured now", profileCode: "D" },
-        { label: "The larger narrative and desired future", profileCode: "E" },
-      ],
-    },
-    {
-      id: "wis25q5",
-      text: "When your influence attempt fails, you first reconsider:",
-      options: [
-        { label: "Whether the logic was clear and credible", profileCode: "A" },
-        { label: "Whether enough trust or understanding existed", profileCode: "B" },
-        { label: "Whether decision rights and expectations were clear", profileCode: "C" },
-        { label: "Whether you followed up strongly enough", profileCode: "D" },
-        { label: "Whether the message was meaningful and inspiring", profileCode: "E" },
-      ],
-    },
-    {
-      id: "wis25q6",
-      text: "Which request is most natural for you?",
-      options: [
-        { label: "Here is the evidence; let us choose the strongest option", profileCode: "A" },
-        { label: "Let us find an approach that works for all of us", profileCode: "B" },
-        { label: "This is the required direction and responsibility", profileCode: "C" },
-        { label: "Let us agree the next step and keep moving", profileCode: "D" },
-        { label: "Imagine what becomes possible if we do this well", profileCode: "E" },
-      ],
-    },
-    {
-      id: "wis25q7",
-      text: "People are persuaded by you because:",
-      options: [
-        { label: "Your reasoning is clear", profileCode: "A" },
-        { label: "They trust your intention", profileCode: "B" },
-        { label: "They understand the authority or standard behind the request", profileCode: "C" },
-        { label: "You create momentum and do not let the issue disappear", profileCode: "D" },
-        { label: "You help them see significance and possibility", profileCode: "E" },
-      ],
-    },
-    {
-      id: "wis25q8",
-      text: "Your influence blind spot may be:",
-      options: [
-        { label: "Underestimating emotions or politics", profileCode: "A" },
-        { label: "Avoiding direct asks to protect relationships", profileCode: "B" },
-        { label: "Over-relying on status or rules", profileCode: "C" },
-        { label: "Pushing when listening would help", profileCode: "D" },
-        { label: "Inspiring without enough practical detail", profileCode: "E" },
-      ],
-    },
-    {
-      id: "wis25q9",
-      text: "When influencing across teams without authority, you rely most on:",
-      options: [
-        { label: "A strong business case", profileCode: "A" },
-        { label: "Relationships and reciprocal support", profileCode: "B" },
-        { label: "Governance, policy or senior sponsorship", profileCode: "C" },
-        { label: "Repeated engagement and visible progress", profileCode: "D" },
-        { label: "Shared purpose and a compelling outcome", profileCode: "E" },
-      ],
-    },
-    {
-      id: "wis25q10",
-      text: "To become more versatile, you most need to add:",
-      options: [
-        { label: "Audience empathy and narrative", profileCode: "A" },
-        { label: "Clearer evidence and direct requests", profileCode: "B" },
-        { label: "Consultation and relational trust", profileCode: "C" },
-        { label: "Reflection and deeper listening", profileCode: "D" },
-        { label: "Execution detail and measurable proof", profileCode: "E" },
-      ],
-    },
+    { id: "w25q1", text: "When you need agreement from a peer, you usually:", options: [
+      { label: "Present evidence and logical reasoning", profileCode: "A" },
+      { label: "Build the relationship and find shared interest", profileCode: "B" },
+      { label: "Appeal to the bigger picture and shared values", profileCode: "C" },
+      { label: "Use directness and personal conviction", profileCode: "D" },
+    ]},
+    { id: "w25q2", text: "Your strongest persuasion tool is:", options: [
+      { label: "Data, analysis and preparation", profileCode: "A" },
+      { label: "Empathy and rapport", profileCode: "B" },
+      { label: "Vision and purpose", profileCode: "C" },
+      { label: "Confidence and energy", profileCode: "D" },
+    ]},
+    { id: "w25q3", text: "When an idea faces resistance, you:", options: [
+      { label: "Provide stronger evidence", profileCode: "A" },
+      { label: "Listen and adapt the proposal", profileCode: "B" },
+      { label: "Reframe the opportunity in broader terms", profileCode: "C" },
+      { label: "Push with more conviction", profileCode: "D" },
+    ]},
+    { id: "w25q4", text: "You prepare for a persuasion conversation by:", options: [
+      { label: "Gathering facts and anticipating objections", profileCode: "A" },
+      { label: "Understanding the other person's interests", profileCode: "B" },
+      { label: "Clarifying the vision and why it matters", profileCode: "C" },
+      { label: "Deciding what you want and how firmly to push", profileCode: "D" },
+    ]},
+    { id: "w25q5", text: "Others are influenced by you mainly because you:", options: [
+      { label: "Are well prepared", profileCode: "A" },
+      { label: "Make them feel heard", profileCode: "B" },
+      { label: "Connect to something meaningful", profileCode: "C" },
+      { label: "Create momentum and urgency", profileCode: "D" },
+    ]},
+    { id: "w25q6", text: "When influencing upward, you:", options: [
+      { label: "Lead with evidence and recommendations", profileCode: "A" },
+      { label: "Build trust before making the request", profileCode: "B" },
+      { label: "Link to the leader's priorities and values", profileCode: "C" },
+      { label: "Be direct about what you need", profileCode: "D" },
+    ]},
+    { id: "w25q7", text: "Your influence risk is:", options: [
+      { label: "Being perceived as detached or impersonal", profileCode: "A" },
+      { label: "Yielding too much to maintain harmony", profileCode: "B" },
+      { label: "Sounding abstract or idealistic", profileCode: "C" },
+      { label: "Coming across as aggressive or impatient", profileCode: "D" },
+    ]},
+    { id: "w25q8", text: "In a cross-team negotiation, you:", options: [
+      { label: "Build the logical case for mutual benefit", profileCode: "A" },
+      { label: "Invest in the relationship first", profileCode: "B" },
+      { label: "Frame the conversation around shared goals", profileCode: "C" },
+      { label: "State your position clearly and negotiate directly", profileCode: "D" },
+    ]},
+    { id: "w25q9", text: "You feel most effective when influence is based on:", options: [
+      { label: "Competence and credibility", profileCode: "A" },
+      { label: "Trust and goodwill", profileCode: "B" },
+      { label: "Shared meaning", profileCode: "C" },
+      { label: "Action and visible results", profileCode: "D" },
+    ]},
+    { id: "w25q10", text: "Your development priority is:", options: [
+      { label: "Adding emotional connection", profileCode: "A" },
+      { label: "Increasing directness", profileCode: "B" },
+      { label: "Grounding vision in practical evidence", profileCode: "C" },
+      { label: "Listening before advocating", profileCode: "D" },
+    ]},
   ],
   profiles: [
-    {
-      code: "A",
-      label: "Logical Influencer",
-      meaning: "Persuades through evidence, structure and clear reasoning.",
-      interpretation:
-        "Your responses suggest you persuade through logic. You build a clear case, use evidence credibly and trust that the strength of your reasoning will carry the argument.",
-      nextStep: "Connect facts to the audience's priorities and emotions, not only to correctness.",
-      color: "blue",
-    },
-    {
-      code: "B",
-      label: "Relationship Builder",
-      meaning: "Influences through trust, empathy and personal credibility.",
-      interpretation:
-        "Your responses suggest you influence through relationship. People act because they trust you, feel understood by you and believe your intentions are aligned with theirs.",
-      nextStep:
-        "Make the proposal and desired action explicit rather than relying on goodwill alone.",
-      color: "emerald",
-    },
-    {
-      code: "C",
-      label: "Authority Driver",
-      meaning: "Uses role clarity, standards and decision rights to create movement.",
-      interpretation:
-        "Your responses suggest you influence through authority and process. You establish what is required, who is responsible and what standards apply — and people align accordingly.",
-      nextStep:
-        "Use authority transparently and invite challenge where better information may exist.",
-      color: "yellow",
-    },
-    {
-      code: "D",
-      label: "Persistent Mobiliser",
-      meaning: "Builds momentum through follow-up, energy and repeated action.",
-      interpretation:
-        "Your responses suggest you influence through persistence. You keep the issue alive, maintain energy and create movement through consistent follow-through rather than a single persuasive moment.",
-      nextStep: "Check whether resistance contains useful information before pushing harder.",
-      color: "orange",
-    },
-    {
-      code: "E",
-      label: "Vision Communicator",
-      meaning: "Creates commitment through purpose, narrative and an attractive future.",
-      interpretation:
-        "Your responses suggest you influence through inspiration. You connect work to a compelling future, and people act because they believe in the direction you describe.",
-      nextStep: "Translate inspiration into evidence, ownership and concrete next steps.",
-      color: "purple",
-    },
+    { code: "A", label: "Logical Persuader", meaning: "Influences through evidence, preparation and structured reasoning.", interpretation: "Your responses suggest you influence through evidence, preparation and structured reasoning.", nextStep: "Add emotional resonance and relationship investment.", color: "blue" },
+    { code: "B", label: "Relationship Builder", meaning: "Influences through trust, empathy and personal connection.", interpretation: "Your responses suggest you influence through trust, empathy and personal connection.", nextStep: "Practise stating your position directly after rapport is established.", color: "emerald" },
+    { code: "C", label: "Visionary Inspirer", meaning: "Influences by connecting actions to purpose and shared meaning.", interpretation: "Your responses suggest you influence by connecting actions to purpose and shared meaning.", nextStep: "Ground the vision with evidence and practical next steps.", color: "purple" },
+    { code: "D", label: "Direct Advocate", meaning: "Influences through confidence, clarity and personal conviction.", interpretation: "Your responses suggest you influence through confidence, clarity and personal conviction.", nextStep: "Listen and ask before advocating so others feel included.", color: "orange" },
   ],
   dimensions: [],
 };

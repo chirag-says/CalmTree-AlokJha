@@ -257,7 +257,19 @@ export const launchCampaign = createServerFn({ method: "POST" })
       }
     }
 
-    return { launched: true, invited: emails.length, emailsSent, emailsSkipped };
+    return {
+      launched: true,
+      invited: emails.length,
+      emailsSent,
+      emailsSkipped,
+      // Raw links are returned here (and only here) so the UI can surface them
+      // for manual distribution when Resend is not configured or emails are
+      // skipped. These are one-time values — they're gone after this response.
+      links: minted.map((m) => ({
+        email: m.email,
+        link: `${getPublicSiteUrl()}/a/${m.rawToken}`,
+      })),
+    };
   });
 
 // ─── closeCampaign (expire non-completed + refund) ───────────────────────────
@@ -362,6 +374,56 @@ export const sendReminders = createServerFn({ method: "POST" })
     }
 
     return { reminded: sent };
+  });
+
+// ─── getInviteLinks (re-mint tokens → raw links, no email) ───────────────────
+// Used when Resend is not configured or emails were skipped, so the admin can
+// copy-paste links directly to employees. Re-minting invalidates any earlier
+// links for the same invitations — that's intentional.
+
+export const getInviteLinks = createServerFn({ method: "POST" })
+  .inputValidator(z.object({ accessToken: z.string(), campaignId: z.string().uuid() }))
+  .handler(async ({ data }) => {
+    const supabase = getAdminClient();
+
+    const { data: campaign } = await supabase
+      .from("campaigns")
+      .select("id, org_id, status")
+      .eq("id", data.campaignId)
+      .maybeSingle();
+    if (!campaign) return { error: "Campaign not found." };
+
+    try {
+      await requireOrgRole(data.accessToken, campaign.org_id, "admin");
+    } catch (e) {
+      return { error: e instanceof Error ? e.message : "Unauthorized." };
+    }
+
+    if (campaign.status === "closed") {
+      return { error: "Campaign is closed — no links to generate." };
+    }
+
+    const { data: invitations } = await supabase
+      .from("invitations")
+      .select("id, email, status")
+      .eq("campaign_id", data.campaignId)
+      .in("status", ["pending", "sent", "opened"])
+      .order("email");
+
+    const links: { email: string; link: string }[] = [];
+    for (const inv of invitations ?? []) {
+      const rawToken = generateInviteToken();
+      await supabase
+        .from("invitations")
+        .update({ token_hash: hashInviteToken(rawToken) })
+        .eq("id", inv.id as string);
+      links.push({
+        email: inv.email as string,
+        link: `${getPublicSiteUrl()}/a/${rawToken}`,
+      });
+    }
+
+    return { links };
   });
 
 // ─── getCampaignReport (privacy-gated aggregate) ─────────────────────────────

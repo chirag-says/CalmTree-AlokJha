@@ -1,173 +1,59 @@
 /**
- * A25. Workplace Adaptability Style
- * Tier: Professional
- * Shows how a person responds to new systems, shifting priorities, unfamiliar roles and repeated workplace change.
+ * W10. Workplace Adaptability Style
+ * Measures comfort with changing priorities, unfamiliar methods, learning demands and uncertainty at work.
  */
 
-import type { ProfileAssessmentConfig } from "./types";
+import type { AssessmentConfig } from "./types";
+import { LIKERT_5 } from "./types";
 
-export const workplaceAdaptabilityStyle: ProfileAssessmentConfig = {
+export const workplaceAdaptabilityStyle: AssessmentConfig = {
   slug: "workplace-adaptability-style",
   order: 25,
-  type: "profile-based",
+  type: "standard",
   tier: "professional",
   category: "Professional",
   status: "active",
   meta: {
     title: "Workplace Adaptability Style",
-    subtitle: "How do you respond to change at work?",
-    description:
-      "See how you respond to new systems, shifting priorities and repeated workplace change. Four profiles, ten situational questions.",
-    purpose:
-      "Shows how a person responds to new systems, shifting priorities, unfamiliar roles and repeated workplace change.",
+    subtitle: "How well do you adapt to change at work?",
+    description: "Measure your comfort with changing priorities, unfamiliar methods and uncertainty at work.",
+    purpose: "Measures comfort with changing priorities, unfamiliar methods, learning demands and uncertainty at work.",
     duration: "3–5 minutes",
     questionCount: 10,
     icon: "refresh-cw",
     productCategory: "Workplace Effectiveness",
     isFree: false,
   },
-  instructions:
-    "Select the option that most closely reflects what you would usually do, not what you believe is the ideal answer.",
-  tieBreakQuestionIds: ["was10q1", "was10q3", "was10q8"],
-  profileQuestions: [
-    {
-      id: "was10q1",
-      text: "A new system replaces one you know well. You:",
-      options: [
-        { label: "Prefer to keep current system unless benefit is proven", profileCode: "A" },
-        { label: "Learn the reason, plan transition and then adjust", profileCode: "B" },
-        { label: "Explore the new system and learn by using it", profileCode: "C" },
-        { label: "Encourage early adoption and help others see the opportunity", profileCode: "D" },
-      ],
-    },
-    {
-      id: "was10q2",
-      text: "When priorities change suddenly, you:",
-      options: [
-        { label: "Need time to reorganise and regain stability", profileCode: "A" },
-        { label: "Clarify what changed and revise the plan", profileCode: "B" },
-        { label: "Shift quickly and work out details while moving", profileCode: "C" },
-        { label: "Use the change to rethink the wider approach", profileCode: "D" },
-      ],
-    },
-    {
-      id: "was10q3",
-      text: "A restructuring is announced. Your first concern is:",
-      options: [
-        { label: "What stability, role clarity and routines will be lost", profileCode: "A" },
-        { label: "What the new structure means and how transition will happen", profileCode: "B" },
-        { label: "What new possibilities and ways of working may emerge", profileCode: "C" },
-        { label: "How to help shape the change rather than only respond to it", profileCode: "D" },
-      ],
-    },
-    {
-      id: "was10q4",
-      text: "When learning unfamiliar work, you prefer:",
-      options: [
-        { label: "Clear instructions and proven examples", profileCode: "A" },
-        { label: "A structured orientation and time to practise", profileCode: "B" },
-        { label: "Hands-on experimentation with quick feedback", profileCode: "C" },
-        { label: "Freedom to redesign the approach from the start", profileCode: "D" },
-      ],
-    },
-    {
-      id: "was10q5",
-      text: "People may experience you during change as:",
-      options: [
-        { label: "A source of continuity and caution", profileCode: "A" },
-        { label: "A calm planner who helps people adjust", profileCode: "B" },
-        { label: "A flexible problem-solver", profileCode: "C" },
-        { label: "An energetic advocate for movement", profileCode: "D" },
-      ],
-    },
-    {
-      id: "was10q6",
-      text: "Which change is hardest for you?",
-      options: [
-        { label: "Change that removes dependable routines", profileCode: "A" },
-        { label: "Change without a clear rationale or transition plan", profileCode: "B" },
-        { label: "Change restricted by too many rules", profileCode: "C" },
-        { label: "Change that is too slow or limited in ambition", profileCode: "D" },
-      ],
-    },
-    {
-      id: "was10q7",
-      text: "When a pilot produces mixed results, you:",
-      options: [
-        { label: "Prefer returning to the established method", profileCode: "A" },
-        { label: "Review evidence and improve the implementation plan", profileCode: "B" },
-        { label: "Modify the experiment and test again", profileCode: "C" },
-        { label: "Use the learning to push for a broader redesign", profileCode: "D" },
-      ],
-    },
-    {
-      id: "was10q8",
-      text: "Your confidence during change comes from:",
-      options: [
-        { label: "Continuity, experience and proven practice", profileCode: "A" },
-        { label: "Preparation, communication and support", profileCode: "B" },
-        { label: "Ability to learn and adjust quickly", profileCode: "C" },
-        { label: "Belief in the future direction and ability to influence it", profileCode: "D" },
-      ],
-    },
-    {
-      id: "was10q9",
-      text: "If colleagues resist change, you tend to:",
-      options: [
-        { label: "Understand why they want to protect what works", profileCode: "A" },
-        { label: "Explain the transition and address practical concerns", profileCode: "B" },
-        { label: "Help them try the new approach in a low-risk way", profileCode: "C" },
-        { label: "Challenge the status quo and create momentum", profileCode: "D" },
-      ],
-    },
-    {
-      id: "was10q10",
-      text: "You are most engaged when change is:",
-      options: [
-        { label: "Necessary, limited and well controlled", profileCode: "A" },
-        { label: "Clearly explained and competently managed", profileCode: "B" },
-        { label: "Flexible, iterative and open to learning", profileCode: "C" },
-        { label: "Transformative and capable of creating a better future", profileCode: "D" },
-      ],
-    },
+  instructions: "Rate each statement according to your typical experience during the past four weeks. 1 = Almost Never; 2 = Rarely; 3 = Sometimes; 4 = Often; 5 = Almost Always.",
+  questions: [
+    { id: "w10q1", text: "I can shift priorities without remaining frustrated by the earlier plan.", options: [...LIKERT_5], dimension: "priority-shift" },
+    { id: "w10q2", text: "I need considerable time before I feel effective in a new process.", options: [...LIKERT_5], reverse: true, dimension: "learning-transition" },
+    { id: "w10q3", text: "I look for useful information when circumstances change.", options: [...LIKERT_5], dimension: "learning-orientation" },
+    { id: "w10q4", text: "Unexpected change quickly reduces my confidence.", options: [...LIKERT_5], reverse: true, dimension: "emotional-adjustment" },
+    { id: "w10q5", text: "I can experiment with a new method before mastering it.", options: [...LIKERT_5], dimension: "experimentation" },
+    { id: "w10q6", text: "I continue using familiar methods even when they are no longer effective.", options: [...LIKERT_5], reverse: true, dimension: "rigidity" },
+    { id: "w10q7", text: "I can work productively while some details remain uncertain.", options: [...LIKERT_5], dimension: "uncertainty-tolerance" },
+    { id: "w10q8", text: "I learn from colleagues whose approach differs from mine.", options: [...LIKERT_5], dimension: "openness" },
+    { id: "w10q9", text: "Repeated change without explanation makes me disengage.", options: [...LIKERT_5], reverse: true, dimension: "change-meaning" },
+    { id: "w10q10", text: "After an adjustment period, I can build new routines.", options: [...LIKERT_5], dimension: "integration" },
   ],
-  profiles: [
-    {
-      code: "A",
-      label: "Steady Preserver",
-      meaning: "Values continuity, proven methods and stable expectations.",
-      interpretation:
-        "Your responses suggest you value stability and continuity. You protect what works, absorb change carefully and ensure transitions do not discard hard-won reliability.",
-      nextStep: "Ask what must remain stable while testing one change at a time.",
-      color: "blue",
-    },
-    {
-      code: "B",
-      label: "Prepared Adapter",
-      meaning: "Adjusts well when the rationale, plan and support are clear.",
-      interpretation:
-        "Your responses suggest you adapt effectively when change is well-managed. You adjust through understanding and planning, not through instinct or pressure.",
-      nextStep: "Act before every detail is settled; use early feedback to refine.",
-      color: "emerald",
-    },
-    {
-      code: "C",
-      label: "Agile Experimenter",
-      meaning: "Adapts through trying, learning and rapid adjustment.",
-      interpretation:
-        "Your responses suggest you are comfortable learning by doing. You prefer to explore a new way than read about it, and you recover quickly from what does not work.",
-      nextStep: "Document learning and avoid change for novelty alone.",
-      color: "yellow",
-    },
-    {
-      code: "D",
-      label: "Change Catalyst",
-      meaning: "Actively promotes new approaches and helps others move forward.",
-      interpretation:
-        "Your responses suggest you are drawn to transformation. You see possibility where others see risk, and you help organisations move from comfortable but limited to capable and forward-facing.",
-      nextStep: "Acknowledge transition costs and protect what already works.",
-      color: "orange",
-    },
+  scoring: { method: "sum", min: 10, max: 50 },
+  dimensions: [
+    { id: "priority-shift", label: "Priority Shift", questionIds: ["w10q1"] },
+    { id: "learning-transition", label: "Learning Transition", questionIds: ["w10q2"] },
+    { id: "learning-orientation", label: "Learning Orientation", questionIds: ["w10q3"] },
+    { id: "emotional-adjustment", label: "Emotional Adjustment", questionIds: ["w10q4"] },
+    { id: "experimentation", label: "Experimentation", questionIds: ["w10q5"] },
+    { id: "rigidity", label: "Rigidity", questionIds: ["w10q6"] },
+    { id: "uncertainty-tolerance", label: "Uncertainty Tolerance", questionIds: ["w10q7"] },
+    { id: "openness", label: "Openness", questionIds: ["w10q8"] },
+    { id: "change-meaning", label: "Change Meaning", questionIds: ["w10q9"] },
+    { id: "integration", label: "Integration", questionIds: ["w10q10"] },
   ],
-  dimensions: [],
+  archetypes: [
+    { min: 10, max: 19, label: "Stability Seeker", color: "blue", interpretation: "Your responses suggest that workplace adaptability is currently limited or inconsistent. The pattern may depend heavily on reassurance or favourable conditions.", nextStep: "Choose one small behaviour to practise repeatedly rather than trying to change everything at once." },
+    { min: 20, max: 29, label: "Cautious Adapter", color: "yellow", interpretation: "You show some foundations of workplace adaptability, although they may become less reliable under pressure or uncertainty.", nextStep: "Identify situations where the skill already works and deliberately transfer that behaviour to one harder context." },
+    { min: 30, max: 39, label: "Flexible Operator", color: "emerald", interpretation: "Your responses suggest a generally steady level of workplace adaptability, with a few areas that could become more consistent.", nextStep: "Strengthen the lowest subdomain while continuing to use your existing strengths." },
+    { min: 40, max: 50, label: "Adaptive Explorer", color: "green", interpretation: "Your responses indicate a strong and broadly reliable pattern of workplace adaptability. You are likely to use it across many situations.", nextStep: "Protect the strength from becoming overused and practise adapting it to people and contexts that need a different approach." },
+  ],
 };

@@ -1,7 +1,8 @@
 /**
- * A3. Confidence Quotient™
- * Tier: Discovery (Free)
- * Measures self-belief, initiative, social confidence, and resilience.
+ * A3. Confidence Quotient
+ * Pack 1 — Self-Awareness and Personality
+ * Explores self-belief, willingness to act, response to criticism and
+ * comfort expressing needs or opinions.
  */
 
 import type { AssessmentConfig } from "./types";
@@ -15,89 +16,96 @@ export const confidenceQuotient: AssessmentConfig = {
   category: "Personal Growth",
   status: "active",
   meta: {
-    title: "Confidence Quotient™",
-    subtitle: "How confident are you, really?",
+    title: "Confidence Quotient",
+    subtitle: "How strong is your self-confidence?",
     description:
-      "Explore your self-belief, initiative, and resilience. A quick, non-clinical confidence check with instant private results.",
-    purpose: "Measures self-belief, initiative, social confidence, and resilience.",
-    duration: "Under 2 minutes",
+      "Explore your self-belief, willingness to act and comfort expressing your needs. Ten honest questions, instant results, completely private.",
+    purpose:
+      "Explores self-belief, willingness to act, response to criticism and comfort expressing needs or opinions.",
+    duration: "3–5 minutes",
     questionCount: 10,
-    icon: "shield",
+    icon: "zap",
     productCategory: "Self-Awareness & Personality",
     isFree: true,
   },
   instructions:
-    "Answer each question honestly based on how you typically feel and act. There are no right or wrong answers.",
+    "Rate each statement according to your typical experience during the past four weeks. 1 = Almost Never; 2 = Rarely; 3 = Sometimes; 4 = Often; 5 = Almost Always.",
   questions: [
     {
       id: "a3q1",
-      text: "When making an important decision, how comfortable are you choosing a direction without excessive reassurance?",
+      text: "I share my view even when more experienced people are present.",
       options: [...LIKERT_5],
-      dimension: "self-belief",
+      dimension: "voice",
     },
     {
       id: "a3q2",
-      text: "In a group discussion, how likely are you to share a different viewpoint if you disagree?",
+      text: "I am willing to attempt unfamiliar tasks before I feel fully ready.",
       options: [...LIKERT_5],
-      dimension: "social-confidence",
+      dimension: "action",
     },
     {
       id: "a3q3",
-      text: "If you make a mistake publicly, how easily do you move forward?",
+      text: "I can make a mistake without treating it as proof that I am incapable.",
       options: [...LIKERT_5],
-      dimension: "resilience",
+      dimension: "recovery",
     },
     {
       id: "a3q4",
-      text: "How often do concerns about failure stop you from trying something new?",
+      text: "I compare myself unfavourably with others before deciding whether to act.",
       options: [...LIKERT_5],
       reverse: true,
-      dimension: "initiative",
+      dimension: "comparison",
     },
     {
       id: "a3q5",
-      text: "When presented with a challenge, how likely are you to believe you can learn what is needed?",
+      text: "I make everyday decisions without repeatedly seeking reassurance.",
       options: [...LIKERT_5],
-      dimension: "self-belief",
+      dimension: "self-trust",
     },
     {
       id: "a3q6",
-      text: "How comfortable are you introducing yourself to unfamiliar people in a professional setting?",
+      text: "I can accept appreciation without immediately dismissing it.",
       options: [...LIKERT_5],
-      dimension: "social-confidence",
+      dimension: "self-recognition",
     },
     {
       id: "a3q7",
-      text: "How likely are you to volunteer for opportunities that stretch your abilities?",
+      text: "I set reasonable boundaries even when another person may disagree.",
       options: [...LIKERT_5],
-      dimension: "initiative",
+      dimension: "assertiveness",
     },
     {
       id: "a3q8",
-      text: "How often do you compare yourself negatively with others?",
+      text: "I avoid opportunities when I cannot guarantee a strong performance.",
       options: [...LIKERT_5],
       reverse: true,
-      dimension: "resilience",
+      dimension: "perfection-avoidance",
     },
     {
       id: "a3q9",
-      text: "When receiving constructive feedback, how easy is it to focus on improvement rather than criticism?",
+      text: "I trust my ability to learn what I do not yet know.",
       options: [...LIKERT_5],
-      dimension: "resilience",
+      dimension: "growth-belief",
     },
     {
       id: "a3q10",
-      text: "If someone questions your opinion, how comfortable are you explaining your perspective?",
+      text: "I recover after criticism without losing confidence for a long time.",
       options: [...LIKERT_5],
-      dimension: "social-confidence",
+      dimension: "resilience",
     },
   ],
   scoring: { method: "sum", min: 10, max: 50 },
   dimensions: [
-    { id: "self-belief", label: "Self-Belief", questionIds: ["a3q1", "a3q5"] },
-    { id: "initiative", label: "Initiative", questionIds: ["a3q4", "a3q7"] },
-    { id: "social-confidence", label: "Social Confidence", questionIds: ["a3q2", "a3q6", "a3q10"] },
-    { id: "resilience", label: "Resilience", questionIds: ["a3q3", "a3q8", "a3q9"] },
+    { id: "voice", label: "Voice", questionIds: ["a3q1"] },
+    { id: "action", label: "Action", questionIds: ["a3q2"] },
+    { id: "recovery", label: "Recovery", questionIds: ["a3q3"] },
+    { id: "comparison", label: "Comparison", questionIds: ["a3q4"] },
+    { id: "self-trust", label: "Self-trust", questionIds: ["a3q5"] },
+    { id: "self-recognition", label: "Self-recognition", questionIds: ["a3q6"] },
+    { id: "assertiveness", label: "Assertiveness", questionIds: ["a3q7"] },
+    { id: "perfection-avoidance", label: "Perfection Avoidance", questionIds: ["a3q8"] },
+    { id: "growth-belief", label: "Growth Belief", questionIds: ["a3q9"] },
+    { id: "resilience", label: "Resilience", questionIds: ["a3q10"] },
   ],
   archetypes: [
     {
@@ -106,7 +114,9 @@ export const confidenceQuotient: AssessmentConfig = {
       label: "Quiet Observer",
       color: "blue",
       interpretation:
-        "You tend to hold back and observe. Building confidence is a process — and awareness is the first step.",
+        "Your responses suggest that self-confidence is currently limited or inconsistent. The pattern may depend heavily on reassurance or favourable conditions.",
+      nextStep:
+        "Choose one small behaviour to practise repeatedly rather than trying to change everything at once.",
     },
     {
       min: 20,
@@ -114,7 +124,9 @@ export const confidenceQuotient: AssessmentConfig = {
       label: "Emerging Confident",
       color: "yellow",
       interpretation:
-        "Your confidence is developing. You have moments of strength but may second-guess yourself in certain situations.",
+        "You show some foundations of self-confidence, although they may become less reliable under pressure or uncertainty.",
+      nextStep:
+        "Identify situations where the skill already works and deliberately transfer that behaviour to one harder context.",
     },
     {
       min: 30,
@@ -122,7 +134,9 @@ export const confidenceQuotient: AssessmentConfig = {
       label: "Steady Performer",
       color: "emerald",
       interpretation:
-        "You have a solid foundation of self-belief and can handle most situations with reasonable confidence.",
+        "Your responses suggest a generally steady level of self-confidence, with a few areas that could become more consistent.",
+      nextStep:
+        "Strengthen the lowest subdomain while continuing to use your existing strengths.",
     },
     {
       min: 40,
@@ -130,7 +144,9 @@ export const confidenceQuotient: AssessmentConfig = {
       label: "Bold Achiever",
       color: "green",
       interpretation:
-        "You demonstrate strong self-belief, initiative, and social confidence. You embrace challenges and recover well from setbacks.",
+        "Your responses indicate a strong and broadly reliable pattern of self-confidence. You are likely to use it across many situations.",
+      nextStep:
+        "Protect the strength from becoming overused and practise adapting it to people and contexts that need a different approach.",
     },
   ],
 };

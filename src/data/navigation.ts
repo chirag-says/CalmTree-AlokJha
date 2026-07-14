@@ -18,6 +18,7 @@ export const NAV_LINKS: readonly NavLink[] = [
   { to: "/academy", label: "Academy", requiresAuth: true },
   { to: "/assessments", label: "Assessments", requiresAuth: true },
   { to: "/resources", label: "Resources", requiresAuth: true },
+  { to: "/for-organizations", label: "For Organizations" },
   { to: "/about", label: "About" },
   { to: "/contact", label: "Contact" },
 ] as const;

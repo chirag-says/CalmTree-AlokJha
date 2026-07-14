@@ -1,103 +1,132 @@
 /**
  * Assessment Registry — single import to get any assessment.
  *
- * All 40 CalmTree Original™ assessments, organized by tier.
+ * All 50 CalmTree assessments (Packs 1-5), organized by tier.
  * Add a new assessment: import it, add to the map and list. Done.
  */
 
 import type { AssessmentConfig, ProfileAssessmentConfig, AssessmentTier } from "./types";
 export type { ProductCategory } from "./types";
 
-// Discovery Tier (Free)
-import { burnoutRiskCheck } from "./burnout-risk-check";
-import { stressLevelCheck } from "./stress-level-check";
+// ─── Pack 1: Self-Awareness and Personality ────────────────────────
 import { confidenceQuotient } from "./confidence-quotient";
-import { screenDependency } from "./screen-dependency";
-import { happinessBlueprint } from "./happiness-blueprint";
-
-// Growth Tier (₹99-299)
 import { emotionalIntelligence } from "./emotional-intelligence";
 import { personalityCompass } from "./personality-compass";
-import { relationshipHealth } from "./relationship-health";
-import { communicationStyle } from "./communication-style";
-import { learningStyle } from "./learning-style";
-
-// Professional Tier (₹299-999)
-import { workLifeHarmony } from "./work-life-harmony";
-import { entrepreneurResilience } from "./entrepreneur-resilience";
-import { leadershipDNA } from "./leadership-dna";
-import { careerSatisfaction } from "./career-satisfaction";
-import { teamPlayerIndex } from "./team-player-index";
-import { independenceVsCollaboration } from "./independence-vs-collaboration";
-import { detailVsBigPicture } from "./detail-vs-big-picture";
-import { workplaceAdaptabilityStyle } from "./workplace-adaptability-style";
-import { workplaceStressTriggerMap } from "./workplace-stress-trigger-map";
-import { deadlinePressureResponse } from "./deadline-pressure-response";
-import { workloadRecoveryCapacity } from "./workload-recovery-capacity";
-import { unclearRoleStress } from "./unclear-role-stress";
+import { happinessBlueprint } from "./happiness-blueprint";
 import { workplacePersonalityStyle } from "./workplace-personality-style";
 import { socialEnergyAtWork } from "./social-energy-at-work";
 import { structureVsFlexibility } from "./structure-vs-flexibility";
+import { detailVsBigPicture } from "./detail-vs-big-picture";
+import { communicationStyle } from "./communication-style";
+import { learningStyle } from "./learning-style";
+
+// ─── Pack 2: Emotional Wellbeing and Digital Balance ───────────────
+import { burnoutRiskCheck } from "./burnout-risk-check";
+import { stressLevelCheck } from "./stress-level-check";
+import { screenDependency } from "./screen-dependency";
+import { workLifeHarmony } from "./work-life-harmony";
+import { workloadRecoveryCapacity } from "./workload-recovery-capacity";
+import { meetingFatigueCheck } from "./meeting-fatigue-check";
+import { workplaceInterruptionSensitivity } from "./workplace-interruption-sensitivity";
+import { afterWorkDetachment } from "./after-work-detachment";
+import { workplaceEmotionalLoad } from "./workplace-emotional-load";
+import { changeFatigue } from "./change-fatigue";
+
+// ─── Pack 3: Workplace Effectiveness and Stress ────────────────────
+import { careerSatisfaction } from "./career-satisfaction";
+import { teamPlayerIndex } from "./team-player-index";
 import { riskTakingAtWork } from "./risk-taking-at-work";
 import { workplaceAssertiveness } from "./workplace-assertiveness-style";
 import { controlOrientation } from "./control-orientation";
 import { recognitionNeedAtWork } from "./recognition-need-at-work";
-import { meetingFatigueCheck } from "./meeting-fatigue-check";
-import { workplaceInterruptionSensitivity } from "./workplace-interruption-sensitivity";
-import { afterWorkDetachment } from "./after-work-detachment";
+import { independenceVsCollaboration } from "./independence-vs-collaboration";
+import { workplaceAdaptabilityStyle } from "./workplace-adaptability-style";
+import { workplaceStressTriggerMap } from "./workplace-stress-trigger-map";
+import { unclearRoleStress } from "./unclear-role-stress";
+
+// ─── Pack 4: Leadership, Relationships and Influence ───────────────
+import { entrepreneurResilience } from "./entrepreneur-resilience";
+import { relationshipHealth } from "./relationship-health";
+import { leadershipDNA } from "./leadership-dna";
+import { deadlinePressureResponse } from "./deadline-pressure-response";
 import { pressureDecisionStyle } from "./pressure-decision-style";
-import { workplaceEmotionalLoad } from "./workplace-emotional-load";
-import { changeFatigue } from "./change-fatigue";
 import { naturalLeadershipOrientation } from "./natural-leadership-orientation";
 import { feedbackResponseStyle } from "./feedback-response-style";
 import { teamTrustStyle } from "./team-trust-style";
 import { psychologicalSafetyCheck } from "./psychological-safety-check";
 import { workplaceInfluenceStyle } from "./workplace-influence-style";
 
+// ─── Pack 5: Relationships and Emotional Connection ────────────────
+import { relationshipCommunicationPattern } from "./relationship-communication-pattern";
+import { emotionalNeedsAwareness } from "./emotional-needs-awareness";
+import { closenessPersonalSpace } from "./closeness-personal-space";
+import { conflictResponsePattern } from "./conflict-response-pattern";
+import { trustVulnerabilityReadiness } from "./trust-vulnerability-readiness";
+import { relationshipExpectationsCheck } from "./relationship-expectations-check";
+import { appreciationExpressionStyle } from "./appreciation-expression-style";
+import { boundaryBalanceRelationships } from "./boundary-balance-relationships";
+import { difficultConversationReadiness } from "./difficult-conversation-readiness";
+import { repairAfterConflict } from "./repair-after-conflict";
+
 export type AnyAssessmentConfig = AssessmentConfig | ProfileAssessmentConfig;
 
 /** Lookup by slug */
 export const ASSESSMENTS: Record<string, AssessmentConfig | ProfileAssessmentConfig> = {
-  "burnout-risk-check": burnoutRiskCheck,
-  "stress-level-check": stressLevelCheck,
+  // Pack 1
   "confidence-quotient": confidenceQuotient,
-  "screen-dependency": screenDependency,
-  "happiness-blueprint": happinessBlueprint,
   "emotional-intelligence": emotionalIntelligence,
   "personality-compass": personalityCompass,
-  "relationship-health": relationshipHealth,
-  "communication-style": communicationStyle,
-  "learning-style": learningStyle,
-  "work-life-harmony": workLifeHarmony,
-  "entrepreneur-resilience": entrepreneurResilience,
-  "leadership-dna": leadershipDNA,
-  "career-satisfaction": careerSatisfaction,
-  "team-player-index": teamPlayerIndex,
+  "happiness-blueprint": happinessBlueprint,
   "workplace-personality-style": workplacePersonalityStyle,
   "social-energy-at-work": socialEnergyAtWork,
   "structure-vs-flexibility": structureVsFlexibility,
+  "detail-vs-big-picture": detailVsBigPicture,
+  "communication-style": communicationStyle,
+  "learning-style": learningStyle,
+  // Pack 2
+  "burnout-risk-check": burnoutRiskCheck,
+  "stress-level-check": stressLevelCheck,
+  "screen-dependency": screenDependency,
+  "work-life-harmony": workLifeHarmony,
+  "workload-recovery-capacity": workloadRecoveryCapacity,
+  "meeting-fatigue-check": meetingFatigueCheck,
+  "workplace-interruption-sensitivity": workplaceInterruptionSensitivity,
+  "after-work-detachment": afterWorkDetachment,
+  "workplace-emotional-load": workplaceEmotionalLoad,
+  "change-fatigue": changeFatigue,
+  // Pack 3
+  "career-satisfaction": careerSatisfaction,
+  "team-player-index": teamPlayerIndex,
   "risk-taking-at-work": riskTakingAtWork,
   "workplace-assertiveness-style": workplaceAssertiveness,
   "control-orientation": controlOrientation,
   "recognition-need-at-work": recognitionNeedAtWork,
   "independence-vs-collaboration": independenceVsCollaboration,
-  "detail-vs-big-picture": detailVsBigPicture,
   "workplace-adaptability-style": workplaceAdaptabilityStyle,
   "workplace-stress-trigger-map": workplaceStressTriggerMap,
-  "deadline-pressure-response": deadlinePressureResponse,
-  "workload-recovery-capacity": workloadRecoveryCapacity,
   "unclear-role-stress": unclearRoleStress,
-  "meeting-fatigue-check": meetingFatigueCheck,
-  "workplace-interruption-sensitivity": workplaceInterruptionSensitivity,
-  "after-work-detachment": afterWorkDetachment,
+  // Pack 4
+  "entrepreneur-resilience": entrepreneurResilience,
+  "relationship-health": relationshipHealth,
+  "leadership-dna": leadershipDNA,
+  "deadline-pressure-response": deadlinePressureResponse,
   "pressure-decision-style": pressureDecisionStyle,
-  "workplace-emotional-load": workplaceEmotionalLoad,
-  "change-fatigue": changeFatigue,
   "natural-leadership-orientation": naturalLeadershipOrientation,
   "feedback-response-style": feedbackResponseStyle,
   "team-trust-style": teamTrustStyle,
   "psychological-safety-check": psychologicalSafetyCheck,
   "workplace-influence-style": workplaceInfluenceStyle,
+  // Pack 5
+  "relationship-communication-pattern": relationshipCommunicationPattern,
+  "emotional-needs-awareness": emotionalNeedsAwareness,
+  "closeness-personal-space": closenessPersonalSpace,
+  "conflict-response-pattern": conflictResponsePattern,
+  "trust-vulnerability-readiness": trustVulnerabilityReadiness,
+  "relationship-expectations-check": relationshipExpectationsCheck,
+  "appreciation-expression-style": appreciationExpressionStyle,
+  "boundary-balance-relationships": boundaryBalanceRelationships,
+  "difficult-conversation-readiness": difficultConversationReadiness,
+  "repair-after-conflict": repairAfterConflict,
 };
 
 /** Ordered list — sorted by tier then order */
@@ -121,6 +150,16 @@ export function getAssessmentsByTier(tier: AssessmentTier): AnyAssessmentConfig[
 /** Get single assessment by slug */
 export function getAssessment(slug: string): AnyAssessmentConfig | undefined {
   return ASSESSMENTS[slug];
+}
+
+/** Get assessments by pack */
+export function getAssessmentsByPack(pack: number): AnyAssessmentConfig[] {
+  const ranges: Record<number, [number, number]> = {
+    1: [1, 10], 2: [11, 20], 3: [21, 30], 4: [31, 40], 5: [41, 50],
+  };
+  const range = ranges[pack];
+  if (!range) return [];
+  return ASSESSMENT_LIST.filter((a) => a.order >= range[0] && a.order <= range[1]);
 }
 
 /** Tier metadata for display */

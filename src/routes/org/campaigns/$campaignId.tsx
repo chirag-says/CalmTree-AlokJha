@@ -25,6 +25,9 @@ import {
   CheckCircle2,
   Clock,
   AlertTriangle,
+  Link2,
+  Copy,
+  Check,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import {
@@ -32,6 +35,7 @@ import {
   getCampaignReport,
   closeCampaign,
   sendReminders,
+  getInviteLinks,
 } from "@/server/functions/campaigns.functions";
 import { CampaignStatusBadge } from "@/routes/org/index";
 import { toast } from "sonner";
@@ -48,6 +52,9 @@ function CampaignDetailPage() {
   const { campaignId } = Route.useParams();
   const queryClient = useQueryClient();
   const [showCloseConfirm, setShowCloseConfirm] = useState(false);
+  const [showLinks, setShowLinks] = useState(false);
+  const [inviteLinks, setInviteLinks] = useState<{ email: string; link: string }[]>([]);
+  const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
 
   // Campaign detail (metadata + invitation list)
   const detailQuery = useQuery({
@@ -80,6 +87,25 @@ function CampaignDetailPage() {
       }
     },
     onError: () => toast.error("Failed to close campaign."),
+  });
+
+  // Get invite links mutation
+  const getLinksMutation = useMutation({
+    mutationFn: () => getInviteLinks({ data: { accessToken: session!.access_token, campaignId } }),
+    onSuccess: (result) => {
+      if ("error" in result) {
+        toast.error(result.error);
+        return;
+      }
+      if (result.links.length === 0) {
+        toast.info("No pending invitations — everyone has already completed the assessment.");
+        return;
+      }
+      setInviteLinks(result.links);
+      setShowLinks(true);
+      setCopiedIdx(null);
+    },
+    onError: () => toast.error("Failed to generate invite links."),
   });
 
   // Reminders mutation
@@ -163,7 +189,22 @@ function CampaignDetailPage() {
 
         {/* Actions */}
         {campaign.status === "active" && (
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={() => {
+                setShowLinks(false);
+                getLinksMutation.mutate();
+              }}
+              disabled={getLinksMutation.isPending}
+              className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl border border-input bg-background text-sm font-medium hover:bg-accent transition-colors disabled:opacity-50"
+            >
+              {getLinksMutation.isPending ? (
+                <div className="h-4 w-4 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+              ) : (
+                <Link2 className="h-4 w-4" />
+              )}
+              Get Links
+            </button>
             <button
               onClick={() => reminderMutation.mutate()}
               disabled={reminderMutation.isPending}
@@ -214,6 +255,67 @@ function CampaignDetailPage() {
                 </button>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Invite links panel */}
+      {showLinks && inviteLinks.length > 0 && (
+        <div className="rounded-xl border border-border bg-card p-5 mb-6">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
+              <Link2 className="h-4 w-4" />
+              Invite Links
+            </h3>
+            <button
+              onClick={() => setShowLinks(false)}
+              className="text-xs text-muted-foreground hover:text-foreground"
+            >
+              Dismiss
+            </button>
+          </div>
+          <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 mb-3">
+            These links are freshly generated. Any previously sent links for the same people are now
+            invalid. Share each link only with the person it's addressed to.
+          </p>
+          <div className="overflow-x-auto rounded-lg border border-border">
+            <table className="w-full text-sm">
+              <thead className="bg-muted/50">
+                <tr>
+                  <th className="text-left py-2 px-3 text-muted-foreground font-medium">Email</th>
+                  <th className="text-right py-2 px-3 text-muted-foreground font-medium">Link</th>
+                </tr>
+              </thead>
+              <tbody>
+                {inviteLinks.map((l, idx) => (
+                  <tr key={idx} className="border-t border-border/50">
+                    <td className="py-2 px-3 text-foreground">{l.email}</td>
+                    <td className="py-2 px-3 text-right">
+                      <button
+                        onClick={async () => {
+                          await navigator.clipboard.writeText(l.link);
+                          setCopiedIdx(idx);
+                          setTimeout(() => setCopiedIdx(null), 2000);
+                        }}
+                        className="inline-flex items-center gap-1.5 text-xs text-primary hover:text-primary/80 transition-colors"
+                      >
+                        {copiedIdx === idx ? (
+                          <>
+                            <Check className="h-3.5 w-3.5" />
+                            Copied
+                          </>
+                        ) : (
+                          <>
+                            <Copy className="h-3.5 w-3.5" />
+                            Copy link
+                          </>
+                        )}
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       )}

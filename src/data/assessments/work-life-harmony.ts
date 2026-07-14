@@ -1,7 +1,8 @@
 /**
- * A6. Work-Life Harmony™ Check
- * Tier: Professional (₹299-999)
- * Measures balance between responsibilities, personal wellbeing, boundaries, and recovery.
+ * A6. Work-Life Harmony Check
+ * Pack 2 — Emotional Wellbeing and Digital Balance
+ * Assesses boundaries, mental detachment, recovery, role flexibility and
+ * whether work and personal life can coexist sustainably.
  */
 
 import type { AssessmentConfig } from "./types";
@@ -12,126 +13,140 @@ export const workLifeHarmony: AssessmentConfig = {
   order: 6,
   type: "standard",
   tier: "professional",
-  category: "Professional",
+  category: "Lifestyle",
   status: "active",
   meta: {
-    title: "Work-Life Harmony™",
-    subtitle: "How balanced is your life, really?",
+    title: "Work-Life Harmony Check",
+    subtitle: "Is your work-life balance sustainable?",
     description:
-      "Check the balance between your work demands and personal wellbeing. Situational, quick, and private.",
+      "Assess your boundaries, mental detachment, recovery and role flexibility. Ten honest questions, instant results, completely private.",
     purpose:
-      "Measures balance between responsibilities, personal wellbeing, boundaries, and recovery.",
-    duration: "Under 2 minutes",
+      "Assesses boundaries, mental detachment, recovery, role flexibility and whether work and personal life can coexist sustainably.",
+    duration: "3–5 minutes",
     questionCount: 10,
     icon: "sun",
-    productCategory: "Workplace Effectiveness",
+    productCategory: "Emotional Strength & Everyday Mind",
     isFree: false,
   },
   instructions:
-    "Answer based on your typical experience over the past few weeks. Be honest — there are no right or wrong answers.",
+    "Rate each statement according to your typical experience during the past four weeks. 1 = Almost Never; 2 = Rarely; 3 = Sometimes; 4 = Often; 5 = Almost Always.",
   questions: [
     {
       id: "a6q1",
-      text: "How often do you have enough time for activities that are important to you outside of work?",
+      text: "I can give personal relationships attention even during demanding work periods.",
       options: [...LIKERT_5],
-      reverse: true,
-      dimension: "boundaries",
+      dimension: "presence",
     },
     {
       id: "a6q2",
-      text: "At the end of the day, how easy is it to mentally disconnect from responsibilities?",
+      text: "I have a reasonably clear boundary between work time and personal time.",
       options: [...LIKERT_5],
-      reverse: true,
       dimension: "boundaries",
     },
     {
       id: "a6q3",
-      text: "How frequently do work or obligations interrupt your personal plans?",
+      text: "I continue thinking about work during most of my personal time.",
       options: [...LIKERT_5],
-      dimension: "boundaries",
+      reverse: true,
+      dimension: "detachment",
     },
     {
       id: "a6q4",
-      text: "How often do you feel guilty when taking time for yourself?",
+      text: "I can adjust plans when either work or personal life temporarily needs more attention.",
       options: [...LIKERT_5],
-      dimension: "satisfaction",
+      dimension: "flexibility",
     },
     {
       id: "a6q5",
-      text: "How regularly do you make time for exercise, hobbies, or relaxation?",
+      text: "Rest makes me feel guilty when work remains unfinished.",
       options: [...LIKERT_5],
       reverse: true,
-      dimension: "recovery",
+      dimension: "recovery-permission",
     },
     {
       id: "a6q6",
-      text: "How often do you feel in control of how your time is spent?",
+      text: "My schedule includes activities that are unrelated to achievement or productivity.",
       options: [...LIKERT_5],
-      reverse: true,
-      dimension: "satisfaction",
+      dimension: "identity-balance",
     },
     {
       id: "a6q7",
-      text: "During vacations or breaks, how easy is it to truly switch off?",
+      text: "I frequently cancel personal commitments because of avoidable work demands.",
       options: [...LIKERT_5],
       reverse: true,
-      dimension: "recovery",
+      dimension: "boundary-erosion",
     },
     {
       id: "a6q8",
-      text: "How often do you sacrifice sleep to meet responsibilities?",
+      text: "People close to me usually receive my attention when I am with them.",
       options: [...LIKERT_5],
-      dimension: "recovery",
+      dimension: "presence",
     },
     {
       id: "a6q9",
-      text: "How satisfied are you with the balance between your work and personal life?",
+      text: "I can stop checking work communication after a reasonable hour.",
       options: [...LIKERT_5],
-      reverse: true,
-      dimension: "satisfaction",
+      dimension: "digital-boundary",
     },
     {
       id: "a6q10",
-      text: "How often do you feel you have enough energy for both work and personal commitments?",
+      text: "My current combination of responsibilities feels sustainable.",
       options: [...LIKERT_5],
-      reverse: true,
-      dimension: "satisfaction",
+      dimension: "sustainability",
     },
   ],
   scoring: { method: "sum", min: 10, max: 50 },
   dimensions: [
-    { id: "boundaries", label: "Boundaries", questionIds: ["a6q1", "a6q2", "a6q3"] },
-    { id: "recovery", label: "Recovery", questionIds: ["a6q5", "a6q7", "a6q8"] },
-    { id: "satisfaction", label: "Satisfaction", questionIds: ["a6q4", "a6q6", "a6q9", "a6q10"] },
+    { id: "presence", label: "Presence", questionIds: ["a6q1", "a6q8"] },
+    { id: "boundaries", label: "Boundaries", questionIds: ["a6q2"] },
+    { id: "detachment", label: "Detachment", questionIds: ["a6q3"] },
+    { id: "flexibility", label: "Flexibility", questionIds: ["a6q4"] },
+    { id: "recovery-permission", label: "Recovery Permission", questionIds: ["a6q5"] },
+    { id: "identity-balance", label: "Identity Balance", questionIds: ["a6q6"] },
+    { id: "boundary-erosion", label: "Boundary Erosion", questionIds: ["a6q7"] },
+    { id: "digital-boundary", label: "Digital Boundary", questionIds: ["a6q9"] },
+    { id: "sustainability", label: "Sustainability", questionIds: ["a6q10"] },
   ],
   archetypes: [
     {
       min: 10,
       max: 19,
-      label: "Harmony Builder",
-      color: "green",
-      interpretation: "You appear to maintain healthy boundaries and recovery habits.",
+      label: "Work Dominated",
+      color: "red",
+      interpretation:
+        "Your responses suggest that work-life harmony is currently limited or inconsistent. The pattern may depend heavily on reassurance or favourable conditions.",
+      nextStep:
+        "Choose one small behaviour to practise repeatedly rather than trying to change everything at once.",
     },
     {
       min: 20,
       max: 29,
-      label: "Busy Balancer",
-      color: "yellow",
-      interpretation: "Your balance is generally stable, though some areas may need attention.",
+      label: "Constant Juggler",
+      color: "orange",
+      interpretation:
+        "You show some foundations of work-life harmony, although they may become less reliable under pressure or uncertainty.",
+      nextStep:
+        "Identify situations where the skill already works and deliberately transfer that behaviour to one harder context.",
     },
     {
       min: 30,
       max: 39,
-      label: "Constant Juggler",
-      color: "orange",
-      interpretation: "Competing priorities may be reducing personal recovery and satisfaction.",
+      label: "Busy Balancer",
+      color: "yellow",
+      interpretation:
+        "Your responses suggest a generally steady level of work-life harmony, with a few areas that could become more consistent.",
+      nextStep:
+        "Strengthen the lowest subdomain while continuing to use your existing strengths.",
     },
     {
       min: 40,
       max: 50,
-      label: "Work Dominated",
-      color: "red",
-      interpretation: "Responsibilities appear to be consuming most available time and energy.",
+      label: "Harmony Builder",
+      color: "green",
+      interpretation:
+        "Your responses indicate a strong and broadly reliable pattern of work-life harmony. You are likely to use it across many situations.",
+      nextStep:
+        "Protect the strength from becoming overused and practise adapting it to people and contexts that need a different approach.",
     },
   ],
 };

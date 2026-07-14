@@ -1,7 +1,7 @@
 /**
- * A29. Unclear Role Stress Assessment
- * Tier: Professional
- * Measures how strongly unclear responsibilities, shifting expectations and uncertain decision rights affect the person's functioning.
+ * W14. Unclear Role Stress Assessment
+ * Measures stress created by uncertain priorities, conflicting expectations,
+ * unclear authority and ambiguous success criteria.
  */
 
 import type { AssessmentConfig } from "./types";
@@ -16,125 +16,41 @@ export const unclearRoleStress: AssessmentConfig = {
   status: "active",
   meta: {
     title: "Unclear Role Stress Assessment",
-    subtitle: "How much does role ambiguity affect you?",
-    description:
-      "Measure how strongly unclear responsibilities, shifting expectations and uncertain decision rights affect your functioning at work.",
-    purpose:
-      "Measures how strongly unclear responsibilities, shifting expectations and uncertain decision rights affect the person's functioning.",
-    duration: "3–5 minutes",
-    questionCount: 10,
-    icon: "alert-circle",
-    productCategory: "Workplace Effectiveness",
-    isFree: false,
+    subtitle: "Is role ambiguity causing you stress?",
+    description: "Measure stress from uncertain priorities, conflicting expectations and unclear authority.",
+    purpose: "Measures stress created by uncertain priorities, conflicting expectations, unclear authority and ambiguous success criteria.",
+    duration: "3–5 minutes", questionCount: 10, icon: "alert-circle",
+    productCategory: "Workplace Effectiveness", isFree: false,
   },
-  instructions:
-    "Rate each statement according to your typical experience during the past four weeks. 1 = Never; 2 = Rarely; 3 = Sometimes; 4 = Often; 5 = Almost always.",
+  instructions: "Rate each statement according to your typical experience during the past four weeks. 1 = Almost Never; 2 = Rarely; 3 = Sometimes; 4 = Often; 5 = Almost Always.",
   questions: [
-    {
-      id: "urs1",
-      text: "I receive different expectations from different people.",
-      options: [...LIKERT_5],
-      dimension: "conflicting-expectations",
-    },
-    {
-      id: "urs2",
-      text: "I am unsure which responsibilities are genuinely mine.",
-      options: [...LIKERT_5],
-      dimension: "role-boundaries",
-    },
-    {
-      id: "urs3",
-      text: "Priorities change without a clear explanation of what should be deprioritised.",
-      options: [...LIKERT_5],
-      dimension: "priority-ambiguity",
-    },
-    {
-      id: "urs4",
-      text: "I know who has the authority to make important decisions affecting my work.",
-      options: [...LIKERT_5],
-      reverse: true,
-      dimension: "decision-clarity",
-    },
-    {
-      id: "urs5",
-      text: "I sometimes discover success criteria only after work has been reviewed.",
-      options: [...LIKERT_5],
-      dimension: "performance-clarity",
-    },
-    {
-      id: "urs6",
-      text: "My role allows me to understand where my responsibility begins and ends.",
-      options: [...LIKERT_5],
-      reverse: true,
-      dimension: "role-boundaries",
-    },
-    {
-      id: "urs7",
-      text: "I spend time guessing what senior people really want.",
-      options: [...LIKERT_5],
-      dimension: "performance-clarity",
-    },
-    {
-      id: "urs8",
-      text: "When instructions conflict, there is a clear way to resolve them.",
-      options: [...LIKERT_5],
-      reverse: true,
-      dimension: "decision-clarity",
-    },
-    {
-      id: "urs9",
-      text: "Uncertainty about my role makes it harder to prioritise confidently.",
-      options: [...LIKERT_5],
-      dimension: "priority-ambiguity",
-    },
-    {
-      id: "urs10",
-      text: "I can explain my role and expected outcomes in a few clear sentences.",
-      options: [...LIKERT_5],
-      reverse: true,
-      dimension: "role-boundaries",
-    },
+    { id: "w14q1", text: "I know which outcomes matter most in my role.", options: [...LIKERT_5], reverse: true, dimension: "priority-clarity" },
+    { id: "w14q2", text: "Different people give me expectations that conflict with one another.", options: [...LIKERT_5], dimension: "expectation-conflict" },
+    { id: "w14q3", text: "I understand where my authority begins and ends.", options: [...LIKERT_5], reverse: true, dimension: "decision-rights" },
+    { id: "w14q4", text: "I often discover important responsibilities only after a problem appears.", options: [...LIKERT_5], dimension: "role-definition" },
+    { id: "w14q5", text: "Success in my role is measured consistently.", options: [...LIKERT_5], reverse: true, dimension: "success-criteria" },
+    { id: "w14q6", text: "I spend time guessing what senior people really want.", options: [...LIKERT_5], dimension: "expectation-clarity" },
+    { id: "w14q7", text: "I know whom to approach when priorities conflict.", options: [...LIKERT_5], reverse: true, dimension: "escalation-path" },
+    { id: "w14q8", text: "My role changes frequently without an explicit discussion.", options: [...LIKERT_5], dimension: "change-clarity" },
+    { id: "w14q9", text: "I can explain my main responsibilities in a few clear sentences.", options: [...LIKERT_5], reverse: true, dimension: "role-definition" },
+    { id: "w14q10", text: "Ambiguity in my role regularly affects sleep, confidence or concentration.", options: [...LIKERT_5], dimension: "stress-impact" },
   ],
   scoring: { method: "sum", min: 10, max: 50 },
   dimensions: [
-    { id: "conflicting-expectations", label: "Conflicting Expectations", questionIds: ["urs1"] },
-    { id: "role-boundaries", label: "Role Boundaries", questionIds: ["urs2", "urs6", "urs10"] },
-    { id: "priority-ambiguity", label: "Priority Ambiguity", questionIds: ["urs3", "urs9"] },
-    { id: "decision-clarity", label: "Decision Clarity", questionIds: ["urs4", "urs8"] },
-    { id: "performance-clarity", label: "Performance Clarity", questionIds: ["urs5", "urs7"] },
+    { id: "priority-clarity", label: "Priority Clarity", questionIds: ["w14q1"] },
+    { id: "expectation-conflict", label: "Expectation Conflict", questionIds: ["w14q2"] },
+    { id: "decision-rights", label: "Decision Rights", questionIds: ["w14q3"] },
+    { id: "role-definition", label: "Role Definition", questionIds: ["w14q4", "w14q9"] },
+    { id: "success-criteria", label: "Success Criteria", questionIds: ["w14q5"] },
+    { id: "expectation-clarity", label: "Expectation Clarity", questionIds: ["w14q6"] },
+    { id: "escalation-path", label: "Escalation Path", questionIds: ["w14q7"] },
+    { id: "change-clarity", label: "Change Clarity", questionIds: ["w14q8"] },
+    { id: "stress-impact", label: "Stress Impact", questionIds: ["w14q10"] },
   ],
   archetypes: [
-    {
-      min: 10,
-      max: 20,
-      label: "Low Role-Ambiguity Stress",
-      color: "green",
-      interpretation:
-        "Your role and decision environment appear relatively clear. Maintain written priorities and clarify changes before ambiguity accumulates.",
-    },
-    {
-      min: 21,
-      max: 30,
-      label: "Manageable Ambiguity",
-      color: "yellow",
-      interpretation:
-        "Some uncertainty exists, but you can usually work through it without major disruption. Confirm priorities, owners and success criteria at the start of important work.",
-    },
-    {
-      min: 31,
-      max: 40,
-      label: "High Ambiguity Strain",
-      color: "orange",
-      interpretation:
-        "Unclear or conflicting expectations may be consuming significant attention and confidence. A role-clarity conversation using written outcomes and boundaries can help.",
-    },
-    {
-      min: 41,
-      max: 50,
-      label: "Severe Role-Ambiguity Strain",
-      color: "red",
-      interpretation:
-        "Persistent uncertainty may be making it difficult to prioritise, perform or feel secure in the role. Escalate for formal clarification and document agreements.",
-    },
+    { min: 10, max: 19, label: "Clear Role Experience", color: "green", interpretation: "Your responses currently show relatively few signs of role ambiguity. Protective habits appear to be working reasonably well.", nextStep: "Maintain the routines that support recovery and notice early changes rather than waiting for strain to build." },
+    { min: 20, max: 29, label: "Manageable Ambiguity", color: "yellow", interpretation: "Some signs of role ambiguity are present, especially during demanding periods, but they may still be manageable with deliberate adjustments.", nextStep: "Identify the two situations that raise your score most often and make one practical change this week." },
+    { min: 30, max: 39, label: "Role Strain", color: "orange", interpretation: "Your responses suggest a recurring pattern of role ambiguity that may be affecting energy, concentration, relationships or performance.", nextStep: "Reduce avoidable load, strengthen boundaries and use a structured recovery or support plan." },
+    { min: 40, max: 50, label: "High Ambiguity Stress", color: "red", interpretation: "Your responses suggest a strong and persistent pattern of role ambiguity. The present pace or environment may be difficult to sustain.", nextStep: "Prioritise immediate load reduction and consider speaking with a qualified professional if the experience is severe or persistent." },
   ],
 };

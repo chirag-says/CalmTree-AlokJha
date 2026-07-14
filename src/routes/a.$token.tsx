@@ -10,6 +10,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { CheckCircle2, Loader2 } from "lucide-react";
 import { AssessmentRunner } from "@/components/assessment/AssessmentRunner";
 import { ProfileRunner } from "@/components/assessment/ProfileRunner";
 import { getAssessment } from "@/data/assessments";
@@ -144,6 +145,18 @@ function EmployeeRunnerPage() {
         <p className="text-sm text-muted-foreground">
           Invited by <span className="font-medium text-foreground">{data.orgName}</span>
         </p>
+        {submit.isPending && (
+          <p className="mt-2 inline-flex items-center gap-1.5 text-xs text-muted-foreground">
+            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            Saving your results…
+          </p>
+        )}
+        {submit.isSuccess && (
+          <p className="mt-2 inline-flex items-center gap-1.5 text-xs font-medium text-emerald-600">
+            <CheckCircle2 className="h-3.5 w-3.5" />
+            Results saved and shared with {data.orgName}
+          </p>
+        )}
       </div>
       {config.type === "profile-based" ? (
         <ProfileRunner config={config as ProfileAssessmentConfig} onComplete={onComplete} />

@@ -1,7 +1,8 @@
 /**
- * A2. Stress Level Check™
- * Tier: Discovery (Free)
- * Measures perceived pressure, cognitive load, and recovery ability.
+ * A2. Stress Level Check
+ * Pack 2 — Emotional Wellbeing and Digital Balance
+ * Measures the frequency of mental pressure, physical tension, reduced control
+ * and difficulty recovering from everyday demands.
  */
 
 import type { AssessmentConfig } from "./types";
@@ -15,89 +16,96 @@ export const stressLevelCheck: AssessmentConfig = {
   category: "Mental Wellness",
   status: "active",
   meta: {
-    title: "Stress Level Check™",
-    subtitle: "What's your real stress level?",
+    title: "Stress Level Check",
+    subtitle: "How much stress are you carrying?",
     description:
-      "Measure your current stress using situational questions. Under 2 minutes, private, and immediately actionable.",
-    purpose: "Measures perceived pressure, cognitive load, and recovery ability.",
-    duration: "Under 2 minutes",
+      "A quick self-check on your current stress patterns. Ten honest questions, instant results, completely private.",
+    purpose:
+      "Measures the frequency of mental pressure, physical tension, reduced control and difficulty recovering from everyday demands.",
+    duration: "3–5 minutes",
     questionCount: 10,
-    icon: "brain",
+    icon: "activity",
     productCategory: "Emotional Strength & Everyday Mind",
     isFree: true,
   },
   instructions:
-    "For each question, choose how often this applies to you in a typical week. Answer honestly — there are no right or wrong answers.",
+    "Rate each statement according to your typical experience during the past four weeks. 1 = Almost Never; 2 = Rarely; 3 = Sometimes; 4 = Often; 5 = Almost Always.",
   questions: [
     {
       id: "a2q1",
-      text: "How often do you feel that several important things require your attention at the same time?",
+      text: "My thoughts continue racing after the main demands of the day are over.",
       options: [...LIKERT_5],
-      dimension: "pressure",
+      dimension: "mental-activation",
     },
     {
       id: "a2q2",
-      text: "When plans change unexpectedly, how difficult is it to adjust?",
+      text: "I notice tension in my body when several demands arrive together.",
       options: [...LIKERT_5],
-      dimension: "pressure",
+      dimension: "physical-tension",
     },
     {
       id: "a2q3",
-      text: "How often are you able to find moments of calm during a busy day?",
+      text: "I can identify and use ways to calm myself before pressure escalates.",
       options: [...LIKERT_5],
       reverse: true,
-      dimension: "recovery",
+      dimension: "self-regulation",
     },
     {
       id: "a2q4",
-      text: "How frequently do you replay conversations or situations in your mind after they have ended?",
+      text: "Small delays or mistakes feel harder to tolerate than usual.",
       options: [...LIKERT_5],
-      dimension: "cognitive-load",
+      dimension: "reactivity",
     },
     {
       id: "a2q5",
-      text: "When facing deadlines, how often do you feel rushed?",
-      options: [...LIKERT_5],
-      dimension: "pressure",
-    },
-    {
-      id: "a2q6",
-      text: "How easy is it for you to relax when your responsibilities are temporarily completed?",
-      options: [...LIKERT_5],
-      reverse: true,
-      dimension: "recovery",
-    },
-    {
-      id: "a2q7",
-      text: "How often do you feel mentally occupied even during free time?",
+      text: "I carry several unresolved worries at the same time.",
       options: [...LIKERT_5],
       dimension: "cognitive-load",
     },
     {
-      id: "a2q8",
-      text: "How often do everyday demands feel heavier than they should?",
+      id: "a2q6",
+      text: "I ask for help or adjust priorities before pressure becomes unmanageable.",
       options: [...LIKERT_5],
-      dimension: "pressure",
+      reverse: true,
+      dimension: "coping",
+    },
+    {
+      id: "a2q7",
+      text: "My concentration drops when situations are uncertain.",
+      options: [...LIKERT_5],
+      dimension: "concentration",
+    },
+    {
+      id: "a2q8",
+      text: "I react more sharply to people when I am overloaded.",
+      options: [...LIKERT_5],
+      dimension: "reactivity",
     },
     {
       id: "a2q9",
-      text: "How often do you wake up feeling ready for the day ahead?",
+      text: "Sleep or quiet time usually restores my mental energy.",
       options: [...LIKERT_5],
       reverse: true,
       dimension: "recovery",
     },
     {
       id: "a2q10",
-      text: "How frequently do you feel that your mind is juggling too many things at once?",
+      text: "I feel that important demands are beyond my control.",
       options: [...LIKERT_5],
-      dimension: "cognitive-load",
+      dimension: "control",
     },
   ],
   scoring: { method: "sum", min: 10, max: 50 },
   dimensions: [
-    { id: "pressure", label: "Pressure", questionIds: ["a2q1", "a2q2", "a2q5", "a2q8"] },
-    { id: "cognitive-load", label: "Cognitive Load", questionIds: ["a2q4", "a2q7", "a2q10"] },
-    { id: "recovery", label: "Recovery", questionIds: ["a2q3", "a2q6", "a2q9"] },
+    { id: "mental-activation", label: "Mental Activation", questionIds: ["a2q1"] },
+    { id: "physical-tension", label: "Physical Tension", questionIds: ["a2q2"] },
+    { id: "self-regulation", label: "Self-regulation", questionIds: ["a2q3"] },
+    { id: "reactivity", label: "Reactivity", questionIds: ["a2q4", "a2q8"] },
+    { id: "cognitive-load", label: "Cognitive Load", questionIds: ["a2q5"] },
+    { id: "coping", label: "Coping", questionIds: ["a2q6"] },
+    { id: "concentration", label: "Concentration", questionIds: ["a2q7"] },
+    { id: "recovery", label: "Recovery", questionIds: ["a2q9"] },
+    { id: "control", label: "Control", questionIds: ["a2q10"] },
   ],
   archetypes: [
     {
@@ -106,7 +114,9 @@ export const stressLevelCheck: AssessmentConfig = {
       label: "Calm Navigator",
       color: "green",
       interpretation:
-        "You manage stress effectively and maintain a healthy sense of control over daily demands.",
+        "Your responses currently show relatively few signs of stress and pressure. Protective habits appear to be working reasonably well.",
+      nextStep:
+        "Maintain the routines that support recovery and notice early changes rather than waiting for strain to build.",
     },
     {
       min: 20,
@@ -114,7 +124,9 @@ export const stressLevelCheck: AssessmentConfig = {
       label: "Active Juggler",
       color: "yellow",
       interpretation:
-        "You are handling multiple demands but may benefit from better recovery strategies.",
+        "Some signs of stress and pressure are present, especially during demanding periods, but they may still be manageable with deliberate adjustments.",
+      nextStep:
+        "Identify the two situations that raise your score most often and make one practical change this week.",
     },
     {
       min: 30,
@@ -122,7 +134,9 @@ export const stressLevelCheck: AssessmentConfig = {
       label: "Pressure Carrier",
       color: "orange",
       interpretation:
-        "Your cognitive load is elevated. Sustained pressure at this level can affect clarity and wellbeing.",
+        "Your responses suggest a recurring pattern of stress and pressure that may be affecting energy, concentration, relationships or performance.",
+      nextStep:
+        "Reduce avoidable load, strengthen boundaries and use a structured recovery or support plan.",
     },
     {
       min: 40,
@@ -130,7 +144,9 @@ export const stressLevelCheck: AssessmentConfig = {
       label: "Constant Firefighter",
       color: "red",
       interpretation:
-        "You may be operating under persistent high stress. Review your commitments and recovery patterns.",
+        "Your responses suggest a strong and persistent pattern of stress and pressure. The present pace or environment may be difficult to sustain.",
+      nextStep:
+        "Prioritise immediate load reduction and consider speaking with a qualified professional if the experience is severe or persistent.",
     },
   ],
 };

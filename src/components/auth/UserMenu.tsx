@@ -7,7 +7,7 @@
 
 import { useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { User, LayoutDashboard, LogOut, ChevronDown, Shield } from "lucide-react";
+import { LayoutDashboard, LogOut, ChevronDown, Shield, Building2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -84,6 +84,12 @@ export function UserMenu() {
           <Link to="/dashboard" className="flex items-center gap-2">
             <LayoutDashboard className="h-4 w-4" />
             Dashboard
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link to="/org" className="flex items-center gap-2">
+            <Building2 className="h-4 w-4" />
+            Organization
           </Link>
         </DropdownMenuItem>
         {profile?.is_admin && (

@@ -29,6 +29,22 @@ export function CreateOrgForm() {
         return;
       }
       toast.success("Organization created. Add credits to get started.");
+      // Optimistically populate the cache so the parent /org layout renders
+      // the dashboard immediately instead of flashing back to CreateOrgForm
+      // while the real refetch is in-flight.
+      queryClient.setQueryData(["org", "myOrgs"], {
+        orgs: [
+          {
+            id: result.orgId,
+            name: name.trim(),
+            slug: "",
+            role: "owner",
+            creditBalance: 0,
+            individualResultsUnlocked: false,
+          },
+        ],
+      });
+      // Background refetch to get canonical slug and server-confirmed data.
       queryClient.invalidateQueries({ queryKey: ["org", "myOrgs"] });
       navigate({ to: "/org/credits", search: { orgId: result.orgId } });
     },

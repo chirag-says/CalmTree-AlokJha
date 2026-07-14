@@ -1,196 +1,83 @@
 /**
- * A36. Natural Leadership Orientation
- * Tier: Professional
- * Identifies the leadership approach a person most naturally uses to create direction, performance and commitment.
+ * W21. Natural Leadership Orientation
+ * Profile-based: identifies the leadership contribution most used.
  */
 
 import type { ProfileAssessmentConfig } from "./types";
 
 export const naturalLeadershipOrientation: ProfileAssessmentConfig = {
   slug: "natural-leadership-orientation",
-  order: 36,
-  type: "profile-based",
-  tier: "professional",
-  category: "Professional",
-  status: "active",
-  meta: {
-    title: "Natural Leadership Orientation",
-    subtitle: "What is your natural leadership style?",
-    description:
-      "Identify the leadership approach you most naturally use to create direction, performance and commitment. Five profiles, ten workplace scenarios.",
-    purpose:
-      "Identifies the leadership approach a person most naturally uses to create direction, performance and commitment.",
-    duration: "3–5 minutes",
-    questionCount: 10,
-    icon: "award",
-    productCategory: "Leadership & Teams",
-    isFree: true,
-  },
-  instructions:
-    "Select the option that most closely reflects what you would usually do, not what you believe is the ideal answer.",
-  tieBreakQuestionIds: ["nlo1", "nlo4", "nlo8"],
+  order: 36, type: "profile-based", tier: "professional", category: "Professional", status: "active",
+  meta: { title: "Natural Leadership Orientation", subtitle: "What is your natural leadership style?", description: "Identify the leadership contribution you most naturally use in teams and projects.", purpose: "Identifies the leadership contribution a person most naturally relies on.", duration: "3–5 minutes", questionCount: 10, icon: "briefcase", productCategory: "Leadership & Teams", isFree: false },
+  instructions: "Select the option that most closely reflects what you would usually do, not what you believe is the ideal answer.",
+  tieBreakQuestionIds: ["w21q1", "w21q5", "w21q9"],
   profileQuestions: [
-    {
-      id: "nlo1",
-      text: "When a team is uncertain, you first:",
-      options: [
-        { label: "Set direction and clarify what must happen", profileCode: "A" },
-        { label: "Ask questions that help people find their own way", profileCode: "B" },
-        { label: "Bring the group together to build a shared plan", profileCode: "C" },
-        { label: "Explain the technical or professional approach required", profileCode: "D" },
-        { label: "Reconnect the team to the larger purpose and possibility", profileCode: "E" },
-      ],
-    },
-    {
-      id: "nlo2",
-      text: "When performance falls, you tend to:",
-      options: [
-        { label: "Reset expectations and accountability", profileCode: "A" },
-        { label: "Explore what is blocking the person and coach improvement", profileCode: "B" },
-        { label: "Review the situation with the team and agree changes", profileCode: "C" },
-        { label: "Examine capability, method and quality standards", profileCode: "D" },
-        { label: "Re-energise people around the significance of the goal", profileCode: "E" },
-      ],
-    },
-    {
-      id: "nlo3",
-      text: "Your strongest contribution as a leader is:",
-      options: [
-        { label: "Decisiveness and clarity", profileCode: "A" },
-        { label: "Developing people's confidence and capability", profileCode: "B" },
-        { label: "Creating commitment and cooperation", profileCode: "C" },
-        { label: "Providing expert judgement and standards", profileCode: "D" },
-        { label: "Creating belief in a meaningful direction", profileCode: "E" },
-      ],
-    },
-    {
-      id: "nlo4",
-      text: "In a crisis, you are most likely to:",
-      options: [
-        { label: "Take command and assign actions", profileCode: "A" },
-        { label: "Support people to stay capable under pressure", profileCode: "B" },
-        { label: "Coordinate collective information and response", profileCode: "C" },
-        { label: "Diagnose the problem and prescribe the best method", profileCode: "D" },
-        {
-          label: "Frame the challenge and mobilise people around a bold response",
-          profileCode: "E",
-        },
-      ],
-    },
-    {
-      id: "nlo5",
-      text: "When delegating, you emphasise:",
-      options: [
-        { label: "Expected output, deadline and accountability", profileCode: "A" },
-        { label: "Learning, questions and progressive independence", profileCode: "B" },
-        { label: "Shared context and collaboration points", profileCode: "C" },
-        { label: "Correct method and professional quality", profileCode: "D" },
-        { label: "Connection between the task and the wider mission", profileCode: "E" },
-      ],
-    },
-    {
-      id: "nlo6",
-      text: "A team member proposes a different approach. You:",
-      options: [
-        { label: "Decide whether it supports the required outcome", profileCode: "A" },
-        { label: "Ask them to explain their reasoning and learning", profileCode: "B" },
-        { label: "Invite the team to examine the trade-offs", profileCode: "C" },
-        { label: "Evaluate its technical validity and standards", profileCode: "D" },
-        { label: "Consider whether it advances the future direction", profileCode: "E" },
-      ],
-    },
-    {
-      id: "nlo7",
-      text: "People are most likely to follow you because:",
-      options: [
-        { label: "They know where they stand and what to do", profileCode: "A" },
-        { label: "They feel supported to grow", profileCode: "B" },
-        { label: "They feel heard and involved", profileCode: "C" },
-        { label: "They trust your competence", profileCode: "D" },
-        { label: "They believe in the direction you describe", profileCode: "E" },
-      ],
-    },
-    {
-      id: "nlo8",
-      text: "Your possible leadership blind spot is:",
-      options: [
-        { label: "Becoming too controlling or abrupt", profileCode: "A" },
-        { label: "Avoiding hard performance decisions", profileCode: "B" },
-        { label: "Taking too long to reach consensus", profileCode: "C" },
-        { label: "Over-relying on your own expertise", profileCode: "D" },
-        { label: "Underestimating execution detail", profileCode: "E" },
-      ],
-    },
-    {
-      id: "nlo9",
-      text: "A successful team should primarily be:",
-      options: [
-        { label: "Disciplined and accountable", profileCode: "A" },
-        { label: "Capable and continuously developing", profileCode: "B" },
-        { label: "Connected and mutually responsible", profileCode: "C" },
-        { label: "Skilled and committed to excellence", profileCode: "D" },
-        { label: "Inspired and aligned to a compelling purpose", profileCode: "E" },
-      ],
-    },
-    {
-      id: "nlo10",
-      text: "When starting a major initiative, you begin with:",
-      options: [
-        { label: "Direction, roles and non-negotiables", profileCode: "A" },
-        { label: "Capability needs and development conversations", profileCode: "B" },
-        { label: "Stakeholder involvement and shared design", profileCode: "C" },
-        { label: "Evidence, method and standards", profileCode: "D" },
-        { label: "Purpose, ambition and a picture of success", profileCode: "E" },
-      ],
-    },
+    { id: "w21q1", text: "A project needs a leader. You naturally:", options: [
+      { label: "Create the plan and organise the team", profileCode: "A" },
+      { label: "Build relationships and align people", profileCode: "B" },
+      { label: "Clarify the strategic direction", profileCode: "C" },
+      { label: "Roll up your sleeves and deliver the hardest part", profileCode: "D" },
+    ]},
+    { id: "w21q2", text: "Your influence comes mainly from:", options: [
+      { label: "Competence and reliability", profileCode: "A" },
+      { label: "Connection and trust", profileCode: "B" },
+      { label: "Vision and inspiration", profileCode: "C" },
+      { label: "Action and results", profileCode: "D" },
+    ]},
+    { id: "w21q3", text: "When a team member underperforms, you:", options: [
+      { label: "Review expectations and resources", profileCode: "A" },
+      { label: "Have a supportive conversation", profileCode: "B" },
+      { label: "Reconnect them to the bigger goal", profileCode: "C" },
+      { label: "Pick up the critical tasks yourself", profileCode: "D" },
+    ]},
+    { id: "w21q4", text: "You add most value when:", options: [
+      { label: "Structure is needed", profileCode: "A" },
+      { label: "People need support", profileCode: "B" },
+      { label: "Direction is unclear", profileCode: "C" },
+      { label: "Execution is behind", profileCode: "D" },
+    ]},
+    { id: "w21q5", text: "Under pressure, you tend to:", options: [
+      { label: "Tighten plans and processes", profileCode: "A" },
+      { label: "Rally people and maintain morale", profileCode: "B" },
+      { label: "Refocus on the priority and strategic goal", profileCode: "C" },
+      { label: "Work harder and longer yourself", profileCode: "D" },
+    ]},
+    { id: "w21q6", text: "You energise others by:", options: [
+      { label: "Providing clear expectations", profileCode: "A" },
+      { label: "Listening and encouraging", profileCode: "B" },
+      { label: "Sharing an exciting possibility", profileCode: "C" },
+      { label: "Demonstrating effort and commitment", profileCode: "D" },
+    ]},
+    { id: "w21q7", text: "Your development area is:", options: [
+      { label: "Flexibility and empowerment", profileCode: "A" },
+      { label: "Tough decisions and accountability", profileCode: "B" },
+      { label: "Turning vision into operating detail", profileCode: "C" },
+      { label: "Delegating and developing others", profileCode: "D" },
+    ]},
+    { id: "w21q8", text: "You measure success by:", options: [
+      { label: "On-time delivery and process quality", profileCode: "A" },
+      { label: "Team satisfaction and cohesion", profileCode: "B" },
+      { label: "Progress towards the larger ambition", profileCode: "C" },
+      { label: "Tangible output and measurable results", profileCode: "D" },
+    ]},
+    { id: "w21q9", text: "You are most frustrated when:", options: [
+      { label: "There is no discipline", profileCode: "A" },
+      { label: "People are unheard or unsupported", profileCode: "B" },
+      { label: "There is no compelling direction", profileCode: "C" },
+      { label: "Talk replaces action", profileCode: "D" },
+    ]},
+    { id: "w21q10", text: "Your next leadership step involves:", options: [
+      { label: "Inspiring beyond process", profileCode: "A" },
+      { label: "Holding standards firmly", profileCode: "B" },
+      { label: "Translating strategy into milestones", profileCode: "C" },
+      { label: "Coaching rather than doing", profileCode: "D" },
+    ]},
   ],
   profiles: [
-    {
-      code: "A",
-      label: "Directive Leader",
-      meaning: "Creates clarity through decisions, standards and direct accountability.",
-      interpretation:
-        "Your responses suggest you lead through clarity. You define direction, set standards and hold people accountable. People follow you because they know exactly where they stand and what they must do.",
-      nextStep: "Explain the rationale and invite useful challenge before closing decisions.",
-      color: "blue",
-    },
-    {
-      code: "B",
-      label: "Coaching Leader",
-      meaning: "Develops people through questions, feedback and gradual ownership.",
-      interpretation:
-        "Your responses suggest you lead through development. You grow capability, ask rather than tell and give people the ownership they need to perform at their best.",
-      nextStep:
-        "Know when the situation needs a decision rather than another developmental conversation.",
-      color: "emerald",
-    },
-    {
-      code: "C",
-      label: "Collaborative Leader",
-      meaning: "Builds commitment through participation and shared problem-solving.",
-      interpretation:
-        "Your responses suggest you lead through inclusion. You bring people into decisions, build shared understanding and create commitment through genuine participation.",
-      nextStep: "Clarify decision rights and avoid consensus on every issue.",
-      color: "yellow",
-    },
-    {
-      code: "D",
-      label: "Expert Leader",
-      meaning: "Leads through competence, insight and high professional standards.",
-      interpretation:
-        "Your responses suggest you lead through mastery. People follow your judgement because your expertise is visible, credible and consistently applied.",
-      nextStep: "Translate expertise into accessible guidance and develop other experts.",
-      color: "purple",
-    },
-    {
-      code: "E",
-      label: "Visionary Leader",
-      meaning: "Creates energy through purpose, possibility and future direction.",
-      interpretation:
-        "Your responses suggest you lead through inspiration. You articulate a future that people want to reach and generate the belief and energy needed to get there.",
-      nextStep: "Connect inspiration to priorities, resources and operational follow-through.",
-      color: "orange",
-    },
+    { code: "A", label: "Process Architect", meaning: "Leads through structure, planning and reliable delivery.", interpretation: "Your responses suggest you lead through structure, planning and reliable delivery.", nextStep: "Practise inspiring and empowering beyond process.", color: "blue" },
+    { code: "B", label: "People Developer", meaning: "Leads through relationships, coaching and team wellbeing.", interpretation: "Your responses suggest you lead through relationships, coaching and team wellbeing.", nextStep: "Combine support with explicit standards and accountability.", color: "emerald" },
+    { code: "C", label: "Strategic Visionary", meaning: "Leads through direction, possibility and transformation.", interpretation: "Your responses suggest you lead through direction, possibility and transformation.", nextStep: "Translate vision into milestones, owners and review cycles.", color: "purple" },
+    { code: "D", label: "Action Leader", meaning: "Leads through personal effort, results and demonstration.", interpretation: "Your responses suggest you lead through personal effort, results and demonstration.", nextStep: "Delegate more, coach others and protect your own sustainability.", color: "orange" },
   ],
   dimensions: [],
 };

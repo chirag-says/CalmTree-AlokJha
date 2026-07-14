@@ -1,10 +1,8 @@
 /**
- * A5. Personality Compass™
- * Tier: Growth (₹99-299)
- *
- * SPECIAL: This assessment does NOT produce a single score.
- * It produces a personality profile based on four dimensions.
- * Each dimension is scored independently, then combined into an archetype.
+ * A5. Personality Compass
+ * Pack 1 — Self-Awareness and Personality
+ * Maps four everyday preference dimensions: social energy, structure,
+ * decision style and adaptability.
  */
 
 import type { AssessmentConfig } from "./types";
@@ -18,143 +16,143 @@ export const personalityCompass: AssessmentConfig = {
   category: "Personal Growth",
   status: "active",
   meta: {
-    title: "Personality Compass™",
-    subtitle: "What's your personality profile?",
+    title: "Personality Compass",
+    subtitle: "What drives your everyday preferences?",
     description:
-      "Discover your personality across four core dimensions — social energy, structure, decision style, and adaptability. Quick, private, and insightful.",
-    purpose: "Produces a personality profile based on four independent dimensions.",
-    duration: "Under 2 minutes",
+      "Map your social energy, structure preference, decision style and adaptability. Ten honest questions, instant results, completely private.",
+    purpose:
+      "Maps four everyday preference dimensions: social energy, structure, decision style and adaptability.",
+    duration: "3–5 minutes",
     questionCount: 10,
     icon: "compass",
     productCategory: "Self-Awareness & Personality",
     isFree: true,
   },
   instructions:
-    "Answer based on how you generally are now, not how you wish to be. There are no right or wrong answers — every profile is valid.",
+    "Rate each statement according to your typical experience during the past four weeks. 1 = Almost Never; 2 = Rarely; 3 = Sometimes; 4 = Often; 5 = Almost Always.",
   questions: [
-    // Dimension 1: Social Energy
     {
       id: "a5q1",
-      text: "After spending time with a group, do you usually feel energized or drained?",
+      text: "I gain clarity by discussing ideas with other people.",
       options: [...LIKERT_5],
       dimension: "social-energy",
     },
     {
       id: "a5q2",
-      text: "In new environments, how likely are you to start conversations?",
-      options: [...LIKERT_5],
-      dimension: "social-energy",
-    },
-    // Dimension 2: Structure
-    {
-      id: "a5q3",
-      text: "Before starting a project, how important is it to have a plan?",
+      text: "I prefer to decide the sequence and timeline before starting.",
       options: [...LIKERT_5],
       dimension: "structure",
+    },
+    {
+      id: "a5q3",
+      text: "I rely first on evidence and logical consistency when making important choices.",
+      options: [...LIKERT_5],
+      dimension: "decision-style",
     },
     {
       id: "a5q4",
-      text: "When plans change unexpectedly, how comfortable are you adapting?",
-      options: [...LIKERT_5],
-      reverse: true,
-      dimension: "structure",
-    },
-    // Dimension 3: Decision Style
-    {
-      id: "a5q5",
-      text: "When making decisions, how much weight do you give to objective facts?",
-      options: [...LIKERT_5],
-      dimension: "decision-style",
-    },
-    {
-      id: "a5q6",
-      text: "When making decisions, how much weight do you give to the impact on people?",
-      options: [...LIKERT_5],
-      reverse: true,
-      dimension: "decision-style",
-    },
-    // Dimension 4: Adaptability
-    {
-      id: "a5q7",
-      text: "How likely are you to try a new approach if the current one is working reasonably well?",
+      text: "I enjoy changing direction when a new possibility appears.",
       options: [...LIKERT_5],
       dimension: "adaptability",
     },
     {
-      id: "a5q8",
-      text: "How comfortable are you with uncertainty?",
+      id: "a5q5",
+      text: "I usually need quiet reflection before sharing a considered opinion.",
       options: [...LIKERT_5],
+      reverse: true,
+      dimension: "social-energy",
+    },
+    {
+      id: "a5q6",
+      text: "I feel comfortable leaving some details open until later.",
+      options: [...LIKERT_5],
+      reverse: true,
+      dimension: "structure",
+    },
+    {
+      id: "a5q7",
+      text: "I give significant weight to values and people impact when deciding.",
+      options: [...LIKERT_5],
+      reverse: true,
+      dimension: "decision-style",
+    },
+    {
+      id: "a5q8",
+      text: "I prefer familiar methods when the consequences of error are high.",
+      options: [...LIKERT_5],
+      reverse: true,
       dimension: "adaptability",
     },
     {
       id: "a5q9",
-      text: "How often do you seek new experiences or perspectives?",
+      text: "Frequent interaction usually increases my energy.",
       options: [...LIKERT_5],
-      dimension: "adaptability",
+      dimension: "social-energy",
     },
     {
       id: "a5q10",
-      text: "How quickly do you adjust when circumstances change?",
+      text: "Clear routines help me perform consistently.",
       options: [...LIKERT_5],
-      dimension: "adaptability",
+      dimension: "structure",
     },
   ],
   scoring: { method: "sum", min: 10, max: 50 },
   dimensions: [
-    { id: "social-energy", label: "Social Energy", questionIds: ["a5q1", "a5q2"] },
-    { id: "structure", label: "Structure", questionIds: ["a5q3", "a5q4"] },
-    { id: "decision-style", label: "Decision Style", questionIds: ["a5q5", "a5q6"] },
-    { id: "adaptability", label: "Adaptability", questionIds: ["a5q7", "a5q8", "a5q9", "a5q10"] },
+    { id: "social-energy", label: "Social Energy", questionIds: ["a5q1", "a5q5", "a5q9"] },
+    { id: "structure", label: "Structure", questionIds: ["a5q2", "a5q6", "a5q10"] },
+    { id: "decision-style", label: "Decision Style", questionIds: ["a5q3", "a5q7"] },
+    { id: "adaptability", label: "Adaptability", questionIds: ["a5q4", "a5q8"] },
   ],
-  archetypes: [], // Not used — personality compass uses personalityArchetypes
-  personalityArchetypes: [
+  archetypes: [
     {
-      profile: "structured+logic+introvert",
-      label: "Strategic Builder",
-      description:
-        "You combine deep focus, logical thinking, and systematic planning. You excel at building frameworks and solving complex problems independently.",
-    },
-    {
-      profile: "structured+empathy",
-      label: "Reliable Guide",
-      description:
-        "You blend organisation with genuine care for others. People trust you to lead with both structure and heart.",
-    },
-    {
-      profile: "adaptive+social",
-      label: "Dynamic Connector",
-      description:
-        "You thrive on human connection and adapt easily to new situations. Your energy and flexibility make you a natural networker and collaborator.",
-    },
-    {
-      profile: "adaptive+logic",
-      label: "Innovative Explorer",
-      description:
-        "You combine analytical thinking with openness to change. You're drawn to new ideas and approach problems with both logic and creativity.",
-    },
-    {
-      profile: "introvert+structured",
+      min: 10,
+      max: 19,
       label: "Thoughtful Architect",
-      description:
-        "You prefer working independently with clear plans. Your strength lies in careful, methodical thinking and attention to detail.",
+      color: "blue",
+      interpretation:
+        "A reflective, structured and careful pattern is likely to be prominent. You may value depth, preparation and accuracy.",
+      nextStep:
+        "Make space for experimentation and visible communication when circumstances require speed.",
     },
     {
-      profile: "social+empathy",
-      label: "Harmonizer",
-      description:
-        "You're attuned to people's emotions and energised by social connection. You naturally create warmth and unity in groups.",
+      min: 20,
+      max: 29,
+      label: "Reliable Guide",
+      color: "yellow",
+      interpretation:
+        "You are likely to combine steadiness with people awareness and practical judgement.",
+      nextStep:
+        "Avoid carrying too much responsibility simply because others experience you as dependable.",
     },
     {
-      profile: "adaptive+flexible",
-      label: "Creative Pathfinder",
-      description:
-        "You embrace change, resist rigidity, and find unconventional solutions. Your flexibility is your superpower.",
-    },
-    {
-      profile: "balanced",
+      min: 30,
+      max: 39,
       label: "Versatile Navigator",
-      description:
-        "You show a balanced profile across dimensions — adaptable and well-rounded in your approach to life and work.",
+      color: "emerald",
+      interpretation:
+        "Your responses suggest a relatively balanced pattern that changes with context.",
+      nextStep:
+        "Name your preferred default so flexibility remains intentional rather than reactive.",
     },
+    {
+      min: 40,
+      max: 50,
+      label: "Dynamic Explorer",
+      color: "green",
+      interpretation:
+        "You may gain energy from interaction, variety and movement, and adapt readily to new possibilities.",
+      nextStep:
+        "Use simple structure and reflection checkpoints to improve consistency and follow-through.",
+    },
+  ],
+  personalityArchetypes: [
+    { profile: "structured+logic+introvert", label: "Strategic Builder", description: "Combines deep thinking with structured execution and evidence-based decisions." },
+    { profile: "structured+people+introvert", label: "Reliable Guide", description: "Steady, people-aware and dependable, with careful structured support." },
+    { profile: "flexible+people+extrovert", label: "Dynamic Connector", description: "Energised by interaction, variety and people-centred adaptive leadership." },
+    { profile: "flexible+logic+extrovert", label: "Innovative Explorer", description: "Combines quick experimentation with logical assessment and social energy." },
+    { profile: "structured+logic+introvert+detail", label: "Thoughtful Architect", description: "Values depth, preparation, accuracy and careful decision-making." },
+    { profile: "balanced+people", label: "Harmonizer", description: "Balances multiple dimensions with a people-centred approach." },
+    { profile: "flexible+logic+introvert", label: "Creative Pathfinder", description: "Combines independent reflection with adaptable, evidence-based exploration." },
+    { profile: "balanced", label: "Versatile Navigator", description: "A balanced pattern that changes flexibly with context and demands." },
   ],
 };

@@ -1,7 +1,8 @@
 /**
- * A7. Entrepreneur Resilience™ Index
- * Tier: Professional (₹299-999)
- * Measures persistence, adaptability, optimism, and recovery from setbacks.
+ * A7. Entrepreneur Resilience Index
+ * Pack 4 — Leadership, Relationships and Influence
+ * Explores how founders and independent builders respond to uncertainty,
+ * setbacks, prolonged effort and changing evidence.
  */
 
 import type { AssessmentConfig } from "./types";
@@ -15,88 +16,96 @@ export const entrepreneurResilience: AssessmentConfig = {
   category: "Professional",
   status: "active",
   meta: {
-    title: "Entrepreneur Resilience™",
-    subtitle: "How resilient are you as a builder?",
+    title: "Entrepreneur Resilience Index",
+    subtitle: "How resilient are you as a founder?",
     description:
-      "Measure your persistence, adaptability, and recovery from setbacks. Built for founders, freelancers, and leaders.",
-    purpose: "Measures persistence, adaptability, optimism, and recovery from setbacks.",
-    duration: "Under 2 minutes",
+      "Explore how you respond to uncertainty, setbacks and prolonged effort. Ten honest questions, instant results, completely private.",
+    purpose:
+      "Explores how founders and independent builders respond to uncertainty, setbacks, prolonged effort and changing evidence.",
+    duration: "3–5 minutes",
     questionCount: 10,
-    icon: "zap",
-    productCategory: "Founders & Entrepreneurship",
+    icon: "target",
+    productCategory: "Leadership & Teams",
     isFree: false,
   },
   instructions:
-    "Answer based on how you typically respond to challenges and uncertainty. Be honest — there are no right or wrong answers.",
+    "Rate each statement according to your typical experience during the past four weeks. 1 = Almost Never; 2 = Rarely; 3 = Sometimes; 4 = Often; 5 = Almost Always.",
   questions: [
     {
       id: "a7q1",
-      text: "When a project does not go as planned, how quickly do you begin exploring alternatives?",
+      text: "After a setback, I can separate the event from my overall worth or capability.",
       options: [...LIKERT_5],
-      dimension: "adaptability",
+      dimension: "recovery",
     },
     {
       id: "a7q2",
-      text: "How comfortable are you making decisions with incomplete information?",
+      text: "I can continue working when outcomes are uncertain.",
       options: [...LIKERT_5],
-      dimension: "adaptability",
+      dimension: "uncertainty-tolerance",
     },
     {
       id: "a7q3",
-      text: "How often do setbacks affect your motivation for extended periods?",
+      text: "I change direction when evidence shows that the current approach is weak.",
       options: [...LIKERT_5],
-      reverse: true,
-      dimension: "persistence",
+      dimension: "adaptability",
     },
     {
       id: "a7q4",
-      text: "When facing uncertainty, how likely are you to focus on opportunities rather than obstacles?",
+      text: "A disappointing result makes me question the entire venture for a long time.",
       options: [...LIKERT_5],
-      dimension: "optimism",
+      reverse: true,
+      dimension: "setback-impact",
     },
     {
       id: "a7q5",
-      text: "How willing are you to take calculated risks?",
+      text: "I can ask for help without feeling that I have failed as a founder.",
       options: [...LIKERT_5],
-      dimension: "adaptability",
+      dimension: "support-use",
     },
     {
       id: "a7q6",
-      text: "How often do you continue working toward goals despite slow progress?",
+      text: "I protect basic sleep, health or recovery even during intense periods.",
       options: [...LIKERT_5],
-      dimension: "persistence",
+      dimension: "sustainability",
     },
     {
       id: "a7q7",
-      text: "When receiving criticism, how easy is it to separate feedback from personal judgment?",
+      text: "I can make decisions with incomplete information and review them later.",
       options: [...LIKERT_5],
-      dimension: "optimism",
+      dimension: "decision-agility",
     },
     {
       id: "a7q8",
-      text: "How quickly do you adapt when market conditions or circumstances change?",
+      text: "I hide problems until they become difficult to solve.",
       options: [...LIKERT_5],
-      dimension: "adaptability",
+      reverse: true,
+      dimension: "problem-openness",
     },
     {
       id: "a7q9",
-      text: "How often do challenges make you question your long-term goals?",
+      text: "I can maintain a long-term view without ignoring present cash or execution realities.",
       options: [...LIKERT_5],
-      reverse: true,
-      dimension: "persistence",
+      dimension: "perspective",
     },
     {
       id: "a7q10",
-      text: "How confident are you in finding solutions when facing unfamiliar problems?",
+      text: "I learn from criticism without automatically accepting or rejecting it.",
       options: [...LIKERT_5],
-      dimension: "optimism",
+      dimension: "learning-orientation",
     },
   ],
   scoring: { method: "sum", min: 10, max: 50 },
   dimensions: [
-    { id: "persistence", label: "Persistence", questionIds: ["a7q3", "a7q6", "a7q9"] },
-    { id: "adaptability", label: "Adaptability", questionIds: ["a7q1", "a7q2", "a7q5", "a7q8"] },
-    { id: "optimism", label: "Optimism", questionIds: ["a7q4", "a7q7", "a7q10"] },
+    { id: "recovery", label: "Recovery", questionIds: ["a7q1"] },
+    { id: "uncertainty-tolerance", label: "Uncertainty Tolerance", questionIds: ["a7q2"] },
+    { id: "adaptability", label: "Adaptability", questionIds: ["a7q3"] },
+    { id: "setback-impact", label: "Setback Impact", questionIds: ["a7q4"] },
+    { id: "support-use", label: "Support Use", questionIds: ["a7q5"] },
+    { id: "sustainability", label: "Sustainability", questionIds: ["a7q6"] },
+    { id: "decision-agility", label: "Decision Agility", questionIds: ["a7q7"] },
+    { id: "problem-openness", label: "Problem Openness", questionIds: ["a7q8"] },
+    { id: "perspective", label: "Perspective", questionIds: ["a7q9"] },
+    { id: "learning-orientation", label: "Learning Orientation", questionIds: ["a7q10"] },
   ],
   archetypes: [
     {
@@ -105,7 +114,9 @@ export const entrepreneurResilience: AssessmentConfig = {
       label: "Cautious Planner",
       color: "blue",
       interpretation:
-        "You prefer certainty and careful planning. Building comfort with ambiguity can unlock new growth.",
+        "Your responses suggest that entrepreneurial resilience is currently limited or inconsistent. The pattern may depend heavily on reassurance or favourable conditions.",
+      nextStep:
+        "Choose one small behaviour to practise repeatedly rather than trying to change everything at once.",
     },
     {
       min: 20,
@@ -113,7 +124,9 @@ export const entrepreneurResilience: AssessmentConfig = {
       label: "Determined Builder",
       color: "yellow",
       interpretation:
-        "You show persistence and determination but may benefit from building more adaptive strategies.",
+        "You show some foundations of entrepreneurial resilience, although they may become less reliable under pressure or uncertainty.",
+      nextStep:
+        "Identify situations where the skill already works and deliberately transfer that behaviour to one harder context.",
     },
     {
       min: 30,
@@ -121,7 +134,9 @@ export const entrepreneurResilience: AssessmentConfig = {
       label: "Resilient Operator",
       color: "emerald",
       interpretation:
-        "You recover well from setbacks and adapt to changing circumstances with practical optimism.",
+        "Your responses suggest a generally steady level of entrepreneurial resilience, with a few areas that could become more consistent.",
+      nextStep:
+        "Strengthen the lowest subdomain while continuing to use your existing strengths.",
     },
     {
       min: 40,
@@ -129,7 +144,9 @@ export const entrepreneurResilience: AssessmentConfig = {
       label: "Growth Pioneer",
       color: "green",
       interpretation:
-        "You demonstrate exceptional resilience — embracing uncertainty, learning from setbacks, and maintaining forward momentum.",
+        "Your responses indicate a strong and broadly reliable pattern of entrepreneurial resilience. You are likely to use it across many situations.",
+      nextStep:
+        "Protect the strength from becoming overused and practise adapting it to people and contexts that need a different approach.",
     },
   ],
 };

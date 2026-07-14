@@ -830,31 +830,26 @@ export const addOrgMember = createServerFn({ method: "POST" })
 
     const supabase = getAdminClient();
 
-    // Find the user by email via the auth admin API
-    const { data: usersResult } = await supabase.auth.admin.listUsers({ perPage: 1 });
-    // The admin API doesn't support email filter directly, so search users by email
-    let targetUserId: string | null = null;
-
-    // More reliable: use a direct approach to find user by email
-    const { data: authUsers } = await supabase.rpc("get_user_id_by_email", {
-      p_email: data.email,
+    // Supabase admin API has no direct email-filter on listUsers, so we page
+    // through up to 1 000 users. CalmTree is early-stage; revisit with a
+    // get_user_id_by_email DB function if the user base grows past that.
+    const { data: usersResult, error: listErr } = await supabase.auth.admin.listUsers({
+      perPage: 1000,
     });
-
-    // If the RPC doesn't exist, fall back to iterating (admin API)
-    if (authUsers) {
-      targetUserId = authUsers as unknown as string;
-    } else {
-      // Fallback: list users and find by email
-      const allUsers = usersResult?.users ?? [];
-      const match = allUsers.find(
-        (u) => u.email?.toLowerCase() === data.email.toLowerCase(),
-      );
-      targetUserId = match?.id ?? null;
+    if (listErr) {
+      console.error("[addOrgMember] listUsers error:", listErr);
+      return { error: "Could not look up users. Please try again." };
     }
 
-    if (!targetUserId) {
-      return { error: `No user found with email ${data.email}. They must sign up first.` };
+    const targetEmail = data.email.toLowerCase();
+    const match = (usersResult?.users ?? []).find(
+      (u) => u.email?.toLowerCase() === targetEmail,
+    );
+
+    if (!match) {
+      return { error: `No account found for ${data.email}. They must sign up on CalmTree first.` };
     }
+    const targetUserId = match.id;
 
     const { error } = await supabase.from("org_members").insert({
       org_id: data.orgId,

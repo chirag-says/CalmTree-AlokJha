@@ -9,9 +9,17 @@
  */
 
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, Rocket, AlertCircle, CheckCircle2 } from "lucide-react";
+import {
+  ArrowLeft,
+  Rocket,
+  AlertCircle,
+  CheckCircle2,
+  Copy,
+  Check,
+  ExternalLink,
+} from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { useAuth } from "@/hooks/useAuth";
 import { createCampaign, launchCampaign } from "@/server/functions/campaigns.functions";
@@ -45,12 +53,22 @@ function NewCampaignPage() {
   const { org } = extractOrg(orgsQuery.data, Route.useSearch().orgId);
 
   // Form state
-  const [step, setStep] = useState<"create" | "launch">("create");
+  const [step, setStep] = useState<"create" | "launch" | "links">("create");
   const [assessmentSlug, setAssessmentSlug] = useState("");
   const [title, setTitle] = useState("");
   const [closesAt, setClosesAt] = useState("");
   const [emailsText, setEmailsText] = useState("");
   const [draftCampaignId, setDraftCampaignId] = useState<string | null>(null);
+  const [launchedLinks, setLaunchedLinks] = useState<{ email: string; link: string }[]>([]);
+  const [emailsSentCount, setEmailsSentCount] = useState(0);
+  const [emailsSkippedCount, setEmailsSkippedCount] = useState(0);
+  const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
+
+  const copyLink = useCallback(async (link: string, idx: number) => {
+    await navigator.clipboard.writeText(link);
+    setCopiedIdx(idx);
+    setTimeout(() => setCopiedIdx(null), 2000);
+  }, []);
 
   // Group assessments by category for the picker
   const grouped = useMemo(() => {
@@ -121,11 +139,11 @@ function NewCampaignPage() {
         return;
       }
       if ("launched" in result) {
-        toast.success(
-          `Campaign launched! ${result.emailsSent} email(s) sent, ${result.emailsSkipped} skipped.`,
-        );
         queryClient.invalidateQueries({ queryKey: ["org"] });
-        navigate({ to: "/org/campaigns/$campaignId", params: { campaignId: draftCampaignId! } });
+        setEmailsSentCount(result.emailsSent);
+        setEmailsSkippedCount(result.emailsSkipped);
+        setLaunchedLinks(result.links ?? []);
+        setStep("links");
       }
     },
     onError: () => toast.error("Failed to launch campaign."),
@@ -135,17 +153,23 @@ function NewCampaignPage() {
 
   return (
     <div className="max-w-2xl">
-      {/* Back link */}
-      <Link
-        to="/org/campaigns"
-        className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-6 transition-colors"
-      >
-        <ArrowLeft className="h-4 w-4" />
-        Back to campaigns
-      </Link>
+      {/* Back link — hidden on the links step (we show a "View Campaign" button instead) */}
+      {step !== "links" && (
+        <Link
+          to="/org/campaigns"
+          className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-6 transition-colors"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back to campaigns
+        </Link>
+      )}
 
       <h1 className="text-2xl font-bold text-foreground mb-6">
-        {step === "create" ? "Create a Campaign" : "Launch Campaign"}
+        {step === "create"
+          ? "Create a Campaign"
+          : step === "launch"
+            ? "Launch Campaign"
+            : "Campaign Live"}
       </h1>
 
       {step === "create" && (
@@ -222,6 +246,100 @@ function NewCampaignPage() {
             ) : (
               "Continue to Launch"
             )}
+          </button>
+        </div>
+      )}
+
+      {step === "links" && (
+        <div className="space-y-5">
+          {/* Summary */}
+          <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-5">
+            <div className="flex items-start gap-3">
+              <CheckCircle2 className="h-5 w-5 text-emerald-600 shrink-0 mt-0.5" />
+              <div className="text-sm">
+                <p className="font-semibold text-emerald-900">Campaign launched successfully!</p>
+                {emailsSentCount > 0 && (
+                  <p className="text-emerald-800 mt-0.5">
+                    {emailsSentCount} invite email{emailsSentCount !== 1 ? "s" : ""} sent.
+                  </p>
+                )}
+                {emailsSkippedCount > 0 && (
+                  <p className="text-amber-800 mt-0.5">
+                    {emailsSkippedCount} email{emailsSkippedCount !== 1 ? "s" : ""} could not be
+                    sent (email service not configured). Share the links below directly with your
+                    team.
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Links table */}
+          {launchedLinks.length > 0 && (
+            <div>
+              <h2 className="text-sm font-semibold text-foreground mb-2">
+                Invite Links{" "}
+                <span className="text-xs font-normal text-muted-foreground">
+                  — each link is unique to one person
+                </span>
+              </h2>
+              <div className="rounded-xl border border-border overflow-hidden">
+                <table className="w-full text-sm">
+                  <thead className="bg-muted/50">
+                    <tr>
+                      <th className="text-left py-2.5 px-4 text-muted-foreground font-medium">
+                        Email
+                      </th>
+                      <th className="text-right py-2.5 px-4 text-muted-foreground font-medium">
+                        Link
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {launchedLinks.map((l, idx) => (
+                      <tr key={idx} className="border-t border-border/50">
+                        <td className="py-2.5 px-4 text-foreground">{l.email}</td>
+                        <td className="py-2.5 px-4 text-right">
+                          <button
+                            onClick={() => copyLink(l.link, idx)}
+                            className="inline-flex items-center gap-1.5 text-xs text-primary hover:text-primary/80 transition-colors"
+                          >
+                            {copiedIdx === idx ? (
+                              <>
+                                <Check className="h-3.5 w-3.5" />
+                                Copied
+                              </>
+                            ) : (
+                              <>
+                                <Copy className="h-3.5 w-3.5" />
+                                Copy link
+                              </>
+                            )}
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <p className="mt-2 text-xs text-muted-foreground">
+                These links are shown once. The campaign detail page has a "Get Links" button if you
+                need new ones later (this will invalidate these links).
+              </p>
+            </div>
+          )}
+
+          <button
+            onClick={() =>
+              navigate({
+                to: "/org/campaigns/$campaignId",
+                params: { campaignId: draftCampaignId! },
+              })
+            }
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors"
+          >
+            View Campaign
+            <ExternalLink className="h-4 w-4" />
           </button>
         </div>
       )}

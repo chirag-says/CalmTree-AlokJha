@@ -1,7 +1,7 @@
 /**
- * A21. Control Orientation Assessment
- * Tier: Professional
- * Explores how a person balances personal control, shared ownership, delegation and adaptation when outcomes matter.
+ * W6. Control Orientation Assessment
+ * Profile-based: explores whether a person responds to work outcomes through
+ * personal agency, shared-system thinking, contextual adaptation or increased control.
  */
 
 import type { ProfileAssessmentConfig } from "./types";
@@ -15,165 +15,84 @@ export const controlOrientation: ProfileAssessmentConfig = {
   status: "active",
   meta: {
     title: "Control Orientation Assessment",
-    subtitle: "How do you balance control and trust at work?",
-    description:
-      "Explore how you balance personal oversight, shared ownership, delegation and adaptation when outcomes matter. Four profiles, ten workplace scenarios.",
-    purpose:
-      "Explores how a person balances personal control, shared ownership, delegation and adaptation when outcomes matter.",
+    subtitle: "How do you relate to control at work?",
+    description: "Explore whether you respond to outcomes through personal agency, shared thinking, adaptation or increased control.",
+    purpose: "Explores whether a person responds to work outcomes through personal agency, shared-system thinking, contextual adaptation or increased control.",
     duration: "3–5 minutes",
     questionCount: 10,
     icon: "settings",
-    productCategory: "Leadership & Teams",
+    productCategory: "Workplace Effectiveness",
     isFree: false,
   },
-  instructions:
-    "Select the option that most closely reflects what you would usually do, not what you believe is the ideal answer.",
-  tieBreakQuestionIds: ["co1", "co4", "co9"],
+  instructions: "Select the option that most closely reflects what you would usually do, not what you believe is the ideal answer.",
+  tieBreakQuestionIds: ["w6q1", "w6q5", "w6q9"],
   profileQuestions: [
-    {
-      id: "co1",
-      text: "When delegating an important task, you prefer to:",
-      options: [
-        { label: "Review the method and progress frequently", profileCode: "A" },
-        { label: "Agree roles and maintain shared progress updates", profileCode: "B" },
-        {
-          label: "Define the outcome and allow the person to choose their method",
-          profileCode: "C",
-        },
-        { label: "Let the situation evolve and step in only if necessary", profileCode: "D" },
-      ],
-    },
-    {
-      id: "co2",
-      text: "A project depends on another department. You:",
-      options: [
-        { label: "Create detailed follow-ups to ensure they deliver", profileCode: "A" },
-        { label: "Set joint milestones and maintain regular coordination", profileCode: "B" },
-        { label: "Trust their ownership once expectations are clear", profileCode: "C" },
-        { label: "Plan to adjust your part if their delivery changes", profileCode: "D" },
-      ],
-    },
-    {
-      id: "co3",
-      text: "When quality is inconsistent, your first instinct is to:",
-      options: [
-        { label: "Take closer control of the work yourself", profileCode: "A" },
-        { label: "Bring people together to reset shared standards", profileCode: "B" },
-        { label: "Coach the owner and let them correct it", profileCode: "C" },
-        { label: "Change the plan to work around the limitation", profileCode: "D" },
-      ],
-    },
-    {
-      id: "co4",
-      text: "Which situation is most uncomfortable?",
-      options: [
-        { label: "Not knowing exactly how work is being done", profileCode: "A" },
-        { label: "People working separately without coordination", profileCode: "B" },
-        { label: "People waiting for approval instead of taking ownership", profileCode: "C" },
-        {
-          label: "Being expected to control factors that are inherently unpredictable",
-          profileCode: "D",
-        },
-      ],
-    },
-    {
-      id: "co5",
-      text: "When plans are disrupted by events outside your control, you:",
-      options: [
-        { label: "Try to regain control through tighter planning", profileCode: "A" },
-        { label: "Coordinate everyone around a revised plan", profileCode: "B" },
-        { label: "Ask owners to adapt their areas independently", profileCode: "C" },
-        { label: "Accept the change and improvise around it", profileCode: "D" },
-      ],
-    },
-    {
-      id: "co6",
-      text: "Your ideal team environment has:",
-      options: [
-        { label: "Clear supervision and dependable standards", profileCode: "A" },
-        { label: "Shared goals and transparent collaboration", profileCode: "B" },
-        { label: "High autonomy with accountability for results", profileCode: "C" },
-        { label: "Freedom to respond as circumstances require", profileCode: "D" },
-      ],
-    },
-    {
-      id: "co7",
-      text: "If someone chooses a different method but gets a good result, you:",
-      options: [
-        { label: "Still want to understand and standardise the method", profileCode: "A" },
-        { label: "Discuss what the team can learn from it", profileCode: "B" },
-        { label: "Accept it because the outcome was achieved", profileCode: "C" },
-        { label: "See it as proof that flexibility matters", profileCode: "D" },
-      ],
-    },
-    {
-      id: "co8",
-      text: "In uncertain situations, you are reassured by:",
-      options: [
-        { label: "Direct visibility and personal control", profileCode: "A" },
-        { label: "Frequent communication and shared decisions", profileCode: "B" },
-        { label: "Capable people owning their areas", profileCode: "C" },
-        { label: "Confidence that you can adjust later", profileCode: "D" },
-      ],
-    },
-    {
-      id: "co9",
-      text: "When overloaded, you usually:",
-      options: [
-        { label: "Hold onto key work because errors would be too costly", profileCode: "A" },
-        { label: "Distribute work but keep everyone closely connected", profileCode: "B" },
-        { label: "Delegate decisions as well as tasks", profileCode: "C" },
-        { label: "Reduce expectations and adapt to what is possible", profileCode: "D" },
-      ],
-    },
-    {
-      id: "co10",
-      text: "A useful reminder for you may be:",
-      options: [
-        { label: "Not everything important must be personally controlled", profileCode: "A" },
-        { label: "Shared ownership still needs clear accountability", profileCode: "B" },
-        { label: "Autonomy works best with context and feedback loops", profileCode: "C" },
-        { label: "Adaptation should not replace deliberate influence", profileCode: "D" },
-      ],
-    },
+    { id: "w6q1", text: "When a project goes poorly, you first examine:", options: [
+      { label: "Your choices and execution", profileCode: "A" },
+      { label: "Your actions plus system and stakeholder factors", profileCode: "B" },
+      { label: "The circumstances that made success difficult", profileCode: "C" },
+      { label: "Where control or compliance was lost", profileCode: "D" },
+    ]},
+    { id: "w6q2", text: "When outcomes depend on several people, you:", options: [
+      { label: "Focus on your own contribution", profileCode: "A" },
+      { label: "Clarify shared ownership and dependencies", profileCode: "B" },
+      { label: "Wait to see how others respond", profileCode: "C" },
+      { label: "Take tighter control of the process", profileCode: "D" },
+    ]},
+    { id: "w6q3", text: "Uncertainty makes you want to:", options: [
+      { label: "Act on what you can influence", profileCode: "A" },
+      { label: "Map controllable and uncontrollable factors", profileCode: "B" },
+      { label: "Adapt as events unfold", profileCode: "C" },
+      { label: "Add rules, checks and approvals", profileCode: "D" },
+    ]},
+    { id: "w6q4", text: "When a decision is outside your authority, you:", options: [
+      { label: "Find another way to influence it", profileCode: "A" },
+      { label: "Engage the right people with a clear case", profileCode: "B" },
+      { label: "Accept the constraint and adjust", profileCode: "C" },
+      { label: "Try to regain direct control", profileCode: "D" },
+    ]},
+    { id: "w6q5", text: "People may describe you as:", options: [
+      { label: "Accountable", profileCode: "A" },
+      { label: "Realistic and collaborative", profileCode: "B" },
+      { label: "Adaptable but reactive", profileCode: "C" },
+      { label: "Controlling or highly vigilant", profileCode: "D" },
+    ]},
+    { id: "w6q6", text: "When delegating, you:", options: [
+      { label: "Set the outcome and trust ownership", profileCode: "A" },
+      { label: "Agree checkpoints and decision rights", profileCode: "B" },
+      { label: "Adjust based on the person and situation", profileCode: "C" },
+      { label: "Monitor closely and retain key decisions", profileCode: "D" },
+    ]},
+    { id: "w6q7", text: "A sudden external change leads you to:", options: [
+      { label: "Identify the next useful action", profileCode: "A" },
+      { label: "Re-plan with affected people", profileCode: "B" },
+      { label: "Wait for more clarity before committing", profileCode: "C" },
+      { label: "Increase control and reporting", profileCode: "D" },
+    ]},
+    { id: "w6q8", text: "Your stress rises most when:", options: [
+      { label: "You have not acted on what you can control", profileCode: "A" },
+      { label: "Ownership and dependencies are unclear", profileCode: "B" },
+      { label: "The environment keeps changing", profileCode: "C" },
+      { label: "Others make decisions without your oversight", profileCode: "D" },
+    ]},
+    { id: "w6q9", text: "Success is mainly produced by:", options: [
+      { label: "Effort and choices", profileCode: "A" },
+      { label: "Agency interacting with context and support", profileCode: "B" },
+      { label: "Timing, opportunity and constraints", profileCode: "C" },
+      { label: "Strong control and disciplined execution", profileCode: "D" },
+    ]},
+    { id: "w6q10", text: "Your growth priority is:", options: [
+      { label: "Recognising real external constraints", profileCode: "A" },
+      { label: "Keeping responsibility clear", profileCode: "B" },
+      { label: "Strengthening proactive agency", profileCode: "C" },
+      { label: "Tolerating shared control and uncertainty", profileCode: "D" },
+    ]},
   ],
   profiles: [
-    {
-      code: "A",
-      label: "Hands-On Controller",
-      meaning: "Feels secure when personally monitoring decisions, quality and progress.",
-      interpretation:
-        "Your responses suggest you feel most confident when you can directly monitor progress and quality. Personal visibility is your primary way of maintaining standards.",
-      nextStep: "Delegate outcome plus checkpoints rather than retaining every task.",
-      color: "blue",
-    },
-    {
-      code: "B",
-      label: "Shared-Ownership Coordinator",
-      meaning: "Prefers clear collaboration, mutual visibility and collective responsibility.",
-      interpretation:
-        "Your responses suggest you create shared understanding and keep everyone connected. You prefer collective ownership with transparent progress over solo control.",
-      nextStep: "Clarify final decision rights so consensus does not slow action.",
-      color: "emerald",
-    },
-    {
-      code: "C",
-      label: "Autonomy-Enabling Delegator",
-      meaning: "Gives people ownership and focuses on outcomes rather than method.",
-      interpretation:
-        "Your responses suggest you give people real ownership and trust them to find the best path. You focus on results rather than prescribing how work is done.",
-      nextStep: "Match autonomy to capability and agree escalation signals.",
-      color: "yellow",
-    },
-    {
-      code: "D",
-      label: "Adaptive Responder",
-      meaning: "Accepts limited control and adjusts pragmatically to circumstances.",
-      interpretation:
-        "Your responses suggest you accept that much is outside your direct control and focus your energy on adapting well to what emerges.",
-      nextStep: "Identify the few controllable levers where proactive action will matter most.",
-      color: "orange",
-    },
+    { code: "A", label: "Internal Owner", meaning: "Believes personal choices and actions strongly shape outcomes.", interpretation: "Your responses suggest you believe personal choices and actions strongly shape outcomes.", nextStep: "Separate healthy ownership from taking responsibility for factors you cannot control.", color: "blue" },
+    { code: "B", label: "Shared-Control Realist", meaning: "Balances personal agency with systems, resources and other people.", interpretation: "Your responses suggest you balance personal agency with systems, resources and other people.", nextStep: "Keep ownership explicit so balanced thinking does not become diffused accountability.", color: "emerald" },
+    { code: "C", label: "Context Responder", meaning: "Adapts primarily to external constraints and available opportunity.", interpretation: "Your responses suggest you adapt primarily to external constraints and available opportunity.", nextStep: "Name one action you can take before waiting for the environment to change.", color: "yellow" },
+    { code: "D", label: "Control Protector", meaning: "Seeks tight control to reduce uncertainty, dependence and surprise.", interpretation: "Your responses suggest you seek tight control to reduce uncertainty, dependence and surprise.", nextStep: "Delegate one reversible decision with clear boundaries instead of close control.", color: "orange" },
   ],
   dimensions: [],
 };

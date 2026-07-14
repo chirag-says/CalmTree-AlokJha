@@ -1,7 +1,8 @@
 /**
- * A14. Screen Dependency Score™
- * Tier: Discovery (Free)
- * Measures digital habits, focus, awareness, and self-control.
+ * A14. Screen Dependency Score
+ * Pack 2 — Emotional Wellbeing and Digital Balance
+ * Reflects automatic checking, loss of control, emotional reliance,
+ * sleep disruption and interference with attention or relationships.
  */
 
 import type { AssessmentConfig } from "./types";
@@ -15,125 +16,44 @@ export const screenDependency: AssessmentConfig = {
   category: "Lifestyle",
   status: "active",
   meta: {
-    title: "Screen Dependency Score™",
+    title: "Screen Dependency Score",
     subtitle: "How dependent are you on screens?",
-    description:
-      "Check your digital habits — awareness, focus, and screen balance. Under 2 minutes, private, and non-judgmental.",
-    purpose: "Measures digital habits, focus, awareness, and self-control.",
-    duration: "Under 2 minutes",
+    description: "Reflect on automatic checking, loss of control and interference with attention or relationships. Ten honest questions, instant results.",
+    purpose: "Reflects automatic checking, loss of control, emotional reliance, sleep disruption and interference with attention or relationships.",
+    duration: "3–5 minutes",
     questionCount: 10,
     icon: "monitor",
-    productCategory: "Gen Z & Digital Life",
-    isFree: false,
+    productCategory: "Emotional Strength & Everyday Mind",
+    isFree: true,
   },
-  instructions:
-    "Answer honestly about your typical digital habits. There are no right or wrong answers — just self-awareness.",
+  instructions: "Rate each statement according to your typical experience during the past four weeks. 1 = Almost Never; 2 = Rarely; 3 = Sometimes; 4 = Often; 5 = Almost Always.",
   questions: [
-    {
-      id: "a14q1",
-      text: "How often are you aware of how much time you spend on screens?",
-      options: [...LIKERT_5],
-      dimension: "awareness",
-    },
-    {
-      id: "a14q2",
-      text: "While working or studying, how often do digital distractions interrupt your focus?",
-      options: [...LIKERT_5],
-      dimension: "focus",
-    },
-    {
-      id: "a14q3",
-      text: "How easy is it to put away your phone when you have other priorities?",
-      options: [...LIKERT_5],
-      reverse: true,
-      dimension: "habit-control",
-    },
-    {
-      id: "a14q4",
-      text: "How often do you intentionally take breaks from screens?",
-      options: [...LIKERT_5],
-      reverse: true,
-      dimension: "digital-balance",
-    },
-    {
-      id: "a14q5",
-      text: "How frequently do you check devices without a specific reason?",
-      options: [...LIKERT_5],
-      dimension: "awareness",
-    },
-    {
-      id: "a14q6",
-      text: "How often do notifications interrupt what you are doing?",
-      options: [...LIKERT_5],
-      dimension: "focus",
-    },
-    {
-      id: "a14q7",
-      text: "How comfortable are you spending several hours away from digital devices?",
-      options: [...LIKERT_5],
-      reverse: true,
-      dimension: "habit-control",
-    },
-    {
-      id: "a14q8",
-      text: "How often do screens interfere with sleep, relationships, or personal activities?",
-      options: [...LIKERT_5],
-      dimension: "digital-balance",
-    },
-    {
-      id: "a14q9",
-      text: "How often do you create device-free time during the day?",
-      options: [...LIKERT_5],
-      reverse: true,
-      dimension: "digital-balance",
-    },
-    {
-      id: "a14q10",
-      text: "How easy is it to stay focused on one task without checking a screen?",
-      options: [...LIKERT_5],
-      reverse: true,
-      dimension: "focus",
-    },
+    { id: "a14q1", text: "I check my phone or another screen without a clear reason.", options: [...LIKERT_5], dimension: "automatic-use" },
+    { id: "a14q2", text: "I can leave my device out of reach during focused work or conversation.", options: [...LIKERT_5], reverse: true, dimension: "control" },
+    { id: "a14q3", text: "I continue scrolling or watching longer than I intended.", options: [...LIKERT_5], dimension: "loss-of-control" },
+    { id: "a14q4", text: "I feel restless when I cannot check messages or feeds.", options: [...LIKERT_5], dimension: "emotional-reliance" },
+    { id: "a14q5", text: "Screens regularly delay my sleep or reduce sleep quality.", options: [...LIKERT_5], dimension: "sleep" },
+    { id: "a14q6", text: "I can enjoy waiting, travelling or resting without immediately using a screen.", options: [...LIKERT_5], reverse: true, dimension: "tolerance" },
+    { id: "a14q7", text: "People close to me have commented that I am distracted by my device.", options: [...LIKERT_5], dimension: "relationships" },
+    { id: "a14q8", text: "I use screens mainly by choice rather than habit.", options: [...LIKERT_5], reverse: true, dimension: "intentionality" },
+    { id: "a14q9", text: "I switch between apps even when none of them is useful at that moment.", options: [...LIKERT_5], dimension: "automatic-use" },
+    { id: "a14q10", text: "I have tried to reduce screen use but quickly returned to the same pattern.", options: [...LIKERT_5], dimension: "control" },
   ],
   scoring: { method: "sum", min: 10, max: 50 },
   dimensions: [
-    { id: "awareness", label: "Awareness", questionIds: ["a14q1", "a14q5"] },
-    { id: "focus", label: "Focus", questionIds: ["a14q2", "a14q6", "a14q10"] },
-    { id: "habit-control", label: "Habit Control", questionIds: ["a14q3", "a14q7"] },
-    { id: "digital-balance", label: "Digital Balance", questionIds: ["a14q4", "a14q8", "a14q9"] },
+    { id: "automatic-use", label: "Automatic Use", questionIds: ["a14q1", "a14q9"] },
+    { id: "control", label: "Control", questionIds: ["a14q2", "a14q10"] },
+    { id: "loss-of-control", label: "Loss of Control", questionIds: ["a14q3"] },
+    { id: "emotional-reliance", label: "Emotional Reliance", questionIds: ["a14q4"] },
+    { id: "sleep", label: "Sleep", questionIds: ["a14q5"] },
+    { id: "tolerance", label: "Tolerance", questionIds: ["a14q6"] },
+    { id: "relationships", label: "Relationships", questionIds: ["a14q7"] },
+    { id: "intentionality", label: "Intentionality", questionIds: ["a14q8"] },
   ],
   archetypes: [
-    {
-      min: 10,
-      max: 19,
-      label: "Digital Minimalist",
-      color: "green",
-      interpretation:
-        "You maintain a healthy relationship with screens and technology. Your digital habits support your wellbeing.",
-    },
-    {
-      min: 20,
-      max: 29,
-      label: "Balanced User",
-      color: "yellow",
-      interpretation:
-        "You use screens purposefully but may occasionally find it hard to disconnect. Minor adjustments could help.",
-    },
-    {
-      min: 30,
-      max: 39,
-      label: "Constant Connector",
-      color: "orange",
-      interpretation:
-        "Screens play a significant role in your daily life. You may benefit from setting clearer boundaries with technology.",
-    },
-    {
-      min: 40,
-      max: 50,
-      label: "Screen Dependent",
-      color: "red",
-      interpretation:
-        "Digital devices may be consuming a significant portion of your time and attention. Consider reviewing your screen habits.",
-    },
+    { min: 10, max: 19, label: "Intentional User", color: "green", interpretation: "Your responses currently show relatively few signs of screen dependency. Protective habits appear to be working reasonably well.", nextStep: "Maintain the routines that support recovery and notice early changes rather than waiting for strain to build." },
+    { min: 20, max: 29, label: "Habitual Checker", color: "yellow", interpretation: "Some signs of screen dependency are present, especially during demanding periods, but they may still be manageable with deliberate adjustments.", nextStep: "Identify the two situations that raise your score most often and make one practical change this week." },
+    { min: 30, max: 39, label: "Digitally Pulled", color: "orange", interpretation: "Your responses suggest a recurring pattern of screen dependency that may be affecting energy, concentration, relationships or performance.", nextStep: "Reduce avoidable load, strengthen boundaries and use a structured recovery or support plan." },
+    { min: 40, max: 50, label: "Screen-Dependent Pattern", color: "red", interpretation: "Your responses suggest a strong and persistent pattern of screen dependency. The present pace or environment may be difficult to sustain.", nextStep: "Prioritise immediate load reduction and consider speaking with a qualified professional if the experience is severe or persistent." },
   ],
 };

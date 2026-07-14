@@ -1,5 +1,8 @@
 /**
  * Admin Purchases — /admin/purchases
+ *
+ * Mobile: expandable cards showing type + amount up front, with status,
+ * payment ID, and date revealed on expand. Desktop: standard table.
  */
 
 import { createFileRoute } from "@tanstack/react-router";
@@ -10,6 +13,7 @@ import { Download, Loader2, ShoppingBag } from "lucide-react";
 import { useExportPurchases, usePurchases } from "@/data/admin-queries";
 import { PageHeader } from "@/components/admin/PageHeader";
 import { AdminTable, type ColumnDef } from "@/components/admin/AdminTable";
+import { MobileCardList } from "@/components/admin/MobileCardList";
 import { TablePagination } from "@/components/admin/TablePagination";
 import { StatusPill, purchaseStatusTone } from "@/components/admin/StatusPill";
 import { Badge } from "@/components/ui/badge";
@@ -165,19 +169,80 @@ function AdminPurchasesPage() {
         actions={<ExportCsvButton />}
       />
 
-      <AdminTable
-        columns={columns}
-        data={rows}
-        rowKey={(p) => p.id}
-        isLoading={purchases.isPending}
-        error={purchases.error?.message}
-        onRetry={() => void purchases.refetch()}
-        emptyState={{
-          icon: ShoppingBag,
-          title: "No purchases yet",
-          description: "Completed Razorpay payments will appear here.",
-        }}
-      />
+      {/* Mobile: expandable card list */}
+      <div className="sm:hidden">
+        <MobileCardList
+          data={rows}
+          rowKey={(p) => p.id}
+          isLoading={purchases.isPending}
+          error={purchases.error?.message}
+          onRetry={() => void purchases.refetch()}
+          emptyState={{
+            icon: ShoppingBag,
+            title: "No purchases yet",
+            description: "Completed Razorpay payments will appear here.",
+          }}
+          title={(p) => (
+            <span className="flex items-center gap-2">
+              <Badge variant="secondary" className="text-[10px]">{p.product_type}</Badge>
+              <span className="font-bold">₹{(p.amount_paid_inr ?? 0).toLocaleString("en-IN")}</span>
+            </span>
+          )}
+          subtitle={(p) =>
+            formatDistanceToNow(new Date(p.purchased_at), { addSuffix: true })
+          }
+          badges={(p) => (
+            <StatusPill tone={purchaseStatusTone(p.status)}>{p.status}</StatusPill>
+          )}
+          details={(p) => [
+            {
+              label: "Amount",
+              value: (
+                <span className="text-xs font-medium text-foreground">
+                  ₹{(p.amount_paid_inr ?? 0).toLocaleString("en-IN")}
+                </span>
+              ),
+            },
+            {
+              label: "Status",
+              value: <StatusPill tone={purchaseStatusTone(p.status)}>{p.status}</StatusPill>,
+            },
+            {
+              label: "Payment ID",
+              value: (
+                <span className="font-mono text-[10px] text-muted-foreground">
+                  {p.razorpay_payment_id ?? "—"}
+                </span>
+              ),
+            },
+            {
+              label: "Date",
+              value: (
+                <span className="text-xs text-muted-foreground">
+                  {formatDistanceToNow(new Date(p.purchased_at), { addSuffix: true })}
+                </span>
+              ),
+            },
+          ]}
+        />
+      </div>
+
+      {/* Desktop: table view */}
+      <div className="hidden sm:block">
+        <AdminTable
+          columns={columns}
+          data={rows}
+          rowKey={(p) => p.id}
+          isLoading={purchases.isPending}
+          error={purchases.error?.message}
+          onRetry={() => void purchases.refetch()}
+          emptyState={{
+            icon: ShoppingBag,
+            title: "No purchases yet",
+            description: "Completed Razorpay payments will appear here.",
+          }}
+        />
+      </div>
 
       <TablePagination page={page} pageSize={20} total={total} onPageChange={setPage} />
     </div>

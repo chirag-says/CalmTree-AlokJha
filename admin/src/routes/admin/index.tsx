@@ -55,9 +55,9 @@ function AdminOverviewPage() {
       <PageHeader title="Overview" description="CalmTree platform at a glance." />
 
       {overview.isPending ? (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-2 gap-2.5 sm:gap-4 lg:grid-cols-3">
           {[1, 2, 3, 4, 5, 6].map((i) => (
-            <Skeleton key={i} className="h-28 rounded-2xl" />
+            <Skeleton key={i} className="h-20 sm:h-28 rounded-xl sm:rounded-2xl" />
           ))}
         </div>
       ) : overview.error || !o ? (
@@ -67,7 +67,7 @@ function AdminOverviewPage() {
         />
       ) : (
         <>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-2 gap-2.5 sm:gap-4 lg:grid-cols-3">
             <StatCard index={0} label="Total Users" value={o.totalUsers} icon={Users} />
             <StatCard index={1} label="New Users (30d)" value={o.newUsers30d} icon={UserPlus} />
             <StatCard
@@ -91,14 +91,14 @@ function AdminOverviewPage() {
           </div>
 
           {/* Daily trends (last 30 days) */}
-          <div className="mt-8 grid gap-4 lg:grid-cols-2">
+          <div className="mt-6 sm:mt-8 grid gap-3 sm:gap-4 lg:grid-cols-2">
             <ChartCard
               title="Signups & results"
               description="Daily, last 30 days"
               isLoading={series.isPending}
               isEmpty={!hasActivity}
             >
-              <ChartContainer config={activityChartConfig} className="h-[250px] w-full">
+              <ChartContainer config={activityChartConfig} className="h-[200px] sm:h-[250px] w-full">
                 <AreaChart data={days} margin={{ left: 4, right: 4 }}>
                   <defs>
                     <linearGradient id="fillSignups" x1="0" y1="0" x2="0" y2="1">
@@ -145,7 +145,7 @@ function AdminOverviewPage() {
               isEmpty={!hasRevenue}
               emptyLabel="No revenue in this window"
             >
-              <ChartContainer config={revenueChartConfig} className="h-[250px] w-full">
+              <ChartContainer config={revenueChartConfig} className="h-[200px] sm:h-[250px] w-full">
                 <BarChart data={days} margin={{ left: 4, right: 4 }}>
                   <CartesianGrid vertical={false} strokeOpacity={0.15} />
                   <XAxis
@@ -164,7 +164,7 @@ function AdminOverviewPage() {
           </div>
 
           {/* Top assessments (last 30 days) */}
-          <div className="surface-raised mt-8 rounded-2xl p-5">
+          <div className="surface-raised mt-6 sm:mt-8 rounded-xl sm:rounded-2xl p-3 sm:p-5">
             <p className="mb-4 text-xs uppercase tracking-wider text-muted-foreground">
               Top assessments (30d)
             </p>
@@ -175,19 +175,21 @@ function AdminOverviewPage() {
                 {o.topAssessments.map((a) => {
                   const max = o.topAssessments[0].count || 1;
                   return (
-                    <li key={a.slug} className="flex items-center gap-3">
-                      <span className="w-48 shrink-0 truncate text-sm text-foreground">
+                    <li key={a.slug} className="flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-3">
+                      <span className="sm:w-48 shrink-0 truncate text-sm text-foreground">
                         {titleBySlug.get(a.slug) ?? a.slug}
                       </span>
-                      <span className="h-2 flex-1 overflow-hidden rounded-full bg-muted">
-                        <span
-                          className="block h-full rounded-full bg-primary/70 transition-all"
-                          style={{ width: `${(a.count / max) * 100}%` }}
-                        />
-                      </span>
-                      <span className="w-10 text-right text-sm text-muted-foreground">
-                        {a.count}
-                      </span>
+                      <div className="flex items-center gap-2 sm:gap-3 flex-1">
+                        <span className="h-2 flex-1 overflow-hidden rounded-full bg-muted">
+                          <span
+                            className="block h-full rounded-full bg-primary/70 transition-all"
+                            style={{ width: `${(a.count / max) * 100}%` }}
+                          />
+                        </span>
+                        <span className="w-10 text-right text-sm text-muted-foreground">
+                          {a.count}
+                        </span>
+                      </div>
                     </li>
                   );
                 })}

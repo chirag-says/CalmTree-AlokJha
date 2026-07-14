@@ -1,8 +1,9 @@
 /**
  * Admin Users — /admin/users
  *
- * Paginated, searchable user list. Clicking a row opens the UserDrawer with
- * profile, access management, history, and activity.
+ * Paginated, searchable user list. On mobile, users appear as expandable
+ * cards with a chevron to reveal details. On desktop, the standard table
+ * layout is used. Clicking a user opens the UserDrawer.
  */
 
 import { createFileRoute } from "@tanstack/react-router";
@@ -13,6 +14,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useUsers } from "@/data/admin-queries";
 import { PageHeader } from "@/components/admin/PageHeader";
 import { AdminTable, type ColumnDef } from "@/components/admin/AdminTable";
+import { MobileCardList } from "@/components/admin/MobileCardList";
 import { TablePagination } from "@/components/admin/TablePagination";
 import { StatusPill } from "@/components/admin/StatusPill";
 import { UserDrawer } from "@/components/admin/UserDrawer";
@@ -21,7 +23,6 @@ import { Input } from "@/components/ui/input";
 
 export const Route = createFileRoute("/admin/users")({
   head: () => ({ meta: [{ title: "Users — CalmTree Admin" }] }),
-  // `q` seeds the search box (used by the command palette's user search).
   validateSearch: (search: Record<string, unknown>): { q?: string } => ({
     q: typeof search.q === "string" && search.q ? search.q : undefined,
   }),
@@ -55,6 +56,11 @@ function AdminUsersPage() {
     e.preventDefault();
     setPage(1);
     setSearch(searchInput.trim());
+  }
+
+  function openUser(id: string) {
+    setSelectedUserId(id);
+    setDrawerOpen(true);
   }
 
   const columns: ColumnDef<UserRow>[] = [
@@ -102,14 +108,14 @@ function AdminUsersPage() {
         title="Users"
         description={`${total.toLocaleString("en-IN")} total registered users.`}
         actions={
-          <form onSubmit={submitSearch} className="flex items-center gap-2">
-            <div className="relative">
+          <form onSubmit={submitSearch} className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+            <div className="relative flex-1 sm:flex-none">
               <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground/60" />
               <Input
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
                 placeholder="Search by name…"
-                className="w-56 pl-9"
+                className="w-full sm:w-56 pl-9"
               />
             </div>
             <Button type="submit" variant="secondary" size="sm">
@@ -133,23 +139,99 @@ function AdminUsersPage() {
         }
       />
 
-      <AdminTable
-        columns={columns}
-        data={rows}
-        rowKey={(u) => u.id}
-        isLoading={users.isPending}
-        error={users.error?.message}
-        onRetry={() => void users.refetch()}
-        onRowClick={(u) => {
-          setSelectedUserId(u.id);
-          setDrawerOpen(true);
-        }}
-        emptyState={{
-          icon: UsersIcon,
-          title: search ? `No users matching "${search}"` : "No users yet",
-          description: search ? "Try a different name." : undefined,
-        }}
-      />
+      {/* Mobile: expandable card list */}
+      <div className="sm:hidden">
+        <MobileCardList
+          data={rows}
+          rowKey={(u) => u.id}
+          isLoading={users.isPending}
+          error={users.error?.message}
+          onRetry={() => void users.refetch()}
+          emptyState={{
+            icon: UsersIcon,
+            title: search ? `No users matching "${search}"` : "No users yet",
+            description: search ? "Try a different name." : undefined,
+          }}
+          title={(u) => u.full_name ?? "—"}
+          subtitle={(u) => u.email ?? u.id.slice(0, 12) + "…"}
+          badges={(u) => (
+            <>
+              {u.is_admin && <StatusPill tone="primary">Admin</StatusPill>}
+              {u.onboarding_completed ? (
+                <CheckCircle2 className="h-4 w-4 text-success" />
+              ) : (
+                <XCircle className="h-4 w-4 text-muted-foreground/30" />
+              )}
+            </>
+          )}
+          details={(u) => [
+            {
+              label: "Onboarded",
+              value: u.onboarding_completed ? (
+                <span className="flex items-center gap-1 text-success text-xs font-medium">
+                  <CheckCircle2 className="h-3 w-3" /> Yes
+                </span>
+              ) : (
+                <span className="flex items-center gap-1 text-muted-foreground text-xs">
+                  <XCircle className="h-3 w-3" /> No
+                </span>
+              ),
+            },
+            {
+              label: "Role",
+              value: u.is_admin ? (
+                <StatusPill tone="primary">Admin</StatusPill>
+              ) : (
+                <span className="text-xs text-muted-foreground">User</span>
+              ),
+            },
+            {
+              label: "Joined",
+              value: (
+                <span className="text-xs text-muted-foreground">
+                  {formatDistanceToNow(new Date(u.created_at), { addSuffix: true })}
+                </span>
+              ),
+            },
+            ...(u.last_sign_in_at
+              ? [
+                  {
+                    label: "Last seen",
+                    value: (
+                      <span className="text-xs text-muted-foreground">
+                        {formatDistanceToNow(new Date(u.last_sign_in_at), { addSuffix: true })}
+                      </span>
+                    ),
+                  },
+                ]
+              : []),
+          ]}
+          footer={() => (
+            <Button size="sm" variant="outline" className="w-full text-xs">
+              View full profile
+            </Button>
+          )}
+          onTap={(u) => openUser(u.id)}
+        />
+      </div>
+
+      {/* Desktop: table view */}
+      <div className="hidden sm:block">
+        <AdminTable
+          columns={columns}
+          data={rows}
+          rowKey={(u) => u.id}
+          isLoading={users.isPending}
+          error={users.error?.message}
+          onRetry={() => void users.refetch()}
+          onRowClick={(u) => openUser(u.id)}
+          emptyState={{
+            icon: UsersIcon,
+            title: search ? `No users matching "${search}"` : "No users yet",
+            description: search ? "Try a different name." : undefined,
+          }}
+        />
+      </div>
 
       <TablePagination page={page} pageSize={20} total={total} onPageChange={setPage} />
 

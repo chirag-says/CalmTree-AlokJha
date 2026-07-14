@@ -26,18 +26,18 @@ export function ChartCard({
   children: ReactNode;
 }) {
   return (
-    <div className="surface-raised rounded-2xl p-5">
-      <div className="mb-4 flex items-start justify-between gap-3">
-        <div>
-          <p className="text-sm font-medium text-foreground">{title}</p>
-          {description && <p className="mt-0.5 text-xs text-muted-foreground">{description}</p>}
+    <div className="surface-raised rounded-xl sm:rounded-2xl p-3 sm:p-5">
+      <div className="mb-3 sm:mb-4 flex items-start justify-between gap-2 sm:gap-3">
+        <div className="min-w-0">
+          <p className="text-xs sm:text-sm font-medium text-foreground">{title}</p>
+          {description && <p className="mt-0.5 text-[10px] sm:text-xs text-muted-foreground">{description}</p>}
         </div>
         {action}
       </div>
       {isLoading ? (
-        <Skeleton className="h-[250px] w-full rounded-xl" />
+        <Skeleton className="h-[200px] sm:h-[250px] w-full rounded-lg sm:rounded-xl" />
       ) : isEmpty ? (
-        <div className="flex h-[250px] items-center justify-center">
+        <div className="flex h-[200px] sm:h-[250px] items-center justify-center">
           <EmptyState icon={BarChart3} title={emptyLabel} />
         </div>
       ) : (

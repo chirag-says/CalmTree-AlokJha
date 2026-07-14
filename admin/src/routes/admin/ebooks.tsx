@@ -1,6 +1,7 @@
 /**
  * Admin Ebooks — /admin/ebooks
  * Full CRUD: list all (incl. inactive) + create/edit/delete.
+ * Mobile: expandable cards. Desktop: standard table.
  */
 
 import { createFileRoute } from "@tanstack/react-router";
@@ -12,6 +13,7 @@ import { BookOpen, Loader2, Pencil, Plus, Trash2 } from "lucide-react";
 import { useCreateEbook, useDeleteEbook, useEbooks, useUpdateEbook } from "@/data/admin-queries";
 import { PageHeader } from "@/components/admin/PageHeader";
 import { AdminTable, type ColumnDef } from "@/components/admin/AdminTable";
+import { MobileCardList } from "@/components/admin/MobileCardList";
 import { StatusPill, ebookStatusTone } from "@/components/admin/StatusPill";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
 import { CloudinaryUploadButton } from "@/components/CloudinaryUploadButton";
@@ -319,20 +321,101 @@ function AdminEbooksPage() {
         }
       />
 
-      <AdminTable
-        columns={columns}
-        data={rows}
-        rowKey={(e) => e.id}
-        isLoading={ebooks.isPending}
-        error={ebooks.error?.message}
-        onRetry={() => void ebooks.refetch()}
-        skeletonRows={3}
-        emptyState={{
-          icon: BookOpen,
-          title: "No ebooks yet",
-          description: "Create your first ebook to populate the storefront.",
-        }}
-      />
+      {/* Mobile: expandable card list */}
+      <div className="sm:hidden">
+        <MobileCardList
+          data={rows}
+          rowKey={(e) => e.id}
+          isLoading={ebooks.isPending}
+          error={ebooks.error?.message}
+          onRetry={() => void ebooks.refetch()}
+          emptyState={{
+            icon: BookOpen,
+            title: "No ebooks yet",
+            description: "Create your first ebook to populate the storefront.",
+          }}
+          title={(e) => e.title}
+          subtitle={(e) => e.slug}
+          badges={(e) => (
+            <StatusPill tone={ebookStatusTone(e.status)}>{e.status}</StatusPill>
+          )}
+          details={(e) => [
+            {
+              label: "Price",
+              value: (
+                <span className="text-xs font-medium text-foreground">
+                  ₹{e.price_inr.toLocaleString("en-IN")}
+                </span>
+              ),
+            },
+            {
+              label: "Status",
+              value: <StatusPill tone={ebookStatusTone(e.status)}>{e.status}</StatusPill>,
+            },
+            ...(e.page_count
+              ? [
+                  {
+                    label: "Pages",
+                    value: (
+                      <span className="text-xs text-muted-foreground">{e.page_count}</span>
+                    ),
+                  },
+                ]
+              : []),
+          ]}
+          footer={(e) => (
+            <div className="flex items-center gap-2">
+              <Button
+                size="sm"
+                variant="outline"
+                className="flex-1 text-xs gap-1.5"
+                onClick={() => {
+                  setEditTarget(e);
+                  setFormOpen(true);
+                }}
+              >
+                <Pencil className="h-3 w-3" />
+                Edit
+              </Button>
+              <ConfirmDialog
+                title={`Delete "${e.title}"?`}
+                description="This cannot be undone."
+                confirmLabel="Delete"
+                destructive
+                onConfirm={() => deleteMutation.mutateAsync({ id: e.id }).then(() => undefined)}
+                trigger={
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="text-xs gap-1.5 text-destructive hover:text-destructive"
+                  >
+                    <Trash2 className="h-3 w-3" />
+                    Delete
+                  </Button>
+                }
+              />
+            </div>
+          )}
+        />
+      </div>
+
+      {/* Desktop: table view */}
+      <div className="hidden sm:block">
+        <AdminTable
+          columns={columns}
+          data={rows}
+          rowKey={(e) => e.id}
+          isLoading={ebooks.isPending}
+          error={ebooks.error?.message}
+          onRetry={() => void ebooks.refetch()}
+          skeletonRows={3}
+          emptyState={{
+            icon: BookOpen,
+            title: "No ebooks yet",
+            description: "Create your first ebook to populate the storefront.",
+          }}
+        />
+      </div>
 
       <EbookFormDialog
         initial={editTarget}

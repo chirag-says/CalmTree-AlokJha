@@ -194,21 +194,21 @@ export function AdminLayout() {
     <SidebarProvider>
       <AdminSidebar />
       <SidebarInset>
-        <header className="sticky top-0 z-30 flex h-14 items-center gap-2 border-b border-border bg-background/80 px-4 backdrop-blur">
+        <header className="sticky top-0 z-30 flex h-12 sm:h-14 items-center gap-1.5 sm:gap-2 border-b border-border bg-background/80 px-2 sm:px-4 backdrop-blur">
           <SidebarTrigger />
-          <Separator orientation="vertical" className="mr-1 h-4" />
-          <span className="text-sm font-medium text-foreground">
+          <Separator orientation="vertical" className="mr-0.5 sm:mr-1 h-4" />
+          <span className="text-sm font-medium text-foreground truncate">
             {currentNav?.label ?? "Admin"}
           </span>
-          <div className="ml-auto flex items-center gap-1.5">
+          <div className="ml-auto flex items-center gap-1 sm:gap-1.5">
             <Button
               variant="outline"
-              size="sm"
-              className="gap-2 text-muted-foreground"
+              size="icon"
+              className="h-8 w-8 sm:h-auto sm:w-auto sm:gap-2 sm:px-3 text-muted-foreground"
               onClick={() => setPaletteOpen(true)}
             >
               <Search className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">Search</span>
+              <span className="hidden sm:inline text-sm">Search</span>
               <kbd className="pointer-events-none hidden rounded border border-border bg-muted px-1.5 font-mono text-[10px] text-muted-foreground sm:inline-block">
                 ⌘K
               </kbd>
@@ -216,7 +216,7 @@ export function AdminLayout() {
             <ThemeToggle />
           </div>
         </header>
-        <main className="mx-auto w-full max-w-6xl flex-1 px-5 py-8 md:px-8 md:py-10">
+        <main className="mx-auto w-full max-w-6xl flex-1 px-3 py-5 sm:px-5 sm:py-8 md:px-8 md:py-10">
           <Outlet />
         </main>
       </SidebarInset>

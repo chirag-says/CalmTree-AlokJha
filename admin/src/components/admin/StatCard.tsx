@@ -37,14 +37,14 @@ export function StatCard({
       initial={reducedMotion ? false : { opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, delay: index * 0.06, ease: "easeOut" }}
-      className="surface-raised rounded-2xl p-5"
+      className="surface-raised rounded-xl sm:rounded-2xl p-3 sm:p-5"
     >
-      <div className="mb-2 flex items-center justify-between">
-        <p className="text-xs uppercase tracking-wider text-muted-foreground">{label}</p>
-        {Icon && <Icon className="h-4 w-4 text-primary/70" />}
+      <div className="mb-1 sm:mb-2 flex items-center justify-between gap-1">
+        <p className="text-[10px] sm:text-xs uppercase tracking-wider text-muted-foreground truncate">{label}</p>
+        {Icon && <Icon className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0 text-primary/70" />}
       </div>
-      <div className="flex items-baseline gap-2">
-        <p className="text-3xl font-bold text-foreground">
+      <div className="flex items-baseline gap-1 sm:gap-2 flex-wrap">
+        <p className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground">
           {typeof value === "number" ? (
             format === "currency" ? (
               <AnimatedNumber value={value} prefix="₹" format={{ maximumFractionDigits: 0 }} />
@@ -60,16 +60,16 @@ export function StatCard({
         {delta != null && Number.isFinite(delta) && (
           <span
             className={cn(
-              "inline-flex items-center gap-0.5 rounded-full px-1.5 py-0.5 text-xs font-medium",
+              "inline-flex items-center gap-0.5 rounded-full px-1 sm:px-1.5 py-0.5 text-[10px] sm:text-xs font-medium",
               delta >= 0 ? "bg-success/12 text-success" : "bg-destructive/12 text-destructive",
             )}
           >
-            {delta >= 0 ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
+            {delta >= 0 ? <TrendingUp className="h-2.5 w-2.5 sm:h-3 sm:w-3" /> : <TrendingDown className="h-2.5 w-2.5 sm:h-3 sm:w-3" />}
             {Math.abs(Math.round(delta))}%
           </span>
         )}
       </div>
-      {sub && <p className="mt-1 text-xs text-muted-foreground/80">{sub}</p>}
+      {sub && <p className="mt-0.5 sm:mt-1 text-[10px] sm:text-xs text-muted-foreground/80">{sub}</p>}
     </motion.div>
   );
 }

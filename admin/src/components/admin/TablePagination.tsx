@@ -24,11 +24,11 @@ export function TablePagination({
   const to = Math.min(page * pageSize, total);
 
   return (
-    <div className="mt-4 flex items-center justify-between">
+    <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
       <p className="text-xs text-muted-foreground">
         {from}–{to} of {total.toLocaleString("en-IN")}
       </p>
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1.5 sm:gap-2">
         <Button
           variant="outline"
           size="sm"
@@ -36,9 +36,9 @@ export function TablePagination({
           onClick={() => onPageChange(page - 1)}
         >
           <ChevronLeft className="h-4 w-4" />
-          Previous
+          <span className="hidden sm:inline">Previous</span>
         </Button>
-        <span className="text-xs text-muted-foreground">
+        <span className="text-xs text-muted-foreground px-1">
           {page} / {totalPages}
         </span>
         <Button
@@ -47,7 +47,7 @@ export function TablePagination({
           disabled={page >= totalPages}
           onClick={() => onPageChange(page + 1)}
         >
-          Next
+          <span className="hidden sm:inline">Next</span>
           <ChevronRight className="h-4 w-4" />
         </Button>
       </div>

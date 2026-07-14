@@ -103,9 +103,9 @@ function OrgDetailPage() {
       {/* Back link */}
       <Link
         to="/admin/orgs"
-        className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-4 transition-colors"
+        className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-3 sm:mb-4 transition-colors"
       >
-        <ArrowLeft className="h-4 w-4" /> Back to organizations
+        <ArrowLeft className="h-4 w-4" /> Back
       </Link>
 
       {/* Header */}
@@ -113,12 +113,12 @@ function OrgDetailPage() {
         title={org.name}
         description={`slug: ${org.slug} · Created ${formatDistanceToNow(new Date(org.created_at as string), { addSuffix: true })}`}
         actions={
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <Dialog open={grantCreditsOpen} onOpenChange={setGrantCreditsOpen}>
               <DialogTrigger asChild>
-                <Button size="sm" variant="outline" className="gap-2">
+                <Button size="sm" variant="outline" className="gap-1.5 sm:gap-2">
                   <CreditCard className="h-4 w-4" />
-                  Grant Credits
+                  <span className="hidden xs:inline">Grant</span> Credits
                 </Button>
               </DialogTrigger>
               <GrantCreditsDialog
@@ -128,9 +128,9 @@ function OrgDetailPage() {
             </Dialog>
             <Dialog open={addMemberOpen} onOpenChange={setAddMemberOpen}>
               <DialogTrigger asChild>
-                <Button size="sm" className="gap-2">
+                <Button size="sm" className="gap-1.5 sm:gap-2">
                   <Plus className="h-4 w-4" />
-                  Add Member
+                  <span className="hidden xs:inline">Add</span> Member
                 </Button>
               </DialogTrigger>
               <AddMemberDialog
@@ -143,28 +143,28 @@ function OrgDetailPage() {
       />
 
       {/* Stats row */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+      <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-6 sm:mb-8">
         <StatCard
-          icon={<CreditCard className="h-5 w-5 text-emerald-500" />}
+          icon={<CreditCard className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-500" />}
           label="Credit Balance"
           value={creditBalance.toLocaleString()}
         />
         <StatCard
-          icon={<Users className="h-5 w-5 text-blue-500" />}
+          icon={<Users className="h-4 w-4 sm:h-5 sm:w-5 text-blue-500" />}
           label="Members"
           value={members.length.toString()}
         />
         <StatCard
-          icon={<Megaphone className="h-5 w-5 text-purple-500" />}
+          icon={<Megaphone className="h-4 w-4 sm:h-5 sm:w-5 text-purple-500" />}
           label="Campaigns"
           value={campaigns.length.toString()}
         />
       </div>
 
       {/* Settings */}
-      <div className="surface-raised rounded-2xl p-5 mb-6">
+      <div className="surface-raised rounded-2xl p-4 sm:p-5 mb-6">
         <h2 className="text-sm font-semibold text-foreground mb-3">Settings</h2>
-        <div className="grid grid-cols-2 gap-4 text-sm">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-sm">
           <div>
             <span className="text-muted-foreground">Individual results:</span>{" "}
             {org.individual_results_unlocked ? (
@@ -186,6 +186,7 @@ function OrgDetailPage() {
           <Users className="h-4 w-4" /> Members ({members.length})
         </h2>
         <div className="surface-raised overflow-hidden rounded-2xl">
+          <div className="overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow className="hover:bg-transparent">
@@ -244,6 +245,7 @@ function OrgDetailPage() {
               )}
             </TableBody>
           </Table>
+          </div>
         </div>
       </div>
 
@@ -276,6 +278,7 @@ function OrgDetailPage() {
           </div>
         ) : (
           <div className="surface-raised overflow-hidden rounded-2xl">
+            <div className="overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow className="hover:bg-transparent">
@@ -316,6 +319,7 @@ function OrgDetailPage() {
                 ))}
               </TableBody>
             </Table>
+            </div>
           </div>
         )}
       </div>
@@ -331,6 +335,7 @@ function OrgDetailPage() {
           </div>
         ) : (
           <div className="surface-raised overflow-hidden rounded-2xl">
+            <div className="overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow className="hover:bg-transparent">
@@ -385,6 +390,7 @@ function OrgDetailPage() {
                 })}
               </TableBody>
             </Table>
+            </div>
           </div>
         )}
       </div>
@@ -404,14 +410,14 @@ function StatCard({
   value: string;
 }) {
   return (
-    <div className="surface-raised rounded-2xl p-5">
-      <div className="flex items-center gap-3 mb-1">
+    <div className="surface-raised rounded-xl sm:rounded-2xl p-3 sm:p-5">
+      <div className="flex items-center gap-2 sm:gap-3 mb-1">
         {icon}
-        <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+        <span className="text-[10px] sm:text-xs font-medium text-muted-foreground uppercase tracking-wide truncate">
           {label}
         </span>
       </div>
-      <p className="text-2xl font-bold text-foreground">{value}</p>
+      <p className="text-lg sm:text-2xl font-bold text-foreground">{value}</p>
     </div>
   );
 }

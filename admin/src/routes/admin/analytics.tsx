@@ -134,7 +134,7 @@ function AdminAnalyticsPage() {
         title="Analytics"
         description="Product behaviour on calmtree.in, powered by PostHog."
         actions={
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <ToggleGroup
               type="single"
               value={period}
@@ -164,9 +164,9 @@ function AdminAnalyticsPage() {
       ) : (
         <div className="space-y-8">
           {/* KPI row */}
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid grid-cols-2 gap-2.5 sm:gap-4 lg:grid-cols-4">
             {trends.isPending || !kpis ? (
-              [0, 1, 2, 3].map((i) => <Skeleton key={i} className="h-28 rounded-2xl" />)
+              [0, 1, 2, 3].map((i) => <Skeleton key={i} className="h-20 sm:h-28 rounded-xl sm:rounded-2xl" />)
             ) : (
               <>
                 <StatCard
@@ -209,7 +209,7 @@ function AdminAnalyticsPage() {
               isLoading={trends.isPending}
               isEmpty={!days.some((d) => d.pageviews > 0 || d.uniqueUsers > 0)}
             >
-              <ChartContainer config={trafficConfig} className="h-[250px] w-full">
+              <ChartContainer config={trafficConfig} className="h-[200px] sm:h-[250px] w-full">
                 <AreaChart data={days} margin={{ left: 4, right: 4 }}>
                   <defs>
                     <linearGradient id="fillPv" x1="0" y1="0" x2="0" y2="1">
@@ -255,7 +255,7 @@ function AdminAnalyticsPage() {
               isLoading={trends.isPending}
               isEmpty={!days.some((d) => d.assessmentsStarted > 0 || d.assessmentsCompleted > 0)}
             >
-              <ChartContainer config={assessmentConfig} className="h-[250px] w-full">
+              <ChartContainer config={assessmentConfig} className="h-[200px] sm:h-[250px] w-full">
                 <BarChart data={days} margin={{ left: 4, right: 4 }}>
                   <CartesianGrid vertical={false} strokeOpacity={0.15} />
                   <XAxis
@@ -295,7 +295,7 @@ function AdminAnalyticsPage() {
 
           {/* Top pages + referrers */}
           <div className="grid gap-4 lg:grid-cols-2">
-            <div className="surface-raised rounded-2xl p-5">
+            <div className="surface-raised rounded-2xl p-4 sm:p-5">
               <p className="mb-4 text-sm font-medium text-foreground">Top pages</p>
               {pages.isPending ? (
                 <div className="space-y-2">
@@ -308,11 +308,11 @@ function AdminAnalyticsPage() {
               ) : (
                 <ul className="space-y-2">
                   {pageRows.slice(0, 8).map((p) => (
-                    <li key={p.path} className="flex items-center justify-between gap-3 text-sm">
-                      <span className="truncate font-mono text-xs text-foreground">{p.path}</span>
-                      <span className="shrink-0 text-muted-foreground">
+                    <li key={p.path} className="flex items-center justify-between gap-2 sm:gap-3 text-sm">
+                      <span className="truncate font-mono text-xs text-foreground min-w-0">{p.path}</span>
+                      <span className="shrink-0 text-muted-foreground whitespace-nowrap">
                         {p.views.toLocaleString("en-IN")}{" "}
-                        <span className="text-xs">({p.visitors} users)</span>
+                        <span className="text-xs hidden sm:inline">({p.visitors} users)</span>
                       </span>
                     </li>
                   ))}
@@ -326,16 +326,16 @@ function AdminAnalyticsPage() {
               isLoading={referrers.isPending}
               isEmpty={referrerRows.length === 0}
             >
-              <div className="flex items-center gap-4">
-                <ChartContainer config={{}} className="h-[200px] w-[200px] shrink-0">
+              <div className="flex flex-col sm:flex-row items-center gap-4">
+                <ChartContainer config={{}} className="h-[180px] w-[180px] sm:h-[200px] sm:w-[200px] shrink-0">
                   <PieChart>
                     <ChartTooltip content={<ChartTooltipContent nameKey="referrer" />} />
                     <Pie
                       data={referrerRows.slice(0, 5)}
                       dataKey="visitors"
                       nameKey="referrer"
-                      innerRadius={45}
-                      outerRadius={80}
+                      innerRadius={40}
+                      outerRadius={70}
                       paddingAngle={2}
                     >
                       {referrerRows.slice(0, 5).map((_, i) => (
@@ -344,7 +344,7 @@ function AdminAnalyticsPage() {
                     </Pie>
                   </PieChart>
                 </ChartContainer>
-                <ul className="min-w-0 flex-1 space-y-1.5 text-sm">
+                <ul className="min-w-0 w-full sm:flex-1 space-y-1.5 text-sm">
                   {referrerRows.slice(0, 5).map((r, i) => (
                     <li key={r.referrer} className="flex items-center gap-2">
                       <span
@@ -363,7 +363,7 @@ function AdminAnalyticsPage() {
           </div>
 
           {/* Event breakdown */}
-          <div className="surface-raised rounded-2xl p-5">
+          <div className="surface-raised rounded-xl sm:rounded-2xl p-3 sm:p-5">
             <p className="mb-4 text-sm font-medium text-foreground">Event breakdown</p>
             {events.isPending ? (
               <div className="space-y-2">
@@ -376,20 +376,22 @@ function AdminAnalyticsPage() {
             ) : (
               <ul className="space-y-2.5">
                 {eventRows.map((e) => (
-                  <li key={e.event} className="flex items-center gap-3 text-sm">
-                    <span className="w-52 shrink-0 truncate font-mono text-xs text-foreground">
+                  <li key={e.event} className="flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-3 text-sm">
+                    <span className="sm:w-52 shrink-0 truncate font-mono text-xs text-foreground">
                       {e.event}
                     </span>
-                    <span className="h-2 flex-1 overflow-hidden rounded-full bg-muted">
-                      <span
-                        className="block h-full rounded-full bg-primary/70"
-                        style={{ width: `${(e.total / maxEventTotal) * 100}%` }}
-                      />
-                    </span>
-                    <span className="w-24 shrink-0 text-right text-muted-foreground">
-                      {e.total.toLocaleString("en-IN")}{" "}
-                      <span className="text-xs">({e.uniqueUsers})</span>
-                    </span>
+                    <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
+                      <span className="h-2 flex-1 overflow-hidden rounded-full bg-muted">
+                        <span
+                          className="block h-full rounded-full bg-primary/70"
+                          style={{ width: `${(e.total / maxEventTotal) * 100}%` }}
+                        />
+                      </span>
+                      <span className="shrink-0 text-right text-muted-foreground whitespace-nowrap">
+                        {e.total.toLocaleString("en-IN")}{" "}
+                        <span className="text-xs">({e.uniqueUsers})</span>
+                      </span>
+                    </div>
                   </li>
                 ))}
               </ul>
@@ -397,14 +399,14 @@ function AdminAnalyticsPage() {
           </div>
 
           {/* Live activity feed */}
-          <div className="surface-raised rounded-2xl p-5">
-            <div className="mb-4 flex items-center justify-between gap-3">
+          <div className="surface-raised rounded-xl sm:rounded-2xl p-3 sm:p-5">
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-2 sm:gap-3">
               <div className="flex items-center gap-2">
                 <Activity className="h-4 w-4 text-primary" />
                 <p className="text-sm font-medium text-foreground">Live activity</p>
               </div>
               <label className="flex items-center gap-2 text-xs text-muted-foreground">
-                Include pageviews
+                <span className="hidden xs:inline">Include</span> pageviews
                 <Switch checked={includePageviews} onCheckedChange={setIncludePageviews} />
               </label>
             </div>

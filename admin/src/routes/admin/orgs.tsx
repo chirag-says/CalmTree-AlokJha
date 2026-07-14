@@ -2,7 +2,8 @@
  * Admin Organizations — /admin/orgs
  *
  * Lists all B2B organizations with member count, campaign count, and credit
- * balance. Includes a "Create Organization" dialog and links to org detail.
+ * balance. Mobile: expandable cards. Desktop: table. Includes "Create
+ * Organization" dialog and links to org detail.
  */
 
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
@@ -12,6 +13,7 @@ import { Building2, Plus, CreditCard, Users, Megaphone } from "lucide-react";
 import { useOrgs, useCreateOrg } from "@/data/admin-queries";
 import { PageHeader } from "@/components/admin/PageHeader";
 import { AdminTable, type ColumnDef } from "@/components/admin/AdminTable";
+import { MobileCardList } from "@/components/admin/MobileCardList";
 import { StatusPill } from "@/components/admin/StatusPill";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -46,6 +48,10 @@ function AdminOrgsPage() {
   const rows = (orgs.data?.orgs ?? []) as OrgRow[];
   const [createOpen, setCreateOpen] = useState(false);
   const navigate = useNavigate();
+
+  function goToOrg(o: OrgRow) {
+    navigate({ to: "/admin/orgs/$orgId", params: { orgId: o.id } });
+  }
 
   const columns: ColumnDef<OrgRow>[] = [
     {
@@ -124,20 +130,95 @@ function AdminOrgsPage() {
         }
       />
 
-      <AdminTable
-        columns={columns}
-        data={rows}
-        rowKey={(o) => o.id}
-        isLoading={orgs.isPending}
-        error={orgs.error?.message}
-        onRetry={() => void orgs.refetch()}
-        onRowClick={(o) => navigate({ to: "/admin/orgs/$orgId", params: { orgId: o.id } })}
-        emptyState={{
-          icon: Building2,
-          title: "No organizations yet",
-          description: "Create one to get started with B2B campaigns.",
-        }}
-      />
+      {/* Mobile: expandable card list */}
+      <div className="sm:hidden">
+        <MobileCardList
+          data={rows}
+          rowKey={(o) => o.id}
+          isLoading={orgs.isPending}
+          error={orgs.error?.message}
+          onRetry={() => void orgs.refetch()}
+          emptyState={{
+            icon: Building2,
+            title: "No organizations yet",
+            description: "Create one to get started with B2B campaigns.",
+          }}
+          title={(o) => o.name}
+          subtitle={(o) => o.slug}
+          badges={(o) => (
+            <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-600">
+              <CreditCard className="h-3 w-3" />
+              {o.creditBalance}
+            </span>
+          )}
+          details={(o) => [
+            {
+              label: "Members",
+              value: (
+                <span className="inline-flex items-center gap-1 text-xs text-foreground">
+                  <Users className="h-3 w-3 text-muted-foreground" /> {o.memberCount}
+                </span>
+              ),
+            },
+            {
+              label: "Campaigns",
+              value: (
+                <span className="inline-flex items-center gap-1 text-xs text-foreground">
+                  <Megaphone className="h-3 w-3 text-muted-foreground" /> {o.campaignCount}
+                </span>
+              ),
+            },
+            {
+              label: "Credits",
+              value: (
+                <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-600">
+                  <CreditCard className="h-3 w-3" /> {o.creditBalance.toLocaleString()}
+                </span>
+              ),
+            },
+            {
+              label: "Individual results",
+              value: o.individual_results_unlocked ? (
+                <StatusPill tone="success">Unlocked</StatusPill>
+              ) : (
+                <StatusPill tone="neutral">Locked</StatusPill>
+              ),
+            },
+            {
+              label: "Created",
+              value: (
+                <span className="text-xs text-muted-foreground">
+                  {formatDistanceToNow(new Date(o.created_at), { addSuffix: true })}
+                </span>
+              ),
+            },
+          ]}
+          footer={() => (
+            <Button size="sm" variant="outline" className="w-full text-xs">
+              View details →
+            </Button>
+          )}
+          onTap={goToOrg}
+        />
+      </div>
+
+      {/* Desktop: table view */}
+      <div className="hidden sm:block">
+        <AdminTable
+          columns={columns}
+          data={rows}
+          rowKey={(o) => o.id}
+          isLoading={orgs.isPending}
+          error={orgs.error?.message}
+          onRetry={() => void orgs.refetch()}
+          onRowClick={goToOrg}
+          emptyState={{
+            icon: Building2,
+            title: "No organizations yet",
+            description: "Create one to get started with B2B campaigns.",
+          }}
+        />
+      </div>
     </div>
   );
 }

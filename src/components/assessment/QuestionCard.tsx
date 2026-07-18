@@ -1,3 +1,6 @@
+import { motion, useReducedMotion } from "motion/react";
+import { Check } from "lucide-react";
+import { haptic } from "@/lib/haptics";
 import type { Question } from "@/data/assessments/types";
 
 interface QuestionCardProps {
@@ -8,6 +11,17 @@ interface QuestionCardProps {
   totalQuestions: number;
 }
 
+/**
+ * QuestionCard — purely presentational. The AssessmentRunner owns enter/exit
+ * motion and gesture handling; this component only renders the question and
+ * its options, with per-option press feedback.
+ *
+ * §1 Response: the press scale fires on pointer-DOWN (whileTap), so feedback is
+ *   instant, not on release.
+ * §10 Gesture: the actual selection commits on click (pointer-up), which is the
+ *   correct edge to commit a tap.
+ * §13 Multimodal: a selection is a meaningful commit — pair it with a haptic.
+ */
 export function QuestionCard({
   question,
   selectedValue,
@@ -15,8 +29,10 @@ export function QuestionCard({
   questionNumber,
   totalQuestions,
 }: QuestionCardProps) {
+  const reduce = useReducedMotion();
+
   return (
-    <div className="animate-in fade-in slide-in-from-right-4 duration-300">
+    <div>
       <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase mb-4">
         Question {questionNumber} of {totalQuestions}
       </p>
@@ -27,11 +43,20 @@ export function QuestionCard({
         {question.options.map((opt) => {
           const isSelected = selectedValue === opt.value;
           return (
-            <button
+            <motion.button
               key={opt.value}
               type="button"
-              onClick={() => onSelect(opt.value)}
-              className={`w-full text-left px-5 py-4 rounded-xl border-2 transition-all duration-200 cursor-pointer
+              // §1: instant, physical press feedback on pointer-down.
+              whileTap={reduce ? undefined : { scale: 0.985 }}
+              // Critically damped settle — no bounce on a reflective UI (§4).
+              transition={{ type: "spring", bounce: 0, duration: 0.25 }}
+              onClick={() => {
+                // §13: only tick when the value actually changes.
+                if (!isSelected) haptic("select");
+                onSelect(opt.value);
+              }}
+              className={`group flex w-full items-center justify-between gap-3 text-left px-5 py-4 rounded-xl border-2 cursor-pointer
+                transition-colors duration-150
                 ${
                   isSelected
                     ? "border-primary bg-primary/8 text-foreground shadow-sm"
@@ -39,7 +64,22 @@ export function QuestionCard({
                 }`}
             >
               <span className="text-sm font-medium">{opt.label}</span>
-            </button>
+              {/* Confirmation mark materializes with the selection (§8 hint). */}
+              <motion.span
+                aria-hidden
+                initial={false}
+                animate={{
+                  opacity: isSelected ? 1 : 0,
+                  scale: isSelected ? 1 : 0.6,
+                }}
+                transition={
+                  reduce ? { duration: 0.12 } : { type: "spring", bounce: 0.3, duration: 0.3 }
+                }
+                className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground"
+              >
+                <Check className="h-3 w-3" strokeWidth={3} />
+              </motion.span>
+            </motion.button>
           );
         })}
       </div>

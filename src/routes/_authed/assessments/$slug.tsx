@@ -1,9 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { AssessmentRunner } from "@/components/assessment/AssessmentRunner";
 import { ProfileRunner } from "@/components/assessment/ProfileRunner";
 import { getAssessment } from "@/data/assessments";
 import type { ProfileAssessmentConfig } from "@/data/assessments/types";
 import { SITE } from "@/data/constants";
+import { useAuth } from "@/hooks/useAuth";
+import { getResultForSlug } from "@/server/functions/results.functions";
 
 export const Route = createFileRoute("/_authed/assessments/$slug")({
   head: ({ params }) => {
@@ -25,6 +28,38 @@ export const Route = createFileRoute("/_authed/assessments/$slug")({
 function Page() {
   const { slug } = Route.useParams();
   const config = getAssessment(slug);
+  const { session, loading: authLoading } = useAuth();
+
+  // Restore a previously-saved result (from "My Results") so revisiting a
+  // completed assessment shows the result, not the start screen.
+  // undefined = still resolving, null = nothing saved / take fresh.
+  const [savedAnswers, setSavedAnswers] = useState<Record<string, number> | null | undefined>(
+    undefined,
+  );
+
+  useEffect(() => {
+    if (authLoading) return;
+    if (!config || !session?.access_token) {
+      setSavedAnswers(null);
+      return;
+    }
+    let cancelled = false;
+    getResultForSlug({ data: { accessToken: session.access_token, slug } })
+      .then((res) => {
+        if (cancelled) return;
+        if (!("error" in res) && res.result?.answers) {
+          setSavedAnswers(res.result.answers as Record<string, number>);
+        } else {
+          setSavedAnswers(null);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setSavedAnswers(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [config, session, authLoading, slug]);
 
   if (!config) {
     return (
@@ -58,10 +93,17 @@ function Page() {
         </div>
       </section>
       <section className="mx-auto max-w-3xl px-5 py-12 md:py-16">
-        {config.type === "profile-based" ? (
-          <ProfileRunner config={config as ProfileAssessmentConfig} />
+        {savedAnswers === undefined ? (
+          <div className="h-40 flex items-center justify-center text-sm text-muted-foreground animate-pulse">
+            Loading…
+          </div>
+        ) : config.type === "profile-based" ? (
+          <ProfileRunner
+            config={config as ProfileAssessmentConfig}
+            initialAnswers={savedAnswers ?? undefined}
+          />
         ) : (
-          <AssessmentRunner config={config} />
+          <AssessmentRunner config={config} initialAnswers={savedAnswers ?? undefined} />
         )}
       </section>
     </>

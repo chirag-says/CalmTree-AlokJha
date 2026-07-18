@@ -5,7 +5,8 @@
  * Handles both standard (14) and personality-compass (1) assessment types.
  */
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
+import { AnimatePresence, motion, useReducedMotion, type PanInfo } from "motion/react";
 import { usePostHog } from "@posthog/react";
 import { Button } from "@/components/ui/button";
 import { QuestionCard } from "./QuestionCard";
@@ -15,6 +16,8 @@ import { scoreAssessment } from "@/lib/assessment-engine";
 import { ArrowLeft, ArrowRight, Clock, Lock, Sparkles } from "lucide-react";
 import { TIER_BADGE } from "./TierBadge";
 import { useResultPersistence } from "@/hooks/useResultPersistence";
+import { haptic } from "@/lib/haptics";
+import { project, CARD_SPRING, CARD_SLIDE, SWIPE_COMMIT } from "@/lib/fluid";
 import type {
   AssessmentConfig,
   AssessmentState,
@@ -35,16 +38,40 @@ interface AssessmentRunnerProps {
     result: AssessmentResult,
     answers: Record<string, number>,
   ) => void | Promise<void>;
+  /**
+   * When provided (e.g. from "My Results"), the runner mounts straight into the
+   * results view for these previously-saved answers, rather than the start
+   * screen. "Retake" still resets to a fresh run.
+   */
+  initialAnswers?: Record<string, number>;
 }
 
-export function AssessmentRunner({ config, onComplete }: AssessmentRunnerProps) {
-  const [state, setState] = useState<AssessmentState>({
+export function AssessmentRunner({ config, onComplete, initialAnswers }: AssessmentRunnerProps) {
+  const restored = initialAnswers && Object.keys(initialAnswers).length > 0 ? initialAnswers : null;
+  const [state, setState] = useState<AssessmentState>(() => ({
     currentIndex: 0,
-    answers: {},
-    completed: false,
-  });
-  const [started, setStarted] = useState(false);
-  const [result, setResult] = useState<AssessmentResult | null>(null);
+    answers: restored ?? {},
+    completed: restored !== null,
+  }));
+  const [started, setStarted] = useState(restored !== null);
+  const [result, setResult] = useState<AssessmentResult | null>(() =>
+    restored ? scoreAssessment(config, restored) : null,
+  );
+  // +1 = advancing forward, -1 = going back. Drives the directional slide (§7):
+  // forward cards enter from the right, back cards enter from the left.
+  const [direction, setDirection] = useState(1);
+
+  const reduce = useReducedMotion();
+  // Pending auto-advance timer, so we can cancel it if the user navigates
+  // manually or unmounts before it fires.
+  const autoAdvance = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const clearAuto = useCallback(() => {
+    if (autoAdvance.current) {
+      clearTimeout(autoAdvance.current);
+      autoAdvance.current = null;
+    }
+  }, []);
+  useEffect(() => clearAuto, [clearAuto]);
 
   const { saveIfAuthed } = useResultPersistence();
   const posthog = usePostHog();
@@ -69,7 +96,10 @@ export function AssessmentRunner({ config, onComplete }: AssessmentRunnerProps) 
   );
 
   const goNext = useCallback(() => {
+    clearAuto();
+    setDirection(1);
     if (isLast) {
+      haptic("commit");
       const scored = scoreAssessment(config, state.answers);
       setResult(scored);
       setState((prev) => ({ ...prev, completed: true }));
@@ -88,23 +118,61 @@ export function AssessmentRunner({ config, onComplete }: AssessmentRunnerProps) 
         question_count: config.meta.questionCount,
       });
     } else {
+      haptic("commit");
       setState((prev) => ({
         ...prev,
         currentIndex: prev.currentIndex + 1,
       }));
     }
-  }, [isLast, config, state.answers, saveIfAuthed, onComplete, posthog]);
+  }, [isLast, config, state.answers, saveIfAuthed, onComplete, posthog, clearAuto]);
 
   const goPrev = useCallback(() => {
+    clearAuto();
     if (!isFirst) {
+      setDirection(-1);
+      haptic("commit");
       setState((prev) => ({
         ...prev,
         currentIndex: prev.currentIndex - 1,
       }));
     }
-  }, [isFirst]);
+  }, [isFirst, clearAuto]);
+
+  // Selecting an answer auto-advances after a brief beat, so a decisive user
+  // barely touches the Next button — but the pause leaves room to correct a
+  // mis-tap. Only on non-final questions; the last step commits explicitly via
+  // "See Results" (§2 agency: don't auto-fire an irreversible-feeling step).
+  const handleSelect = useCallback(
+    (value: number) => {
+      selectAnswer(value);
+      clearAuto();
+      if (!isLast) {
+        autoAdvance.current = setTimeout(() => goNext(), 280);
+      }
+    },
+    [selectAnswer, clearAuto, isLast, goNext],
+  );
+
+  // §2/§6: a swipe tracks the finger, then projects its momentum to decide
+  // whether it lands on the next/previous question or rubber-bands home.
+  const onDragEnd = useCallback(
+    (_e: PointerEvent | MouseEvent | TouchEvent, info: PanInfo) => {
+      const projected = info.offset.x + project(info.velocity.x);
+      if (projected < -SWIPE_COMMIT && hasAnswer) {
+        goNext();
+      } else if (projected > SWIPE_COMMIT && !isFirst) {
+        goPrev();
+      } else if (Math.abs(projected) > SWIPE_COMMIT) {
+        // Wanted to move but there's nothing that way — §9 boundary feedback.
+        haptic("boundary");
+      }
+    },
+    [hasAnswer, isFirst, goNext, goPrev],
+  );
 
   const retake = useCallback(() => {
+    clearAuto();
+    setDirection(1);
     setState({ currentIndex: 0, answers: {}, completed: false });
     setResult(null);
     setStarted(false);
@@ -113,7 +181,7 @@ export function AssessmentRunner({ config, onComplete }: AssessmentRunnerProps) 
       slug: config.slug,
       tier: config.tier,
     });
-  }, [posthog, config]);
+  }, [posthog, config, clearAuto]);
 
   const handleStart = () => {
     setStarted(true);
@@ -200,17 +268,50 @@ export function AssessmentRunner({ config, onComplete }: AssessmentRunnerProps) 
         </div>
       </div>
 
-      {/* Current question */}
-      {currentQ && (
-        <QuestionCard
-          key={currentQ.id}
-          question={currentQ}
-          selectedValue={state.answers[currentQ.id]}
-          onSelect={selectAnswer}
-          questionNumber={state.currentIndex + 1}
-          totalQuestions={questions.length}
-        />
-      )}
+      {/* Current question — swipe left/right to move between questions. The
+          card tracks the finger, then projects momentum to land or spring back
+          (§2/§6). Enter/exit slide direction mirrors nav direction (§7). */}
+      <div className="relative overflow-hidden">
+        <AnimatePresence mode="popLayout" custom={direction} initial={false}>
+          {currentQ && (
+            <motion.div
+              key={state.currentIndex}
+              custom={direction}
+              variants={{
+                enter: (dir: number) => ({
+                  x: reduce ? 0 : dir > 0 ? CARD_SLIDE : -CARD_SLIDE,
+                  opacity: 0,
+                }),
+                center: { x: 0, opacity: 1 },
+                exit: (dir: number) => ({
+                  x: reduce ? 0 : dir > 0 ? -CARD_SLIDE : CARD_SLIDE,
+                  opacity: 0,
+                }),
+              }}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={CARD_SPRING}
+              drag={reduce ? false : "x"}
+              dragConstraints={{ left: 0, right: 0 }}
+              // Progressive resistance = §9 rubber-banding at the edges.
+              dragElastic={0.5}
+              dragSnapToOrigin
+              onDragEnd={onDragEnd}
+              className="touch-pan-y"
+              whileDrag={{ cursor: "grabbing" }}
+            >
+              <QuestionCard
+                question={currentQ}
+                selectedValue={state.answers[currentQ.id]}
+                onSelect={handleSelect}
+                questionNumber={state.currentIndex + 1}
+                totalQuestions={questions.length}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
 
       {/* Navigation */}
       <div className="flex items-center justify-between mt-8 pt-6 border-t border-border">

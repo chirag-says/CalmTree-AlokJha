@@ -27,14 +27,22 @@ interface ProfileRunnerProps {
     result: AssessmentResult,
     answers: Record<string, number>,
   ) => void | Promise<void>;
+  /**
+   * When provided (e.g. from "My Results"), mounts straight into the results
+   * view for these saved answers rather than the start screen.
+   */
+  initialAnswers?: Record<string, number>;
 }
 
-export function ProfileRunner({ config, onComplete }: ProfileRunnerProps) {
-  const [started, setStarted] = useState(false);
+export function ProfileRunner({ config, onComplete, initialAnswers }: ProfileRunnerProps) {
+  const restored = initialAnswers && Object.keys(initialAnswers).length > 0 ? initialAnswers : null;
+  const [started, setStarted] = useState(restored !== null);
   // answers: questionId -> option index (0-based)
-  const [answers, setAnswers] = useState<Record<string, number>>({});
+  const [answers, setAnswers] = useState<Record<string, number>>(() => restored ?? {});
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [result, setResult] = useState<ProfileResult | null>(null);
+  const [result, setResult] = useState<ProfileResult | null>(() =>
+    restored ? (scoreAssessment(config, restored) as ProfileResult) : null,
+  );
 
   const { saveIfAuthed } = useResultPersistence();
   const posthog = usePostHog();

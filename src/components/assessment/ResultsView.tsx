@@ -10,6 +10,7 @@ import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { ScoreGauge } from "./ScoreGauge";
 import { DimensionBar } from "./DimensionBar";
+import { DimensionRadar } from "./DimensionRadar";
 import { ReportGate } from "./ReportGate";
 import { SITE } from "@/data/constants";
 import { ArrowRight, RotateCcw, Share2 } from "lucide-react";
@@ -77,7 +78,20 @@ export function ResultsView({ config, result, onRetake }: ResultsViewProps) {
         <div className="mb-8">
           <ReportGate config={config}>
             <div className="rounded-2xl border border-border bg-card p-6 md:p-8">
-              <h3 className="text-xl font-semibold mb-6">Dimension Breakdown</h3>
+              <h3 className="text-xl font-semibold mb-1">Dimension Breakdown</h3>
+
+              {/* Profile shape — a radar reads the whole pattern at a glance.
+                  Only meaningful with ≥ 3 axes; fewer degenerates into a line. */}
+              {dimensionScores.length >= 3 && (
+                <>
+                  <p className="text-sm text-muted-foreground mb-2">
+                    The overall shape of your {dimensionScores.length} dimensions.
+                  </p>
+                  <DimensionRadar dimensions={dimensionScores} />
+                  <div className="my-6 h-px bg-border" />
+                </>
+              )}
+
               <div className="space-y-5">
                 {dimensionScores.map((dim) => (
                   <DimensionBar

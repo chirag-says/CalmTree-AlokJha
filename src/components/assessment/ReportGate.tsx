@@ -118,9 +118,9 @@ function UpgradeGate({ config }: { config: AnyAssessmentConfig }) {
         size="lg"
         className="gap-2"
         onSuccess={() => {
-          // Optimistic — the page will re-check entitlements on next render
-          // after the webhook delivers. For now invalidateEntitlementCache is
-          // called inside RazorpayCheckoutButton already.
+          // No-op: RazorpayCheckoutButton verifies the payment synchronously,
+          // writes the entitlement, then calls invalidateEntitlementCache(),
+          // which notifies this mounted gate to refetch and unlock in place.
         }}
       />
 

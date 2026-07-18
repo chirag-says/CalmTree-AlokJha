@@ -32,6 +32,11 @@ const GetResultsInputSchema = z.object({
   limit: z.number().default(50),
 });
 
+const GetResultForSlugInputSchema = z.object({
+  accessToken: z.string(),
+  slug: z.string(),
+});
+
 export const saveAssessmentResult = createServerFn({ method: "POST" })
   .inputValidator(SaveResultInputSchema)
   .handler(async ({ data }) => {
@@ -95,4 +100,37 @@ export const getMyResults = createServerFn({ method: "POST" })
     }
 
     return { results: results ?? [] };
+  });
+
+/**
+ * Fetch the user's most recent saved result for a single assessment slug.
+ * Used by the assessment page to restore a completed result (with the stored
+ * answers) instead of dropping the user back onto the start screen.
+ */
+export const getResultForSlug = createServerFn({ method: "POST" })
+  .inputValidator(GetResultForSlugInputSchema)
+  .handler(async ({ data }) => {
+    let userId: string;
+    try {
+      userId = await requireUser(data.accessToken);
+    } catch {
+      return { error: "Unauthorized: invalid or expired access token." };
+    }
+
+    const supabase = getAdminClient();
+
+    const { data: rows, error } = await supabase
+      .from("assessment_results")
+      .select("assessment_slug, assessment_type, answers, completed_at")
+      .eq("user_id", userId)
+      .eq("assessment_slug", data.slug)
+      .order("completed_at", { ascending: false })
+      .limit(1);
+
+    if (error) {
+      console.error("[getResultForSlug] Supabase select error:", error);
+      return { error: "Failed to fetch assessment result." };
+    }
+
+    return { result: rows?.[0] ?? null };
   });

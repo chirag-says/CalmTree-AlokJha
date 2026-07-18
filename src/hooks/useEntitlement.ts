@@ -37,12 +37,29 @@ interface UseEntitlementResult {
 let cachedEntitlements: EntitlementRow[] | null = null;
 let cachedUserId: string | null = null;
 
+// Subscribers to cache invalidation. Clearing the cache alone doesn't help a
+// hook that's already mounted (its fetch effect won't re-run), so after a
+// purchase we notify every live hook to refetch — that's what flips the gate
+// from locked to unlocked without a full page reload.
+const invalidationListeners = new Set<() => void>();
+
 export function useEntitlement(config: AnyAssessmentConfig): UseEntitlementResult {
   const { user, loading: authLoading } = useAuth();
   const [entitlements, setEntitlements] = useState<EntitlementRow[] | null>(null);
   const [loading, setLoading] = useState(false);
+  // Bumped when the cache is invalidated, so the fetch effect below re-runs.
+  const [refetchToken, setRefetchToken] = useState(0);
 
   const isFree = config.meta.isFree;
+
+  // Re-run the fetch effect whenever the module cache is invalidated.
+  useEffect(() => {
+    const listener = () => setRefetchToken((t) => t + 1);
+    invalidationListeners.add(listener);
+    return () => {
+      invalidationListeners.delete(listener);
+    };
+  }, []);
 
   useEffect(() => {
     // Free assessments need no entitlement check
@@ -80,7 +97,7 @@ export function useEntitlement(config: AnyAssessmentConfig): UseEntitlementResul
         setEntitlements(rows);
         setLoading(false);
       });
-  }, [user, isFree]);
+  }, [user, isFree, refetchToken]);
 
   // Reset cache when user changes
   useEffect(() => {
@@ -129,4 +146,6 @@ export function useEntitlement(config: AnyAssessmentConfig): UseEntitlementResul
 export function invalidateEntitlementCache() {
   cachedUserId = null;
   cachedEntitlements = null;
+  // Notify mounted hooks so an open paywall refetches and unlocks in place.
+  invalidationListeners.forEach((fn) => fn());
 }

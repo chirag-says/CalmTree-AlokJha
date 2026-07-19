@@ -125,7 +125,7 @@ function Page() {
               return (
                 <article
                   key={e.id}
-                  className="rounded-2xl border border-border bg-card p-6 flex flex-col hover:shadow-[var(--shadow-soft)] transition-shadow"
+                  className="rounded-2xl border border-border bg-card p-6 flex flex-col hover:shadow-[var(--shadow-soft)] hover:-translate-y-0.5 transition-all duration-300 motion-reduce:transition-none motion-reduce:hover:translate-y-0"
                 >
                   <div className="aspect-[2/3] w-full rounded-xl bg-gradient-to-br from-accent/40 to-primary/15 flex items-center justify-center overflow-hidden">
                     {e.cover_image_url ? (

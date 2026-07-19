@@ -3,16 +3,25 @@
  *
  * Each question has labelled options that map to a profile code.
  * Scoring counts votes per profile; the highest count wins.
+ *
+ * Motion mirrors the AssessmentRunner fluid slice (ios-design): swipe-to-advance
+ * with momentum projection (§2/§6), directional spring slides (§7), instant
+ * per-option press feedback + haptics (§1/§13), a brief auto-advance after a
+ * pick, and reduced-motion fallbacks (§14). Options are rendered inline here
+ * (this runner is index-based, so it does NOT share QuestionCard).
  */
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
+import { AnimatePresence, motion, useReducedMotion, type PanInfo } from "motion/react";
 import { usePostHog } from "@posthog/react";
 import { Button } from "@/components/ui/button";
 import { ProfileResultsView } from "./ProfileResultsView";
 import { scoreAssessment } from "@/lib/assessment-engine";
-import { ArrowLeft, ArrowRight, Clock, Lock, Sparkles } from "lucide-react";
+import { ArrowLeft, ArrowRight, Clock, Lock, Sparkles, Check } from "lucide-react";
 import { TIER_BADGE } from "./TierBadge";
 import { useResultPersistence } from "@/hooks/useResultPersistence";
+import { haptic } from "@/lib/haptics";
+import { project, CARD_SPRING, CARD_SLIDE, SWIPE_COMMIT } from "@/lib/fluid";
 import type { ProfileAssessmentConfig } from "@/data/assessments/types";
 import type { ProfileResult, AssessmentResult } from "@/data/assessments/types";
 
@@ -43,6 +52,20 @@ export function ProfileRunner({ config, onComplete, initialAnswers }: ProfileRun
   const [result, setResult] = useState<ProfileResult | null>(() =>
     restored ? (scoreAssessment(config, restored) as ProfileResult) : null,
   );
+  // +1 = advancing forward, -1 = going back. Drives the directional slide (§7).
+  const [direction, setDirection] = useState(1);
+
+  const reduce = useReducedMotion();
+  // Pending auto-advance timer — cancel it if the user navigates manually or
+  // unmounts before it fires.
+  const autoAdvance = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const clearAuto = useCallback(() => {
+    if (autoAdvance.current) {
+      clearTimeout(autoAdvance.current);
+      autoAdvance.current = null;
+    }
+  }, []);
+  useEffect(() => clearAuto, [clearAuto]);
 
   const { saveIfAuthed } = useResultPersistence();
   const posthog = usePostHog();
@@ -65,7 +88,10 @@ export function ProfileRunner({ config, onComplete, initialAnswers }: ProfileRun
   );
 
   const goNext = useCallback(() => {
+    clearAuto();
+    setDirection(1);
     if (isLast) {
+      haptic("commit");
       const scored = scoreAssessment(config, answers) as ProfileResult;
       setResult(scored);
       // B2B employee runner overrides persistence; otherwise save-if-authed.
@@ -82,15 +108,55 @@ export function ProfileRunner({ config, onComplete, initialAnswers }: ProfileRun
         question_count: config.meta.questionCount,
       });
     } else {
+      haptic("commit");
       setCurrentIndex((i) => i + 1);
     }
-  }, [isLast, config, answers, saveIfAuthed, onComplete, posthog]);
+  }, [isLast, config, answers, saveIfAuthed, onComplete, posthog, clearAuto]);
 
   const goPrev = useCallback(() => {
-    if (!isFirst) setCurrentIndex((i) => i - 1);
-  }, [isFirst]);
+    clearAuto();
+    if (!isFirst) {
+      setDirection(-1);
+      haptic("commit");
+      setCurrentIndex((i) => i - 1);
+    }
+  }, [isFirst, clearAuto]);
+
+  // Picking an option auto-advances after a brief beat, so a decisive user
+  // barely touches Next — but the pause leaves room to correct a mis-tap. Only
+  // on non-final questions; the last step commits explicitly via "See Results"
+  // (§2 agency: don't auto-fire a step that feels irreversible).
+  const handleSelect = useCallback(
+    (optionIndex: number) => {
+      selectAnswer(optionIndex);
+      clearAuto();
+      if (!isLast) {
+        autoAdvance.current = setTimeout(() => goNext(), 280);
+      }
+    },
+    [selectAnswer, clearAuto, isLast, goNext],
+  );
+
+  // §2/§6: a swipe tracks the finger, then projects its momentum to decide
+  // whether it lands on the next/previous question or rubber-bands home.
+  const onDragEnd = useCallback(
+    (_e: PointerEvent | MouseEvent | TouchEvent, info: PanInfo) => {
+      const projected = info.offset.x + project(info.velocity.x);
+      if (projected < -SWIPE_COMMIT && hasAnswer) {
+        goNext();
+      } else if (projected > SWIPE_COMMIT && !isFirst) {
+        goPrev();
+      } else if (Math.abs(projected) > SWIPE_COMMIT) {
+        // Wanted to move but there's nothing that way — §9 boundary feedback.
+        haptic("boundary");
+      }
+    },
+    [hasAnswer, isFirst, goNext, goPrev],
+  );
 
   const retake = useCallback(() => {
+    clearAuto();
+    setDirection(1);
     setAnswers({});
     setCurrentIndex(0);
     setResult(null);
@@ -100,7 +166,7 @@ export function ProfileRunner({ config, onComplete, initialAnswers }: ProfileRun
       slug: config.slug,
       tier: config.tier,
     });
-  }, [posthog, config]);
+  }, [posthog, config, clearAuto]);
 
   const handleStart = useCallback(() => {
     setStarted(true);
@@ -183,37 +249,91 @@ export function ProfileRunner({ config, onComplete, initialAnswers }: ProfileRun
         </div>
       </div>
 
-      {/* Current question */}
-      {currentQ && (
-        <div className="animate-in fade-in slide-in-from-right-4 duration-300">
-          <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase mb-4">
-            Question {currentIndex + 1} of {profileQuestions.length}
-          </p>
-          <h3 className="text-xl md:text-2xl font-semibold text-foreground leading-snug mb-8">
-            {currentQ.text}
-          </h3>
-          <div className="flex flex-col gap-3">
-            {currentQ.options.map((opt, idx) => {
-              const isSelected = answers[currentQ.id] === idx;
-              return (
-                <button
-                  key={idx}
-                  type="button"
-                  onClick={() => selectAnswer(idx)}
-                  className={`w-full text-left px-5 py-4 rounded-xl border-2 transition-all duration-200 cursor-pointer
-                    ${
-                      isSelected
-                        ? "border-primary bg-primary/8 text-foreground shadow-sm"
-                        : "border-border bg-card text-muted-foreground hover:border-primary/40 hover:bg-primary/[0.03]"
-                    }`}
-                >
-                  <span className="text-sm font-medium">{opt.label}</span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      )}
+      {/* Current question — swipe left/right to move between questions. The card
+          tracks the finger, then projects momentum to land or spring back
+          (§2/§6). Enter/exit slide mirrors nav direction (§7). */}
+      <div className="relative overflow-hidden">
+        <AnimatePresence mode="popLayout" custom={direction} initial={false}>
+          {currentQ && (
+            <motion.div
+              key={currentIndex}
+              custom={direction}
+              variants={{
+                enter: (dir: number) => ({
+                  x: reduce ? 0 : dir > 0 ? CARD_SLIDE : -CARD_SLIDE,
+                  opacity: 0,
+                }),
+                center: { x: 0, opacity: 1 },
+                exit: (dir: number) => ({
+                  x: reduce ? 0 : dir > 0 ? -CARD_SLIDE : CARD_SLIDE,
+                  opacity: 0,
+                }),
+              }}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={CARD_SPRING}
+              drag={reduce ? false : "x"}
+              dragConstraints={{ left: 0, right: 0 }}
+              // Progressive resistance = §9 rubber-banding at the edges.
+              dragElastic={0.5}
+              dragSnapToOrigin
+              onDragEnd={onDragEnd}
+              className="touch-pan-y"
+              whileDrag={{ cursor: "grabbing" }}
+            >
+              <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase mb-4">
+                Question {currentIndex + 1} of {profileQuestions.length}
+              </p>
+              <h3 className="text-xl md:text-2xl font-semibold text-foreground leading-snug mb-8">
+                {currentQ.text}
+              </h3>
+              <div className="flex flex-col gap-3">
+                {currentQ.options.map((opt, idx) => {
+                  const isSelected = answers[currentQ.id] === idx;
+                  return (
+                    <motion.button
+                      key={idx}
+                      type="button"
+                      // §1: instant, physical press feedback on pointer-down.
+                      whileTap={reduce ? undefined : { scale: 0.985 }}
+                      transition={{ type: "spring", bounce: 0, duration: 0.25 }}
+                      onClick={() => {
+                        // §13: only tick when the value actually changes.
+                        if (!isSelected) haptic("select");
+                        handleSelect(idx);
+                      }}
+                      className={`group flex w-full items-center justify-between gap-3 text-left px-5 py-4 rounded-xl border-2 cursor-pointer
+                        transition-colors duration-150
+                        ${
+                          isSelected
+                            ? "border-primary bg-primary/8 text-foreground shadow-sm"
+                            : "border-border bg-card text-muted-foreground hover:border-primary/40 hover:bg-primary/[0.03]"
+                        }`}
+                    >
+                      <span className="text-sm font-medium">{opt.label}</span>
+                      {/* Confirmation mark materializes with the selection (§8 hint). */}
+                      <motion.span
+                        aria-hidden
+                        initial={false}
+                        animate={{ opacity: isSelected ? 1 : 0, scale: isSelected ? 1 : 0.6 }}
+                        transition={
+                          reduce
+                            ? { duration: 0.12 }
+                            : { type: "spring", bounce: 0.3, duration: 0.3 }
+                        }
+                        className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground"
+                      >
+                        <Check className="h-3 w-3" strokeWidth={3} />
+                      </motion.span>
+                    </motion.button>
+                  );
+                })}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
 
       {/* Navigation */}
       <div className="flex items-center justify-between mt-8 pt-6 border-t border-border">

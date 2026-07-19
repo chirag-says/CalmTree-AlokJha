@@ -45,7 +45,7 @@ export function UserMenu() {
         <AuthModal
           open={authOpen}
           onOpenChange={setAuthOpen}
-          onAuthed={() => navigate({ to: "/dashboard" })}
+          onAuthed={(mode) => navigate({ to: mode === "org" ? "/org" : "/dashboard" })}
         />
       </>
     );

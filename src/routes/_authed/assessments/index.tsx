@@ -168,7 +168,7 @@ function CategoryChipRow({ activeCategory }: { activeCategory?: string }) {
       <Link
         to="/assessments"
         search={{}}
-        className={`rounded-full px-4 py-1.5 text-sm font-medium border transition-colors ${
+        className={`rounded-full px-4 py-1.5 text-sm font-medium border transition-all duration-150 ease-out active:scale-[0.96] motion-reduce:transition-none motion-reduce:active:scale-100 ${
           !activeCategory
             ? "bg-primary text-primary-foreground border-primary"
             : "bg-card border-border text-muted-foreground hover:border-primary/40"
@@ -181,7 +181,7 @@ function CategoryChipRow({ activeCategory }: { activeCategory?: string }) {
           key={c.value}
           to="/assessments"
           search={{ category: c.value }}
-          className={`rounded-full px-4 py-1.5 text-sm font-medium border transition-colors ${
+          className={`rounded-full px-4 py-1.5 text-sm font-medium border transition-all duration-150 ease-out active:scale-[0.96] motion-reduce:transition-none motion-reduce:active:scale-100 ${
             activeCategory === c.value
               ? "bg-primary text-primary-foreground border-primary"
               : "bg-card border-border text-muted-foreground hover:border-primary/40"
@@ -199,9 +199,7 @@ function CategoryResults({ category }: { category: string }) {
 
   if (assessments.length === 0) {
     return (
-      <p className="text-muted-foreground">
-        No assessments in this category yet. Check back soon.
-      </p>
+      <p className="text-muted-foreground">No assessments in this category yet. Check back soon.</p>
     );
   }
 

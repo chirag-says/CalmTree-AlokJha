@@ -21,6 +21,7 @@ import {
 import { useAuth } from "@/hooks/useAuth";
 import { listCampaigns } from "@/server/functions/campaigns.functions";
 import { extractOrg, type GetMyOrgsResult, type ListCampaignsResult } from "@/types/org-types";
+import { Reveal } from "@/components/org/marketing/motion-primitives";
 
 export const Route = createFileRoute("/org/")({
   component: OrgHome,
@@ -58,13 +59,17 @@ function OrgHome() {
   return (
     <div>
       {/* Header */}
-      <div className="mb-8">
+      <Reveal onMount className="mb-8">
         <h1 className="text-3xl font-bold text-foreground">{org.name}</h1>
         <p className="mt-1 text-sm text-muted-foreground capitalize">Your role: {org.role}</p>
-      </div>
+      </Reveal>
 
       {/* Stats grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <Reveal
+        onMount
+        delay={0.06}
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8"
+      >
         <StatCard
           icon={<CreditCard className="h-5 w-5 text-emerald-600" />}
           label="Credits Available"
@@ -87,35 +92,35 @@ function OrgHome() {
           label="Total Completed"
           value={totalCompleted.toLocaleString()}
         />
-      </div>
+      </Reveal>
 
-      {/* Quick actions */}
-      <div className="flex flex-wrap gap-3 mb-10">
+      {/* Quick actions — §1 press feedback on each tappable pill. */}
+      <Reveal onMount delay={0.12} className="flex flex-wrap gap-3 mb-10">
         <Link
           to="/org/campaigns/new"
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors shadow-sm"
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 shadow-sm transition-all duration-150 ease-out active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100"
         >
           <Plus className="h-4 w-4" />
           New Campaign
         </Link>
         <Link
           to="/org/campaigns"
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-secondary text-secondary-foreground text-sm font-medium hover:bg-secondary/80 transition-colors"
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-secondary text-secondary-foreground text-sm font-medium hover:bg-secondary/80 transition-all duration-150 ease-out active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100"
         >
           <Megaphone className="h-4 w-4" />
           All Campaigns
         </Link>
         <Link
           to="/org/credits"
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-secondary text-secondary-foreground text-sm font-medium hover:bg-secondary/80 transition-colors"
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-secondary text-secondary-foreground text-sm font-medium hover:bg-secondary/80 transition-all duration-150 ease-out active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100"
         >
           <CreditCard className="h-4 w-4" />
           Credit History
         </Link>
-      </div>
+      </Reveal>
 
       {/* Recent campaigns */}
-      <div>
+      <Reveal onMount delay={0.18}>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold text-foreground">Recent Campaigns</h2>
           {campaigns.length > 3 && (
@@ -153,7 +158,7 @@ function OrgHome() {
                 key={c.id}
                 to="/org/campaigns/$campaignId"
                 params={{ campaignId: c.id }}
-                className="block rounded-xl border border-border bg-card p-4 hover:border-primary/30 hover:shadow-sm transition-all"
+                className="block rounded-xl border border-border bg-card p-4 hover:border-primary/30 hover:shadow-sm transition-all duration-150 ease-out active:scale-[0.99] motion-reduce:transition-none motion-reduce:active:scale-100"
               >
                 <div className="flex items-center justify-between">
                   <div>
@@ -168,7 +173,7 @@ function OrgHome() {
             ))}
           </div>
         )}
-      </div>
+      </Reveal>
     </div>
   );
 }
@@ -185,7 +190,12 @@ function StatCard({
   href?: string;
 }) {
   const content = (
-    <div className="rounded-xl border border-border bg-card p-5 hover:shadow-sm transition-shadow">
+    <div
+      className={
+        "rounded-xl border border-border bg-card p-5 hover:shadow-sm transition-all duration-150 ease-out motion-reduce:transition-none" +
+        (href ? " active:scale-[0.98] motion-reduce:active:scale-100" : "")
+      }
+    >
       <div className="flex items-center gap-3 mb-2">
         {icon}
         <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">

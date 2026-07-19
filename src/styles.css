@@ -158,4 +158,71 @@
     font-family: "Fraunces", ui-serif, Georgia, serif;
     letter-spacing: -0.01em;
   }
+
+  /* ── ios-design §15 (Typography): optical sizing + size-aware tracking ──
+     Tracking is size-specific — tighten large display text, keep body near 0.
+     text-wrap balances headings (no orphan words) and prettifies body copy. */
+  body {
+    font-optical-sizing: auto;
+    text-rendering: optimizeLegibility;
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    text-wrap: balance;
+  }
+  h1 {
+    letter-spacing: -0.021em;
+  }
+  h2 {
+    letter-spacing: -0.015em;
+  }
+  p {
+    text-wrap: pretty;
+  }
+
+  /* ── ios-design §1 (Response): remove the touch tap flash / 300ms grey box
+     so press feedback reads as instant and direct. ── */
+  a,
+  button,
+  summary,
+  label,
+  [role="button"] {
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+/* ── ios-design §14 (Accessibility): honor the three independent signals ──
+   Reduced motion → make transitions instant + stop decorative loops, but
+   keep functional spinners (animate-spin) turning. Reduced transparency →
+   drop blur on translucent chrome. More contrast → strengthen borders. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+  }
+  .animate-ping,
+  .animate-pulse,
+  .animate-bounce {
+    animation: none !important;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  [class*="backdrop-blur"] {
+    backdrop-filter: none !important;
+  }
+}
+
+@media (prefers-contrast: more) {
+  :root,
+  .dark {
+    --border: color-mix(in oklab, var(--foreground) 42%, transparent);
+    --ring: var(--primary);
+  }
 }

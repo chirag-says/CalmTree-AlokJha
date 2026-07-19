@@ -28,6 +28,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { AuthModeToggle, type AuthMode } from "@/components/auth/AuthModeToggle";
 import { useAuth } from "@/hooks/useAuth";
 
 // ─── Schemas ─────────────────────────────────────────────────────────────────
@@ -308,28 +309,43 @@ export interface AuthModalProps {
   onOpenChange: (open: boolean) => void;
   /** Optional message shown above the form */
   prompt?: string;
-  /** Called after successful auth (in addition to closing the modal). */
-  onAuthed?: () => void;
+  /**
+   * Called after successful auth (in addition to closing the modal). Receives the
+   * selected mode so the caller can land the user in the right place
+   * (individual → /dashboard, org → /org).
+   */
+  onAuthed?: (mode: AuthMode) => void;
 }
 
 export function AuthModal({ open, onOpenChange, prompt, onAuthed }: AuthModalProps) {
+  // Individual vs. organization is the *same* OTP auth — only the post-auth
+  // landing differs. Kept as local state so switching doesn't remount the form.
+  const [mode, setMode] = useState<AuthMode>("individual");
+  const isOrg = mode === "org";
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md rounded-2xl p-0 overflow-hidden gap-0">
         <div className="px-6 pt-6 pb-2">
           <DialogHeader>
-            <DialogTitle className="text-xl font-semibold">Sign in to CalmTree</DialogTitle>
+            <DialogTitle className="text-xl font-semibold">
+              {isOrg ? "Organization sign in" : "Sign in to CalmTree"}
+            </DialogTitle>
             <DialogDescription className="text-sm text-muted-foreground">
-              {prompt ?? "Enter your email — we'll send you a one-time code. No password needed."}
+              {prompt ??
+                (isOrg
+                  ? "Access your organization's dashboard. Enter your work email — we'll send you a one-time code."
+                  : "Enter your email — we'll send you a one-time code. No password needed.")}
             </DialogDescription>
           </DialogHeader>
         </div>
         <div className="px-6 pb-6">
+          <AuthModeToggle mode={mode} onSelect={setMode} className="mb-5" />
           <OtpFlow
             prompt={undefined}
             onSuccess={() => {
               onOpenChange(false);
-              onAuthed?.();
+              onAuthed?.(mode);
             }}
           />
         </div>

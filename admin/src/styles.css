@@ -197,4 +197,66 @@
     font-family: "Fraunces", ui-serif, Georgia, serif;
     letter-spacing: -0.01em;
   }
+
+  /* ── ios-design §15 (Typography): optical sizing + size-aware tracking ── */
+  body {
+    font-optical-sizing: auto;
+    text-rendering: optimizeLegibility;
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    text-wrap: balance;
+  }
+  h1 {
+    letter-spacing: -0.021em;
+  }
+  h2 {
+    letter-spacing: -0.015em;
+  }
+  p {
+    text-wrap: pretty;
+  }
+
+  /* ── ios-design §1 (Response): instant, direct press feedback ── */
+  a,
+  button,
+  summary,
+  label,
+  [role="button"] {
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+/* ── ios-design §14 (Accessibility): reduced motion / transparency / contrast ── */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+  }
+  .animate-ping,
+  .animate-pulse,
+  .animate-bounce {
+    animation: none !important;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  [class*="backdrop-blur"],
+  .glass {
+    backdrop-filter: none !important;
+  }
+}
+
+@media (prefers-contrast: more) {
+  :root,
+  .dark {
+    --border: color-mix(in oklab, var(--foreground) 42%, transparent);
+    --ring: var(--primary);
+  }
 }

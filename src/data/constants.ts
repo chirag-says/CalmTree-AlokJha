@@ -8,8 +8,8 @@ export const SITE = {
   tagline: "Psychology Studio",
   description:
     "Practical psychology for self-awareness, emotional wellness, behaviour, work, relationships, and personal growth.",
-  domain: "calmtree.com",
-  url: "https://calmtree.com",
+  domain: "calmtree.in",
+  url: "https://calmtree.in",
   email: "alok@calmtree.in",
   founder: "Alok Jha",
   founderTitle: "Founder of Calmtree. Psychology educator.",

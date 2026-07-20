@@ -24,6 +24,7 @@ export const Route = createFileRoute("/sitemap.xml")({
           },
           { path: "/privacy-policy", changefreq: "yearly", priority: "0.3" },
           { path: "/terms", changefreq: "yearly", priority: "0.3" },
+          { path: "/for-organizations", changefreq: "monthly", priority: "0.8" },
           // Note: /academy, /assessments, /resources are auth-protected and excluded.
         ];
 

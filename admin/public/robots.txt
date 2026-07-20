@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /api/
 
-Sitemap: https://calmtree.com/sitemap.xml
+Sitemap: https://calmtree.in/sitemap.xml

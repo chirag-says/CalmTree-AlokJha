@@ -146,13 +146,45 @@ export const personalityCompass: AssessmentConfig = {
     },
   ],
   personalityArchetypes: [
-    { profile: "structured+logic+introvert", label: "Strategic Builder", description: "Combines deep thinking with structured execution and evidence-based decisions." },
-    { profile: "structured+people+introvert", label: "Reliable Guide", description: "Steady, people-aware and dependable, with careful structured support." },
-    { profile: "flexible+people+extrovert", label: "Dynamic Connector", description: "Energised by interaction, variety and people-centred adaptive leadership." },
-    { profile: "flexible+logic+extrovert", label: "Innovative Explorer", description: "Combines quick experimentation with logical assessment and social energy." },
-    { profile: "structured+logic+introvert+detail", label: "Thoughtful Architect", description: "Values depth, preparation, accuracy and careful decision-making." },
-    { profile: "balanced+people", label: "Harmonizer", description: "Balances multiple dimensions with a people-centred approach." },
-    { profile: "flexible+logic+introvert", label: "Creative Pathfinder", description: "Combines independent reflection with adaptable, evidence-based exploration." },
-    { profile: "balanced", label: "Versatile Navigator", description: "A balanced pattern that changes flexibly with context and demands." },
+    {
+      profile: "structured+logic+introvert",
+      label: "Strategic Builder",
+      description: "Combines deep thinking with structured execution and evidence-based decisions.",
+    },
+    {
+      profile: "structured+people+introvert",
+      label: "Reliable Guide",
+      description: "Steady, people-aware and dependable, with careful structured support.",
+    },
+    {
+      profile: "flexible+people+extrovert",
+      label: "Dynamic Connector",
+      description: "Energised by interaction, variety and people-centred adaptive leadership.",
+    },
+    {
+      profile: "flexible+logic+extrovert",
+      label: "Innovative Explorer",
+      description: "Combines quick experimentation with logical assessment and social energy.",
+    },
+    {
+      profile: "structured+logic+introvert+detail",
+      label: "Thoughtful Architect",
+      description: "Values depth, preparation, accuracy and careful decision-making.",
+    },
+    {
+      profile: "balanced+people",
+      label: "Harmonizer",
+      description: "Balances multiple dimensions with a people-centred approach.",
+    },
+    {
+      profile: "flexible+logic+introvert",
+      label: "Creative Pathfinder",
+      description: "Combines independent reflection with adaptable, evidence-based exploration.",
+    },
+    {
+      profile: "balanced",
+      label: "Versatile Navigator",
+      description: "A balanced pattern that changes flexibly with context and demands.",
+    },
   ],
 };

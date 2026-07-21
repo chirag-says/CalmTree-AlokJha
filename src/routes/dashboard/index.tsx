@@ -17,7 +17,7 @@ import { formatDistanceToNow } from "date-fns";
 
 export const Route = createFileRoute("/dashboard/")({
   head: () => ({
-    meta: [{ title: "Dashboard | CalmTree" }],
+    meta: [{ title: "Dashboard | Calmtree" }],
   }),
   component: Page,
 });
@@ -110,7 +110,7 @@ function Page() {
           <p className="mt-1 text-sm text-primary/80 font-medium">Goal: {profile.primary_goal}</p>
         )}
         <p className="mt-1 text-sm text-muted-foreground">
-          Here's a snapshot of your CalmTree journey.
+          Here's a snapshot of your Calmtree journey.
         </p>
       </div>
 

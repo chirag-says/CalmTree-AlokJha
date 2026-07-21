@@ -39,7 +39,7 @@ import { extractOrg, type GetMyOrgsResult } from "@/types/org-types";
 export const Route = createFileRoute("/org/campaigns/new")({
   component: NewCampaignPage,
   head: () => ({
-    meta: [{ title: "New Campaign | CalmTree Enterprise" }],
+    meta: [{ title: "New Campaign | Calmtree Enterprise" }],
   }),
 });
 

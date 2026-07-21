@@ -21,7 +21,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 
 export const Route = createFileRoute("/admin/")({
-  head: () => ({ meta: [{ title: "Admin Overview — CalmTree" }] }),
+  head: () => ({ meta: [{ title: "Admin Overview — Calmtree" }] }),
   component: AdminOverviewPage,
 });
 
@@ -52,7 +52,7 @@ function AdminOverviewPage() {
 
   return (
     <div>
-      <PageHeader title="Overview" description="CalmTree platform at a glance." />
+      <PageHeader title="Overview" description="Calmtree platform at a glance." />
 
       {overview.isPending ? (
         <div className="grid grid-cols-2 gap-2.5 sm:gap-4 lg:grid-cols-3">

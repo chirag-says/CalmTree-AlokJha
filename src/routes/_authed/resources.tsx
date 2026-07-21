@@ -1,9 +1,13 @@
 /**
- * /resources — the ebook storefront (auth-gated, like all content pages).
+ * /resources — the public ebook storefront.
  *
- * Renders the real catalog from the ebooks table:
- *   - not owned → Razorpay buy button (webhook writes the purchase row)
- *   - owned     → signed-URL download button
+ * Renders the real catalog from the ebooks table to everyone, logged in or
+ * not — browsing needs no auth (getActiveEbooks is a public server function,
+ * same one the homepage's EbooksSection already calls anonymously):
+ *   - not owned → Razorpay buy button (webhook writes the purchase row;
+ *     RazorpayCheckoutButton itself sends an anonymous click to /login)
+ *   - owned     → signed-URL download button (only ever true for a signed-in
+ *     visitor, since ownership requires an account)
  *
  * After a successful checkout the purchase row lands via webhook, so we
  * re-fetch owned IDs shortly after the success callback fires.
@@ -64,23 +68,24 @@ function Page() {
     if (!("error" in res)) setOwnedIds(new Set(res.ebookIds));
   }, [session]);
 
+  // Catalog is public — load it regardless of auth state.
   useEffect(() => {
-    if (authLoading || !user || !session?.access_token) return;
     setLoading(true);
-
-    Promise.all([
-      getActiveEbooks({ data: {} }),
-      getMyPurchasedEbookIds({ data: { accessToken: session.access_token } }),
-    ])
-      .then(([catalogRes, purchasedRes]) => {
+    getActiveEbooks({ data: {} })
+      .then((catalogRes) => {
         if (!("error" in catalogRes)) setEbooks(catalogRes.ebooks as EbookRow[]);
-        if (!("error" in purchasedRes)) setOwnedIds(new Set(purchasedRes.ebookIds));
       })
       .catch((e) => {
         console.error("[resources] failed to load catalog:", e);
       })
       .finally(() => setLoading(false));
-  }, [user, session, authLoading]);
+  }, []);
+
+  // Ownership only applies to a signed-in visitor.
+  useEffect(() => {
+    if (authLoading || !user || !session?.access_token) return;
+    void fetchOwned();
+  }, [user, session, authLoading, fetchOwned]);
 
   useEffect(() => {
     const timers = refetchTimers.current;

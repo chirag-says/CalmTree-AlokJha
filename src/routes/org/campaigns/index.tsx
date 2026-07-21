@@ -14,7 +14,7 @@ import { extractOrg, type GetMyOrgsResult, type ListCampaignsResult } from "@/ty
 export const Route = createFileRoute("/org/campaigns/")({
   component: CampaignListPage,
   head: () => ({
-    meta: [{ title: "Campaigns | CalmTree Enterprise" }],
+    meta: [{ title: "Campaigns | Calmtree Enterprise" }],
   }),
 });
 

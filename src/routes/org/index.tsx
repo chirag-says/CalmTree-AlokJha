@@ -26,7 +26,7 @@ import { Reveal } from "@/components/org/marketing/motion-primitives";
 export const Route = createFileRoute("/org/")({
   component: OrgHome,
   head: () => ({
-    meta: [{ title: "Organization Dashboard | CalmTree" }],
+    meta: [{ title: "Organization Dashboard | Calmtree" }],
   }),
 });
 

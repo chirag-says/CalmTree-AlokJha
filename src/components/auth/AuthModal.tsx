@@ -329,7 +329,7 @@ export function AuthModal({ open, onOpenChange, prompt, onAuthed }: AuthModalPro
         <div className="px-6 pt-6 pb-2">
           <DialogHeader>
             <DialogTitle className="text-xl font-semibold">
-              {isOrg ? "Organization sign in" : "Sign in to CalmTree"}
+              {isOrg ? "Organization sign in" : "Sign in to Calmtree"}
             </DialogTitle>
             <DialogDescription className="text-sm text-muted-foreground">
               {prompt ??

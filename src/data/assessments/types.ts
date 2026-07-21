@@ -1,5 +1,5 @@
 /**
- * CalmTree Assessment Engine — Type Definitions v2
+ * Calmtree Assessment Engine — Type Definitions v2
  *
  * Designed to match the client's spec exactly:
  * - Uniform 1-5 Likert scale (10 questions, score 10-50)

@@ -28,7 +28,7 @@ import {
 } from "@/components/ui/dialog";
 
 export const Route = createFileRoute("/admin/orgs")({
-  head: () => ({ meta: [{ title: "Organizations — CalmTree Admin" }] }),
+  head: () => ({ meta: [{ title: "Organizations — Calmtree Admin" }] }),
   component: AdminOrgsPage,
 });
 

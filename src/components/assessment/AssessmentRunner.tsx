@@ -8,13 +8,20 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import { AnimatePresence, motion, useReducedMotion, type PanInfo } from "motion/react";
 import { usePostHog } from "@posthog/react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { QuestionCard } from "./QuestionCard";
 import { ResultsView } from "./ResultsView";
 import { PersonalityCompassResults } from "./PersonalityCompassResults";
+import {
+  CompletionSignupPrompt,
+  hasShownCompletionPrompt,
+  markCompletionPromptShown,
+} from "./CompletionSignupPrompt";
 import { scoreAssessment } from "@/lib/assessment-engine";
 import { ArrowLeft, ArrowRight, Clock, Lock, Sparkles } from "lucide-react";
 import { TIER_BADGE } from "./TierBadge";
+import { useAuth } from "@/hooks/useAuth";
 import { useResultPersistence } from "@/hooks/useResultPersistence";
 import { haptic } from "@/lib/haptics";
 import { project, CARD_SPRING, CARD_SLIDE, SWIPE_COMMIT } from "@/lib/fluid";
@@ -73,8 +80,10 @@ export function AssessmentRunner({ config, onComplete, initialAnswers }: Assessm
   }, []);
   useEffect(() => clearAuto, [clearAuto]);
 
-  const { saveIfAuthed } = useResultPersistence();
+  const { user } = useAuth();
+  const { saveIfAuthed, claimStashed } = useResultPersistence();
   const posthog = usePostHog();
+  const [showSignupPrompt, setShowSignupPrompt] = useState(false);
 
   const { questions } = config;
   const currentQ = questions[state.currentIndex];
@@ -108,7 +117,15 @@ export function AssessmentRunner({ config, onComplete, initialAnswers }: Assessm
       if (onComplete) {
         void onComplete(config, scored, state.answers);
       } else {
-        void saveIfAuthed(config, scored, state.answers);
+        void saveIfAuthed(config, scored, state.answers).then((res) => {
+          if (user && !res.saved) {
+            toast.error("Couldn't save your result — we'll retry next time you're signed in.");
+          }
+        });
+        if (!user && !hasShownCompletionPrompt()) {
+          markCompletionPromptShown();
+          setShowSignupPrompt(true);
+        }
       }
       posthog.capture("assessment_completed", {
         assessment: config.meta.title,
@@ -124,7 +141,7 @@ export function AssessmentRunner({ config, onComplete, initialAnswers }: Assessm
         currentIndex: prev.currentIndex + 1,
       }));
     }
-  }, [isLast, config, state.answers, saveIfAuthed, onComplete, posthog, clearAuto]);
+  }, [isLast, config, state.answers, saveIfAuthed, onComplete, posthog, clearAuto, user]);
 
   const goPrev = useCallback(() => {
     clearAuto();
@@ -195,10 +212,23 @@ export function AssessmentRunner({ config, onComplete, initialAnswers }: Assessm
 
   // ── Results screen ──
   if (result) {
-    if (result.type === "personality-compass") {
-      return <PersonalityCompassResults config={config} result={result} onRetake={retake} />;
-    }
-    return <ResultsView config={config} result={result as StandardResult} onRetake={retake} />;
+    return (
+      <>
+        {result.type === "personality-compass" ? (
+          <PersonalityCompassResults config={config} result={result} onRetake={retake} />
+        ) : (
+          <ResultsView config={config} result={result as StandardResult} onRetake={retake} />
+        )}
+        <CompletionSignupPrompt
+          open={showSignupPrompt}
+          onOpenChange={setShowSignupPrompt}
+          onSuccess={() => {
+            void claimStashed();
+            setShowSignupPrompt(false);
+          }}
+        />
+      </>
+    );
   }
 
   // ── Start screen ──

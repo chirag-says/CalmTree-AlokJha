@@ -63,7 +63,7 @@
 
 :root {
   --radius: 1rem;
-  /* CalmTree palette: soft sage green, off-white, beige, charcoal */
+  /* Calmtree palette: soft sage green, off-white, beige, charcoal */
   --background: oklch(0.985 0.008 95); /* warm off-white */
   --foreground: oklch(0.24 0.018 160); /* deep charcoal-green */
   --card: oklch(0.995 0.005 95);
@@ -102,7 +102,7 @@
   --shadow-soft: 0 10px 30px -12px oklch(0.46 0.07 155 / 0.18);
 }
 
-/* CalmTree dark mode — deep forest greens, warm neutrals, sage accents.
+/* Calmtree dark mode — deep forest greens, warm neutrals, sage accents.
    Maintains brand identity across both themes. */
 .dark {
   --background: oklch(0.14 0.015 155); /* deep forest */

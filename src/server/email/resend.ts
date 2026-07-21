@@ -6,13 +6,13 @@
  *   RESEND_API_KEY  — Resend API key. Unset ⇒ sends are a graceful no-op
  *                     (returns { ok:false, skipped:true }) so the demo runs
  *                     end-to-end without email configured.
- *   EMAIL_FROM      — "CalmTree <noreply@mail.calmtree.in>". Defaults to
+ *   EMAIL_FROM      — "Calmtree <noreply@mail.calmtree.in>". Defaults to
  *                     Resend's shared onboarding sender for demos.
  *   PUBLIC_SITE_URL — base URL of the CLIENT app; used to build invite links.
  */
 
 const RESEND_ENDPOINT = "https://api.resend.com/emails";
-const DEFAULT_FROM = "CalmTree <onboarding@resend.dev>";
+const DEFAULT_FROM = "Calmtree <onboarding@resend.dev>";
 
 export function getPublicSiteUrl(): string {
   return (process.env.PUBLIC_SITE_URL || "https://calmtree.in").replace(/\/+$/, "");
@@ -62,7 +62,7 @@ function layout(bodyHtml: string): string {
     ${bodyHtml}
     <hr style="border:none;border-top:1px solid #eee;margin:32px 0" />
     <p style="font-size:12px;color:#888">
-      CalmTree — psychology education, not medical or counselling advice.<br/>
+      Calmtree — psychology education, not medical or counselling advice.<br/>
       Your individual answers are private. Your employer sees only aggregated, anonymised results.
     </p>
   </div>`;
@@ -87,13 +87,13 @@ export function sendInviteEmail(args: InviteEmailArgs): Promise<SendResult> {
   const html = layout(`
     <h1 style="font-size:20px;margin:0 0 16px">You've been invited to a wellbeing check-in</h1>
     <p><strong>${escapeHtml(args.orgName)}</strong> has invited you to take the
-    <strong>${escapeHtml(args.assessmentTitle)}</strong> assessment on CalmTree.</p>
+    <strong>${escapeHtml(args.assessmentTitle)}</strong> assessment on Calmtree.</p>
     <p style="font-size:14px;color:#666">It takes a few minutes. No account or sign-up needed — just open the link below.</p>
     <p style="margin:24px 0">${button(args.link, "Start the assessment")}</p>
     ${closing}
     <p style="font-size:13px;color:#999">This link is personal to you — please don't forward it.</p>
   `);
-  return send({ to: args.to, subject: `${args.orgName} invited you to a CalmTree check-in`, html });
+  return send({ to: args.to, subject: `${args.orgName} invited you to a Calmtree check-in`, html });
 }
 
 export function sendReminderEmail(args: InviteEmailArgs): Promise<SendResult> {
@@ -109,7 +109,7 @@ export function sendReminderEmail(args: InviteEmailArgs): Promise<SendResult> {
   `);
   return send({
     to: args.to,
-    subject: `Reminder: your CalmTree check-in for ${args.orgName}`,
+    subject: `Reminder: your Calmtree check-in for ${args.orgName}`,
     html,
   });
 }

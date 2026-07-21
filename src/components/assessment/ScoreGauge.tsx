@@ -1,6 +1,6 @@
 /**
  * ScoreGauge v2 — circular gauge showing score/maxScore with archetype label.
- * Updated for the CalmTree Original format (X/50 + percentage).
+ * Updated for the Calmtree Original format (X/50 + percentage).
  */
 
 interface ScoreGaugeProps {

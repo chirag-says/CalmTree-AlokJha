@@ -18,7 +18,7 @@ const hasCredentials = Boolean(supabaseUrl && supabaseAnonKey);
 
 if (!hasCredentials) {
   console.warn(
-    "[CalmTree] Supabase credentials not configured. Assessment data will use local fallback.",
+    "[Calmtree] Supabase credentials not configured. Assessment data will use local fallback.",
   );
 }
 

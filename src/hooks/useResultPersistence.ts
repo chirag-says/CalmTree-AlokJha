@@ -131,7 +131,11 @@ export function useResultPersistence() {
           },
         });
         if ("error" in response && response.error) {
-          return { saved: false, stashed: false, error: response.error };
+          // Don't lose the result to a transient failure — stash it so the
+          // next claimStashed() call (e.g. on the next authed page load)
+          // can retry the save.
+          stashForLater(payload);
+          return { saved: false, stashed: true, error: response.error };
         }
         return { saved: true, stashed: false };
       }

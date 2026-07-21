@@ -15,7 +15,7 @@ import { RazorpayCheckoutButton } from "@/components/payments/RazorpayCheckoutBu
 export const Route = createFileRoute("/org/credits")({
   component: CreditsPage,
   head: () => ({
-    meta: [{ title: "Credits | CalmTree Enterprise" }],
+    meta: [{ title: "Credits | Calmtree Enterprise" }],
   }),
 });
 

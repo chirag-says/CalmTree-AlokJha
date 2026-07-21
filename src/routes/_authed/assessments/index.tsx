@@ -63,7 +63,7 @@ export const Route = createFileRoute("/_authed/assessments/")({
       {
         name: "description",
         content:
-          "15 CalmTree Original™ assessments: burnout, stress, confidence, emotional intelligence, personality, leadership, and more.",
+          "15 Calmtree Original™ assessments: burnout, stress, confidence, emotional intelligence, personality, leadership, and more.",
       },
       {
         property: "og:title",
@@ -219,7 +219,7 @@ function Page() {
     <>
       <PageHeader
         eyebrow="Assessments"
-        title="CalmTree Original Assessments™"
+        title="Calmtree Original Assessments™"
         description="Situational, non-clinical self-checks designed for self-awareness. Under 2 minutes each. Completely private."
       />
 

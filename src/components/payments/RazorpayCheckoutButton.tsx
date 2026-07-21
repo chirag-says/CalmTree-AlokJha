@@ -14,6 +14,7 @@
  */
 
 import { useState, useCallback } from "react";
+import { useNavigate } from "@tanstack/react-router";
 import { usePostHog } from "@posthog/react";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
@@ -82,6 +83,7 @@ export function RazorpayCheckoutButton(props: RazorpayCheckoutButtonProps) {
   const { label, onSuccess, className, size = "default" } = props;
   const { user, session } = useAuth();
   const posthog = usePostHog();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
   // A stable identifier for analytics, regardless of which product shape this is.
@@ -94,7 +96,7 @@ export function RazorpayCheckoutButton(props: RazorpayCheckoutButtonProps) {
 
   const handleCheckout = useCallback(async () => {
     if (!user || !session?.access_token) {
-      toast.error("Please sign in before making a purchase.");
+      void navigate({ to: "/login", search: { redirect: window.location.pathname } });
       return;
     }
 
@@ -144,7 +146,7 @@ export function RazorpayCheckoutButton(props: RazorpayCheckoutButtonProps) {
         amount,
         currency,
         order_id: orderId,
-        name: "CalmTree",
+        name: "Calmtree",
         description:
           props.productType === "ebook"
             ? "Ebook Purchase"
@@ -152,7 +154,7 @@ export function RazorpayCheckoutButton(props: RazorpayCheckoutButtonProps) {
               ? "Assessment Credits"
               : "Assessment Tier Access",
         prefill: { email: user.email },
-        theme: { color: "#166534" }, // matches CalmTree primary green
+        theme: { color: "#166534" }, // matches Calmtree primary green
         handler: async (response) => {
           // Verify the payment server-side and write the purchase/entitlement row
           // synchronously. This is the source of truth — it needs only the key
@@ -214,7 +216,7 @@ export function RazorpayCheckoutButton(props: RazorpayCheckoutButtonProps) {
     } finally {
       setLoading(false);
     }
-  }, [user, session, props, analyticsRef, onSuccess, posthog]);
+  }, [user, session, props, analyticsRef, onSuccess, posthog, navigate]);
 
   return (
     <Button size={size} className={className} disabled={loading} onClick={handleCheckout}>

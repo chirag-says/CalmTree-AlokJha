@@ -13,7 +13,7 @@ import { EbookDownloadButton } from "@/components/ebooks/EbookDownloadButton";
 import { EbookReadButton } from "@/components/ebooks/EbookReadButton";
 
 export const Route = createFileRoute("/dashboard/ebooks")({
-  head: () => ({ meta: [{ title: "My Ebooks | CalmTree Dashboard" }] }),
+  head: () => ({ meta: [{ title: "My Ebooks | Calmtree Dashboard" }] }),
   component: Page,
 });
 

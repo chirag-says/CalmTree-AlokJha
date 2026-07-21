@@ -1,7 +1,7 @@
 /**
  * Assessment Registry — single import to get any assessment.
  *
- * All 40 CalmTree Original™ assessments, organized by tier.
+ * All 40 Calmtree Original™ assessments, organized by tier.
  * Add a new assessment: import it, add to the map and list. Done.
  */
 

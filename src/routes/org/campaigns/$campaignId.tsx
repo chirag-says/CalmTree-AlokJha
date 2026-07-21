@@ -43,7 +43,7 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/org/campaigns/$campaignId")({
   component: CampaignDetailPage,
   head: () => ({
-    meta: [{ title: "Campaign Detail | CalmTree Enterprise" }],
+    meta: [{ title: "Campaign Detail | Calmtree Enterprise" }],
   }),
 });
 
@@ -541,7 +541,7 @@ function DetailedReport({ report }: { report: Record<string, unknown> }) {
             Individual results are not enabled for this organization.
           </p>
           <p className="text-xs text-muted-foreground mt-1">
-            Contact CalmTree to enable individual-level reporting.
+            Contact Calmtree to enable individual-level reporting.
           </p>
         </div>
       )}

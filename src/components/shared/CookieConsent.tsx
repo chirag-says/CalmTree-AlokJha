@@ -5,7 +5,7 @@
  * Shows once per browser session (persisted in localStorage).
  * Dismissing sets a flag so it never re-appears.
  *
- * Does NOT block PostHog — CalmTree uses a minimal analytics posture
+ * Does NOT block PostHog — Calmtree uses a minimal analytics posture
  * (pageviews + custom events, no session recording) to keep the
  * compliance surface small under India's DPDP Act.
  */
@@ -51,7 +51,7 @@ export function CookieConsent() {
         <div className="flex-1">
           <p className="text-sm font-medium mb-1">We use cookies</p>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            We use analytics cookies to understand how visitors use CalmTree. No session recording.
+            We use analytics cookies to understand how visitors use Calmtree. No session recording.
             See our{" "}
             <Link to="/privacy-policy" className="text-primary hover:underline">
               privacy policy

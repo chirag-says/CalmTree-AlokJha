@@ -1,7 +1,7 @@
 /**
  * HeroComposition — the art-directed product showcase in the B2B hero.
  *
- * A real product shot of the CalmTree org dashboard (laptop + phone, transparent
+ * A real product shot of the Calmtree org dashboard (laptop + phone, transparent
  * PNG with its own soft shadow baked in), presented on a soft ambient halo with
  * a gentle float and an on-load entrance.
  *
@@ -51,7 +51,7 @@ export function HeroComposition() {
 
       <img
         src="/hero-org-dashboard.png"
-        alt="CalmTree organization dashboard shown on a laptop and phone — team credits, active campaigns and recent wellbeing checks."
+        alt="Calmtree organization dashboard shown on a laptop and phone — team credits, active campaigns and recent wellbeing checks."
         width={1536}
         height={1024}
         loading="eager"

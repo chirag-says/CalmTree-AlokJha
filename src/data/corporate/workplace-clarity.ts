@@ -15,7 +15,7 @@
  *   • Internal `dimensions` enrich the personal report; the WES only uses the
  *     assessment's headline `percentage`.
  *
- * Wording here is a first, defensible draft — CalmTree's psychology author
+ * Wording here is a first, defensible draft — Calmtree's psychology author
  * validates final phrasing and reverse-coding before launch.
  */
 

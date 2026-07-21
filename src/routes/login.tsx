@@ -44,7 +44,7 @@ const searchSchema = z.object({
 export const Route = createFileRoute("/login")({
   validateSearch: searchSchema,
   head: () => ({
-    meta: [{ title: "Sign in | CalmTree" }],
+    meta: [{ title: "Sign in | Calmtree" }],
   }),
   component: LoginPage,
 });
@@ -94,7 +94,7 @@ function LoginPage() {
 
           <div className="mb-6 text-center">
             <h1 className="text-2xl font-semibold">
-              {isOrg ? "Organization sign in" : "Sign in to CalmTree"}
+              {isOrg ? "Organization sign in" : "Sign in to Calmtree"}
             </h1>
             <p className="mt-2 text-sm text-muted-foreground">
               {isOrg
@@ -111,7 +111,7 @@ function LoginPage() {
           <p className="mt-4 text-center text-xs text-muted-foreground">
             New here?{" "}
             <a href="/for-organizations" className="text-primary hover:underline">
-              Learn about CalmTree for organizations
+              Learn about Calmtree for organizations
             </a>
           </p>
         )}

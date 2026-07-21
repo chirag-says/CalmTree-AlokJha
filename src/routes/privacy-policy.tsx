@@ -9,12 +9,12 @@ export const Route = createFileRoute("/privacy-policy")({
       {
         name: "description",
         content:
-          "CalmTree's privacy policy explains how we collect, use, and protect your personal information on our psychology education platform.",
+          "Calmtree's privacy policy explains how we collect, use, and protect your personal information on our psychology education platform.",
       },
       { property: "og:title", content: `Privacy Policy | ${SITE.name}` },
       {
         property: "og:description",
-        content: "How CalmTree handles your data. Transparent, simple, and respectful.",
+        content: "How Calmtree handles your data. Transparent, simple, and respectful.",
       },
     ],
   }),
@@ -36,18 +36,18 @@ function Page() {
       <PageHeader
         eyebrow="Legal"
         title="Privacy Policy"
-        description="Your privacy matters. This policy explains how we collect, use, and safeguard your information on CalmTree."
+        description="Your privacy matters. This policy explains how we collect, use, and safeguard your information on Calmtree."
       />
       <article className="mx-auto max-w-3xl px-5 py-12 md:py-16">
         <Section title="1. Introduction">
           <p>
-            CalmTree (“we”, “us”, or “our") operates the website <strong>calmtree.in</strong> and
+            Calmtree (“we”, “us”, or “our") operates the website <strong>calmtree.in</strong> and
             related services. This Privacy Policy describes how we collect, use, disclose, and
             safeguard your personal information when you visit our website, use our assessments,
             subscribe to our newsletter, or engage with our courses and content.
           </p>
           <p>
-            By using CalmTree, you consent to the practices described in this policy. If you do not
+            By using Calmtree, you consent to the practices described in this policy. If you do not
             agree, please discontinue use of our services.
           </p>
         </Section>
@@ -134,7 +134,7 @@ function Page() {
 
         <Section title="8. Children's Privacy">
           <p>
-            CalmTree is not intended for children under 13. We do not knowingly collect personal
+            Calmtree is not intended for children under 13. We do not knowingly collect personal
             information from children. If you believe we have collected data from a child under 13,
             please contact us immediately.
           </p>

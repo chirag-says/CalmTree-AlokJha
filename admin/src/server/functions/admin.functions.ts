@@ -831,7 +831,7 @@ export const addOrgMember = createServerFn({ method: "POST" })
     const supabase = getAdminClient();
 
     // Supabase admin API has no direct email-filter on listUsers, so we page
-    // through up to 1 000 users. CalmTree is early-stage; revisit with a
+    // through up to 1 000 users. Calmtree is early-stage; revisit with a
     // get_user_id_by_email DB function if the user base grows past that.
     const { data: usersResult, error: listErr } = await supabase.auth.admin.listUsers({
       perPage: 1000,
@@ -847,7 +847,7 @@ export const addOrgMember = createServerFn({ method: "POST" })
     );
 
     if (!match) {
-      return { error: `No account found for ${data.email}. They must sign up on CalmTree first.` };
+      return { error: `No account found for ${data.email}. They must sign up on Calmtree first.` };
     }
     const targetUserId = match.id;
 

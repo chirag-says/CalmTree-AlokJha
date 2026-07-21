@@ -16,9 +16,15 @@ import { AnimatePresence, motion, useReducedMotion, type PanInfo } from "motion/
 import { usePostHog } from "@posthog/react";
 import { Button } from "@/components/ui/button";
 import { ProfileResultsView } from "./ProfileResultsView";
+import {
+  CompletionSignupPrompt,
+  hasShownCompletionPrompt,
+  markCompletionPromptShown,
+} from "./CompletionSignupPrompt";
 import { scoreAssessment } from "@/lib/assessment-engine";
 import { ArrowLeft, ArrowRight, Clock, Lock, Sparkles, Check } from "lucide-react";
 import { TIER_BADGE } from "./TierBadge";
+import { useAuth } from "@/hooks/useAuth";
 import { useResultPersistence } from "@/hooks/useResultPersistence";
 import { haptic } from "@/lib/haptics";
 import { project, CARD_SPRING, CARD_SLIDE, SWIPE_COMMIT } from "@/lib/fluid";
@@ -67,8 +73,10 @@ export function ProfileRunner({ config, onComplete, initialAnswers }: ProfileRun
   }, []);
   useEffect(() => clearAuto, [clearAuto]);
 
-  const { saveIfAuthed } = useResultPersistence();
+  const { user } = useAuth();
+  const { saveIfAuthed, claimStashed } = useResultPersistence();
   const posthog = usePostHog();
+  const [showSignupPrompt, setShowSignupPrompt] = useState(false);
 
   const { profileQuestions } = config;
   const currentQ = profileQuestions[currentIndex];
@@ -99,6 +107,10 @@ export function ProfileRunner({ config, onComplete, initialAnswers }: ProfileRun
         void onComplete(config, scored, answers);
       } else {
         void saveIfAuthed(config, scored, answers);
+        if (!user && !hasShownCompletionPrompt()) {
+          markCompletionPromptShown();
+          setShowSignupPrompt(true);
+        }
       }
       posthog.capture("assessment_completed", {
         assessment: config.meta.title,
@@ -111,7 +123,7 @@ export function ProfileRunner({ config, onComplete, initialAnswers }: ProfileRun
       haptic("commit");
       setCurrentIndex((i) => i + 1);
     }
-  }, [isLast, config, answers, saveIfAuthed, onComplete, posthog, clearAuto]);
+  }, [isLast, config, answers, saveIfAuthed, onComplete, posthog, clearAuto, user]);
 
   const goPrev = useCallback(() => {
     clearAuto();
@@ -180,7 +192,19 @@ export function ProfileRunner({ config, onComplete, initialAnswers }: ProfileRun
 
   // ── Results ──
   if (result) {
-    return <ProfileResultsView config={config} result={result} onRetake={retake} />;
+    return (
+      <>
+        <ProfileResultsView config={config} result={result} onRetake={retake} />
+        <CompletionSignupPrompt
+          open={showSignupPrompt}
+          onOpenChange={setShowSignupPrompt}
+          onSuccess={() => {
+            void claimStashed();
+            setShowSignupPrompt(false);
+          }}
+        />
+      </>
+    );
   }
 
   // ── Start screen ──

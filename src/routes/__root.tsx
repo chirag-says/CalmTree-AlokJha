@@ -60,7 +60,7 @@ function NotFoundComponent() {
 function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   const router = useRouter();
   useEffect(() => {
-    console.error("[CalmTree] Unhandled error:", error);
+    console.error("[Calmtree] Unhandled error:", error);
   }, [error]);
 
   return (

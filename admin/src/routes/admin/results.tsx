@@ -16,7 +16,7 @@ import { MobileCardList } from "@/components/admin/MobileCardList";
 import { TablePagination } from "@/components/admin/TablePagination";
 
 export const Route = createFileRoute("/admin/results")({
-  head: () => ({ meta: [{ title: "Results — CalmTree Admin" }] }),
+  head: () => ({ meta: [{ title: "Results — Calmtree Admin" }] }),
   component: AdminResultsPage,
 });
 

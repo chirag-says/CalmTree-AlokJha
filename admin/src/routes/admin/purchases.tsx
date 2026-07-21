@@ -108,7 +108,7 @@ function ExportCsvButton() {
 }
 
 export const Route = createFileRoute("/admin/purchases")({
-  head: () => ({ meta: [{ title: "Purchases — CalmTree Admin" }] }),
+  head: () => ({ meta: [{ title: "Purchases — Calmtree Admin" }] }),
   component: AdminPurchasesPage,
 });
 

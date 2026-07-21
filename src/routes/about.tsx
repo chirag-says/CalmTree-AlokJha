@@ -45,8 +45,8 @@ function Page() {
             depth of psychological insight.
           </p>
           <p className="mt-4 text-lg text-muted-foreground">
-            He founded {SITE.name} to make psychology simple, practical and useful in everyday life
-            , not as therapy or medical advice, but as education that helps you understand yourself
+            He founded {SITE.name} to make psychology simple, practical and useful in everyday life,
+            not as therapy or medical advice, but as education that helps you understand yourself
             and the people around you.
           </p>
 

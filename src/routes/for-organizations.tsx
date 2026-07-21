@@ -20,10 +20,8 @@ import {
   CheckCircle2,
   Sparkles,
   BarChart3,
-  Building2,
   Users,
   EyeOff,
-  Quote,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -56,13 +54,13 @@ export const Route = createFileRoute("/for-organizations")({
 /** Fraunces display face for numerals that aren't heading tags. */
 const serif = { fontFamily: '"Fraunces", Georgia, serif' } as const;
 
-const HERO_TRUST = ["Private", "Anonymous", "Research-backed", "Enterprise-ready"];
+const HERO_TRUST = ["Private", "Anonymous", "Enterprise-ready"];
 
 const STEPS = [
   {
     n: "01",
     title: "Create an assessment",
-    body: "Choose from Calmtree's library of validated psychology assessments — from workplace wellbeing to leadership and team health.",
+    body: "Choose from Calmtree's library of psychology assessments — from workplace wellbeing to leadership and team health.",
   },
   {
     n: "02",
@@ -95,7 +93,7 @@ const FAQS = [
   },
   {
     q: "What assessments are available?",
-    a: "The full Calmtree library — scientifically grounded assessments spanning workplace wellbeing, stress and burnout, leadership, team health, and more. The same instruments used across the Calmtree platform.",
+    a: "The full Calmtree library — assessments spanning workplace wellbeing, stress and burnout, leadership, team health, and more. The same instruments used across the Calmtree platform.",
   },
   {
     q: "How does pricing work?",
@@ -111,14 +109,12 @@ function ForOrganizations() {
   return (
     <SiteLayout>
       <Hero />
-      <LogoStrip />
       <HowItWorks />
       <FeatureBento />
       <AiInsights />
       <Privacy />
       <AssessmentWalkthrough />
       <Pricing />
-      <Testimonial />
       <Faq />
       <FinalCta />
     </SiteLayout>
@@ -215,52 +211,6 @@ function Hero() {
 }
 
 /* ─────────────────────────────────────────────────────────────
-   TRUST LOGO STRIP
-   ───────────────────────────────────────────────────────────── */
-const LOGO_DATA = [
-  { name: "Adobe", src: "/adobe.com-logo.webp" },
-  { name: "Cred Club", src: "/cred.club-logo.webp" },
-  { name: "Infosys", src: "/infosys.com-logo.webp" },
-  { name: "Meridian", src: "/meridian-audio.com-logo.webp" },
-  { name: "TCS", src: "/tcs.com-logo.webp" },
-  { name: "Zoho", src: "/zoho.com-logo.webp" },
-];
-
-function LogoStrip() {
-  return (
-    <section className="border-y border-border/60 bg-card/40">
-      <div className="mx-auto max-w-6xl px-5 py-14">
-        <Reveal>
-          <p className="text-center text-xs uppercase tracking-[0.22em] text-muted-foreground">
-            Trusted by people teams who take wellbeing seriously
-          </p>
-        </Reveal>
-        <Reveal delay={0.1}>
-          <div className="mt-10 grid grid-cols-2 gap-8 sm:grid-cols-3 lg:grid-cols-6">
-            {LOGO_DATA.map(({ name, src }) => (
-              <div
-                key={name}
-                className="flex flex-col items-center justify-center gap-3 opacity-70 hover:opacity-100 transition-opacity"
-              >
-                <div className="h-20 w-20 flex items-center justify-center bg-card/50 rounded-xl p-2 border border-border/30">
-                  <img
-                    src={src}
-                    alt={`${name} logo`}
-                    className="h-16 w-16 object-contain grayscale"
-                    loading="lazy"
-                  />
-                </div>
-                <p className="text-xs font-medium text-foreground text-center">{name}</p>
-              </div>
-            ))}
-          </div>
-        </Reveal>
-      </div>
-    </section>
-  );
-}
-
-/* ─────────────────────────────────────────────────────────────
    HOW IT WORKS — editorial timeline
    ───────────────────────────────────────────────────────────── */
 function HowItWorks() {
@@ -323,31 +273,6 @@ function FeatureBento() {
               Wellbeing, stress and engagement trends by team and over time — clear enough to act
               on, private enough to trust.
             </p>
-            <div className="mt-auto grid grid-cols-3 gap-4 pt-8">
-              {[
-                { k: "Teams tracked", v: 12 },
-                { k: "Assessments", v: 44 },
-                { k: "Avg. completion", v: 87, suffix: "%" },
-              ].map((stat) => (
-                <div key={stat.k} className="rounded-2xl bg-secondary/50 p-4">
-                  <p style={serif} className="text-3xl text-foreground">
-                    <Counter to={stat.v} suffix={stat.suffix ?? ""} />
-                  </p>
-                  <p className="mt-1 text-xs text-muted-foreground">{stat.k}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </RevealItem>
-
-        {/* Quote */}
-        <RevealItem>
-          <div className="flex h-full flex-col justify-between rounded-[28px] bg-primary p-8 text-primary-foreground">
-            <Quote className="h-6 w-6 opacity-70" />
-            <p style={serif} className="text-lg leading-snug">
-              "For the first time, our wellbeing conversations start with evidence, not anecdotes."
-            </p>
-            <p className="text-xs opacity-75">Head of People · SaaS scale-up</p>
           </div>
         </RevealItem>
 
@@ -418,7 +343,7 @@ function AiInsights() {
           <ul className="mt-8 space-y-3">
             {[
               "Detects meaningful shifts, not noise",
-              "Suggests evidence-based interventions",
+              "Suggests practical next steps for your team",
               "Explains the likely drivers in plain language",
             ].map((t) => (
               <li key={t} className="flex items-start gap-3 text-[15px] text-foreground">
@@ -437,7 +362,7 @@ function AiInsights() {
                 <Sparkles className="h-3.5 w-3.5" />
                 Recommendation
               </span>
-              <span className="text-xs text-muted-foreground">Marketing team</span>
+              <span className="text-xs text-muted-foreground">Sample · Marketing team</span>
             </div>
 
             <div className="mt-6 flex items-baseline gap-3">
@@ -672,47 +597,6 @@ function Pricing() {
           .
         </p>
       </Reveal>
-    </section>
-  );
-}
-
-/* ─────────────────────────────────────────────────────────────
-   TESTIMONIAL
-   ───────────────────────────────────────────────────────────── */
-function Testimonial() {
-  return (
-    <section className="border-y border-border/60 bg-primary text-primary-foreground">
-      <div className="mx-auto max-w-5xl px-5 py-24 text-center md:py-32">
-        <Reveal>
-          <Building2 className="mx-auto h-8 w-8 opacity-70" />
-          <blockquote
-            style={serif}
-            className="mx-auto mt-8 max-w-3xl text-2xl leading-[1.35] md:text-[2.4rem] md:leading-[1.3]"
-          >
-            "Calmtree gave us a way to care that our people actually believe in. Response rates went
-            up because nobody feels watched — and for the first time, we're acting on what the data
-            tells us."
-          </blockquote>
-          <p className="mt-8 text-sm opacity-80">
-            Head of People &amp; Culture · 400-person organisation
-          </p>
-        </Reveal>
-
-        <div className="mx-auto mt-16 grid max-w-2xl grid-cols-3 gap-6 border-t border-primary-foreground/15 pt-12">
-          {[
-            { v: 87, suffix: "%", k: "Completion rate" },
-            { v: 3, suffix: "×", k: "More candid responses" },
-            { v: 18, suffix: "%", k: "Drop in reported stress" },
-          ].map((s) => (
-            <div key={s.k}>
-              <p style={serif} className="text-4xl md:text-5xl">
-                <Counter to={s.v} suffix={s.suffix} />
-              </p>
-              <p className="mt-2 text-xs opacity-75">{s.k}</p>
-            </div>
-          ))}
-        </div>
-      </div>
     </section>
   );
 }

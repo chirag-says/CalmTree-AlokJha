@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { SITE } from "@/data/constants";
+import { ASSESSMENT_LIST } from "@/data/assessments";
 import type {} from "@tanstack/react-start";
 
 interface SitemapEntry {
@@ -25,7 +26,18 @@ export const Route = createFileRoute("/sitemap.xml")({
           { path: "/privacy-policy", changefreq: "yearly", priority: "0.3" },
           { path: "/terms", changefreq: "yearly", priority: "0.3" },
           { path: "/for-organizations", changefreq: "monthly", priority: "0.8" },
-          // Note: /academy, /assessments, /resources are auth-protected and excluded.
+          { path: "/assessments", changefreq: "weekly", priority: "0.8" },
+          // Only free assessments are indexed — premium slugs still require
+          // login to take and have no anonymous-visitor value yet.
+          ...ASSESSMENT_LIST.filter((a) => a.meta.isFree).map(
+            (a): SitemapEntry => ({
+              path: `/assessments/${a.slug}`,
+              changefreq: "monthly",
+              priority: "0.7",
+            }),
+          ),
+          { path: "/resources", changefreq: "weekly", priority: "0.8" },
+          { path: "/academy", changefreq: "monthly", priority: "0.5" },
         ];
 
         const today = new Date().toISOString().split("T")[0];

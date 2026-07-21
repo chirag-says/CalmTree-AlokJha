@@ -1,7 +1,7 @@
 /**
  * Assessment Registry — single import to get any assessment.
  *
- * All 50 CalmTree assessments (Packs 1-5), organized by tier.
+ * All 100 Calmtree assessments (Packs 1-10), organized by tier.
  * Add a new assessment: import it, add to the map and list. Done.
  */
 
@@ -68,6 +68,66 @@ import { boundaryBalanceRelationships } from "./boundary-balance-relationships";
 import { difficultConversationReadiness } from "./difficult-conversation-readiness";
 import { repairAfterConflict } from "./repair-after-conflict";
 
+// ─── Pack 6: Founders and Entrepreneurship ───
+import { founderReadinessAssessment } from "./founder-readiness-assessment";
+import { entrepreneurialRiskOrientation } from "./entrepreneurial-risk-orientation";
+import { decisionMakingUnderUncertainty } from "./decision-making-under-uncertainty";
+import { coFounderWorkingAlignment } from "./co-founder-working-alignment";
+import { delegationReadiness } from "./delegation-readiness";
+import { controlAndTrustPattern } from "./control-and-trust-pattern";
+import { visionToExecutionBalance } from "./vision-to-execution-balance";
+import { founderBurnoutWarningSigns } from "./founder-burnout-warning-signs";
+import { fundraisingReadinessMindset } from "./fundraising-readiness-mindset";
+import { founderLearningAgility } from "./founder-learning-agility";
+
+// ─── Pack 7: Gen Z, Student Life and Digital Wellbeing ───
+import { digitalOverloadCheck } from "./digital-overload-check";
+import { socialComparisonPressure } from "./social-comparison-pressure";
+import { fomoResponsePattern } from "./fomo-response-pattern";
+import { onlineIdentityBalance } from "./online-identity-balance";
+import { careerUncertaintyTolerance } from "./career-uncertainty-tolerance";
+import { academicPressurePattern } from "./academic-pressure-pattern";
+import { externalValidationDependence } from "./external-validation-dependence";
+import { friendshipAndBelongingCheck } from "./friendship-and-belonging-check";
+import { attentionFragmentationCheck } from "./attention-fragmentation-check";
+import { independentLivingReadiness } from "./independent-living-readiness";
+
+// ─── Pack 8: Career Direction and Professional Growth ───
+import { careerClarityCheck } from "./career-clarity-check";
+import { roleFitReflection } from "./role-fit-reflection";
+import { strengthsInActionAssessment } from "./strengths-in-action-assessment";
+import { learningAgilityCheck } from "./learning-agility-check";
+import { careerChangeReadiness } from "./career-change-readiness";
+import { promotionReadiness } from "./promotion-readiness";
+import { networkingComfortAssessment } from "./networking-comfort-assessment";
+import { meaningAtWorkReflection } from "./meaning-at-work-reflection";
+import { sideHustleReadiness } from "./side-hustle-readiness";
+import { futureSkillsReadiness } from "./future-skills-readiness";
+
+// ─── Pack 9: Family, Parenting and Social Roles ───
+import { parentingCommunicationPattern } from "./parenting-communication-pattern";
+import { parentTeenConnectionCheck } from "./parent-teen-connection-check";
+import { familyBoundaryBalance } from "./family-boundary-balance";
+import { caregiverLoadReflection } from "./caregiver-load-reflection";
+import { familyConflictResponse } from "./family-conflict-response";
+import { intergenerationalExpectationsCheck } from "./intergenerational-expectations-check";
+import { parentingUnderStress } from "./parenting-under-stress";
+import { coupleToParentRoleBalance } from "./couple-to-parent-role-balance";
+import { siblingRelationshipPattern } from "./sibling-relationship-pattern";
+import { familyDecisionMakingStyle } from "./family-decision-making-style";
+
+// ─── Pack 10: Life Transitions, Meaning and Healthy Ageing ───
+import { psychologicalRetirementReadiness } from "./psychological-retirement-readiness";
+import { attitudeTowardsAgeing } from "./attitude-towards-ageing";
+import { purposeAfter50 } from "./purpose-after-50";
+import { lifeTransitionAdaptability } from "./life-transition-adaptability";
+import { identityBeyondWork } from "./identity-beyond-work";
+import { socialConnectionCheck } from "./social-connection-check";
+import { meaningAndLegacyReflection } from "./meaning-and-legacy-reflection";
+import { changeAndLossAdjustment } from "./change-and-loss-adjustment";
+import { healthBehaviourMotivation } from "./health-behaviour-motivation";
+import { reinventionReadiness } from "./reinvention-readiness";
+
 export type AnyAssessmentConfig = AssessmentConfig | ProfileAssessmentConfig;
 
 /** Lookup by slug */
@@ -127,6 +187,61 @@ export const ASSESSMENTS: Record<string, AssessmentConfig | ProfileAssessmentCon
   "boundary-balance-relationships": boundaryBalanceRelationships,
   "difficult-conversation-readiness": difficultConversationReadiness,
   "repair-after-conflict": repairAfterConflict,
+  // Pack 6: Founders and Entrepreneurship
+  "founder-readiness-assessment": founderReadinessAssessment,
+  "entrepreneurial-risk-orientation": entrepreneurialRiskOrientation,
+  "decision-making-under-uncertainty": decisionMakingUnderUncertainty,
+  "co-founder-working-alignment": coFounderWorkingAlignment,
+  "delegation-readiness": delegationReadiness,
+  "control-and-trust-pattern": controlAndTrustPattern,
+  "vision-to-execution-balance": visionToExecutionBalance,
+  "founder-burnout-warning-signs": founderBurnoutWarningSigns,
+  "fundraising-readiness-mindset": fundraisingReadinessMindset,
+  "founder-learning-agility": founderLearningAgility,
+  // Pack 7: Gen Z, Student Life and Digital Wellbeing
+  "digital-overload-check": digitalOverloadCheck,
+  "social-comparison-pressure": socialComparisonPressure,
+  "fomo-response-pattern": fomoResponsePattern,
+  "online-identity-balance": onlineIdentityBalance,
+  "career-uncertainty-tolerance": careerUncertaintyTolerance,
+  "academic-pressure-pattern": academicPressurePattern,
+  "external-validation-dependence": externalValidationDependence,
+  "friendship-and-belonging-check": friendshipAndBelongingCheck,
+  "attention-fragmentation-check": attentionFragmentationCheck,
+  "independent-living-readiness": independentLivingReadiness,
+  // Pack 8: Career Direction and Professional Growth
+  "career-clarity-check": careerClarityCheck,
+  "role-fit-reflection": roleFitReflection,
+  "strengths-in-action-assessment": strengthsInActionAssessment,
+  "learning-agility-check": learningAgilityCheck,
+  "career-change-readiness": careerChangeReadiness,
+  "promotion-readiness": promotionReadiness,
+  "networking-comfort-assessment": networkingComfortAssessment,
+  "meaning-at-work-reflection": meaningAtWorkReflection,
+  "side-hustle-readiness": sideHustleReadiness,
+  "future-skills-readiness": futureSkillsReadiness,
+  // Pack 9: Family, Parenting and Social Roles
+  "parenting-communication-pattern": parentingCommunicationPattern,
+  "parent-teen-connection-check": parentTeenConnectionCheck,
+  "family-boundary-balance": familyBoundaryBalance,
+  "caregiver-load-reflection": caregiverLoadReflection,
+  "family-conflict-response": familyConflictResponse,
+  "intergenerational-expectations-check": intergenerationalExpectationsCheck,
+  "parenting-under-stress": parentingUnderStress,
+  "couple-to-parent-role-balance": coupleToParentRoleBalance,
+  "sibling-relationship-pattern": siblingRelationshipPattern,
+  "family-decision-making-style": familyDecisionMakingStyle,
+  // Pack 10: Life Transitions, Meaning and Healthy Ageing
+  "psychological-retirement-readiness": psychologicalRetirementReadiness,
+  "attitude-towards-ageing": attitudeTowardsAgeing,
+  "purpose-after-50": purposeAfter50,
+  "life-transition-adaptability": lifeTransitionAdaptability,
+  "identity-beyond-work": identityBeyondWork,
+  "social-connection-check": socialConnectionCheck,
+  "meaning-and-legacy-reflection": meaningAndLegacyReflection,
+  "change-and-loss-adjustment": changeAndLossAdjustment,
+  "health-behaviour-motivation": healthBehaviourMotivation,
+  "reinvention-readiness": reinventionReadiness,
 };
 
 /** Ordered list — sorted by tier then order */
@@ -155,7 +270,16 @@ export function getAssessment(slug: string): AnyAssessmentConfig | undefined {
 /** Get assessments by pack */
 export function getAssessmentsByPack(pack: number): AnyAssessmentConfig[] {
   const ranges: Record<number, [number, number]> = {
-    1: [1, 10], 2: [11, 20], 3: [21, 30], 4: [31, 40], 5: [41, 50],
+    1: [1, 10],
+    2: [11, 20],
+    3: [21, 30],
+    4: [31, 40],
+    5: [41, 50],
+    6: [51, 60],
+    7: [61, 70],
+    8: [71, 80],
+    9: [81, 90],
+    10: [91, 100],
   };
   const range = ranges[pack];
   if (!range) return [];

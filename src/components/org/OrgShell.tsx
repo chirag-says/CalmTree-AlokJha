@@ -218,7 +218,7 @@ export function OrgShell({ children, org, orgs }: OrgShellProps) {
             <Menu className="h-5 w-5" />
           </button>
           <span className="ml-3 text-sm font-semibold">
-            {org ? org.name : "CalmTree Enterprise"}
+            {org ? org.name : "Calmtree Enterprise"}
           </span>
         </header>
 

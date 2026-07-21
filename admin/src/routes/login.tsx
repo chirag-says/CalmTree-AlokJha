@@ -17,7 +17,7 @@ import { ThemeToggle } from "@/components/admin/ThemeToggle";
 import { useAuth } from "@/hooks/useAuth";
 
 export const Route = createFileRoute("/login")({
-  head: () => ({ meta: [{ title: "Admin sign in — CalmTree" }] }),
+  head: () => ({ meta: [{ title: "Admin sign in — Calmtree" }] }),
   component: AdminLoginPage,
 });
 

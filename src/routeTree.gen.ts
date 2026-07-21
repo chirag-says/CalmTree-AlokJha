@@ -15,6 +15,7 @@ import { Route as PrivacyPolicyRouteImport } from './routes/privacy-policy'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as ForOrganizationsRouteImport } from './routes/for-organizations'
+import { Route as ForIndividualsRouteImport } from './routes/for-individuals'
 import { Route as DecodeYourMindRouteImport } from './routes/decode-your-mind'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as AboutRouteImport } from './routes/about'
@@ -67,6 +68,11 @@ const LoginRoute = LoginRouteImport.update({
 const ForOrganizationsRoute = ForOrganizationsRouteImport.update({
   id: '/for-organizations',
   path: '/for-organizations',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ForIndividualsRoute = ForIndividualsRouteImport.update({
+  id: '/for-individuals',
+  path: '/for-individuals',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DecodeYourMindRoute = DecodeYourMindRouteImport.update({
@@ -191,6 +197,7 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/contact': typeof ContactRoute
   '/decode-your-mind': typeof DecodeYourMindRoute
+  '/for-individuals': typeof ForIndividualsRoute
   '/for-organizations': typeof ForOrganizationsRoute
   '/login': typeof LoginRoute
   '/onboarding': typeof OnboardingRoute
@@ -219,6 +226,7 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/contact': typeof ContactRoute
   '/decode-your-mind': typeof DecodeYourMindRoute
+  '/for-individuals': typeof ForIndividualsRoute
   '/for-organizations': typeof ForOrganizationsRoute
   '/login': typeof LoginRoute
   '/onboarding': typeof OnboardingRoute
@@ -251,6 +259,7 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/contact': typeof ContactRoute
   '/decode-your-mind': typeof DecodeYourMindRoute
+  '/for-individuals': typeof ForIndividualsRoute
   '/for-organizations': typeof ForOrganizationsRoute
   '/login': typeof LoginRoute
   '/onboarding': typeof OnboardingRoute
@@ -283,6 +292,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/contact'
     | '/decode-your-mind'
+    | '/for-individuals'
     | '/for-organizations'
     | '/login'
     | '/onboarding'
@@ -311,6 +321,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/contact'
     | '/decode-your-mind'
+    | '/for-individuals'
     | '/for-organizations'
     | '/login'
     | '/onboarding'
@@ -342,6 +353,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/contact'
     | '/decode-your-mind'
+    | '/for-individuals'
     | '/for-organizations'
     | '/login'
     | '/onboarding'
@@ -374,6 +386,7 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   ContactRoute: typeof ContactRoute
   DecodeYourMindRoute: typeof DecodeYourMindRoute
+  ForIndividualsRoute: typeof ForIndividualsRoute
   ForOrganizationsRoute: typeof ForOrganizationsRoute
   LoginRoute: typeof LoginRoute
   OnboardingRoute: typeof OnboardingRoute
@@ -427,6 +440,13 @@ declare module '@tanstack/react-router' {
       path: '/for-organizations'
       fullPath: '/for-organizations'
       preLoaderRoute: typeof ForOrganizationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/for-individuals': {
+      id: '/for-individuals'
+      path: '/for-individuals'
+      fullPath: '/for-individuals'
+      preLoaderRoute: typeof ForIndividualsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/decode-your-mind': {
@@ -657,6 +677,7 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   ContactRoute: ContactRoute,
   DecodeYourMindRoute: DecodeYourMindRoute,
+  ForIndividualsRoute: ForIndividualsRoute,
   ForOrganizationsRoute: ForOrganizationsRoute,
   LoginRoute: LoginRoute,
   OnboardingRoute: OnboardingRoute,

@@ -19,16 +19,16 @@ function Header() {
 
   return (
     <header className="sticky top-0 z-40 backdrop-blur bg-background/80 border-b border-border/60">
-      <div className="mx-auto max-w-6xl px-5 h-16 flex items-center justify-between">
-        <span onClick={() => setOpen(false)}>
+      <div className="mx-auto max-w-7xl px-5 h-16 flex items-center justify-between gap-4">
+        <span className="shrink-0" onClick={() => setOpen(false)}>
           <Logo />
         </span>
-        <nav className="hidden lg:flex items-center gap-7">
+        <nav className="hidden xl:flex items-center gap-5 min-w-0 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {visibleLinks.map((l) => (
             <Link
               key={l.to}
               to={l.to}
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors whitespace-nowrap"
               activeProps={{ className: "text-foreground font-medium" }}
               activeOptions={{ exact: l.to === "/" }}
             >
@@ -36,8 +36,8 @@ function Header() {
             </Link>
           ))}
         </nav>
-        <div className="flex items-center gap-3">
-          <Button asChild size="sm" className="hidden lg:inline-flex rounded-full px-5">
+        <div className="flex items-center gap-3 shrink-0">
+          <Button asChild size="sm" className="hidden xl:inline-flex rounded-full px-5">
             {isAuthed ? (
               <Link to="/dashboard">
                 Go to Dashboard
@@ -53,7 +53,7 @@ function Header() {
           <UserMenu />
           <button
             aria-label="Menu"
-            className="lg:hidden inline-flex h-10 w-10 items-center justify-center rounded-lg hover:bg-muted"
+            className="xl:hidden inline-flex h-10 w-10 items-center justify-center rounded-lg hover:bg-muted"
             onClick={() => setOpen((v) => !v)}
           >
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -61,8 +61,8 @@ function Header() {
         </div>
       </div>
       {open && (
-        <div className="lg:hidden border-t border-border/60 bg-background">
-          <div className="mx-auto max-w-6xl px-5 py-3 flex flex-col gap-1">
+        <div className="xl:hidden border-t border-border/60 bg-background">
+          <div className="mx-auto max-w-7xl px-5 py-3 flex flex-col gap-1">
             {visibleLinks.map((l) => (
               <Link
                 key={l.to}

@@ -135,8 +135,7 @@ export const confidenceQuotient: AssessmentConfig = {
       color: "emerald",
       interpretation:
         "Your responses suggest a generally steady level of self-confidence, with a few areas that could become more consistent.",
-      nextStep:
-        "Strengthen the lowest subdomain while continuing to use your existing strengths.",
+      nextStep: "Strengthen the lowest subdomain while continuing to use your existing strengths.",
     },
     {
       min: 40,

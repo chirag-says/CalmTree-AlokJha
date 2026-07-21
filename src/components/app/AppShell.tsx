@@ -7,7 +7,7 @@
  */
 
 import { Link } from "@tanstack/react-router";
-import { useState, type ReactNode } from "react";
+import { useState, useEffect, type ReactNode } from "react";
 import {
   LayoutDashboard,
   ClipboardCheck,
@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { Logo } from "@/components/shared/Logo";
 import { useAuth } from "@/hooks/useAuth";
+import { useResultPersistence } from "@/hooks/useResultPersistence";
 import { toast } from "sonner";
 
 const NAV_ITEMS = [
@@ -108,6 +109,18 @@ function Sidebar({ onClose }: { onClose?: () => void }) {
 
 export function AppShell({ children }: { children: ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { user } = useAuth();
+  const { claimStashed } = useResultPersistence();
+
+  // Self-heal: if a result ever failed to save (or was stashed anonymously
+  // and never claimed), retry it the next time the signed-in app shell loads.
+  useEffect(() => {
+    if (!user) return;
+    claimStashed().then((res) => {
+      if (res.claimed) toast.success("Synced a saved assessment result.");
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
 
   return (
     <div className="min-h-screen flex bg-background">
@@ -142,7 +155,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           >
             <Menu className="h-5 w-5" />
           </button>
-          <span className="ml-3 text-sm font-semibold">CalmTree</span>
+          <span className="ml-3 text-sm font-semibold">Calmtree</span>
         </header>
 
         <main className="flex-1 px-5 py-8 md:px-8 md:py-10 max-w-6xl w-full mx-auto">

@@ -3,7 +3,7 @@
  *
  * The project id and host are NOT secrets (only the Personal API Key is, and
  * that stays server-side). These power "Open in PostHog" convenience links.
- * Overridable via VITE_ vars; defaults match the CalmTree project.
+ * Overridable via VITE_ vars; defaults match the Calmtree project.
  */
 
 const PROJECT_ID = import.meta.env.VITE_POSTHOG_PROJECT_ID || "493249";

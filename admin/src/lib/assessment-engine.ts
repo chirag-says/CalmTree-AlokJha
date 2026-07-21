@@ -1,5 +1,5 @@
 /**
- * CalmTree Assessment Scoring Engine v2
+ * Calmtree Assessment Scoring Engine v2
  *
  * Pure functions. No side effects. No UI. No network calls.
  *

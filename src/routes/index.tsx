@@ -43,15 +43,19 @@ import {
 } from "lucide-react";
 import type { AssessmentIcon, ProductCategory } from "@/data/assessments/types";
 
-// Six of the ten product categories — enough to speak to each of the brief's
-// audience segments without crowding the hero. Full set lives on /assessments.
+// All ten Calmtree product categories — the full spread of what the 100
+// assessments cover, surfaced right on the landing page.
 const LANDING_CATEGORY_CHIPS: { label: string; value: ProductCategory }[] = [
   { label: "Self-Development", value: "Self-Awareness & Personality" },
+  { label: "Emotional Strength", value: "Emotional Strength & Everyday Mind" },
+  { label: "Relationships", value: "Relationships & Emotional Connection" },
   { label: "Workplace", value: "Workplace Effectiveness" },
   { label: "Leadership", value: "Leadership & Teams" },
   { label: "Founders", value: "Founders & Entrepreneurship" },
-  { label: "Parenting", value: "Family & Parenting" },
+  { label: "Gen Z & Digital Life", value: "Gen Z & Digital Life" },
   { label: "Career", value: "Career Direction" },
+  { label: "Parenting", value: "Family & Parenting" },
+  { label: "Life Transitions", value: "Life Transitions & Healthy Ageing" },
 ];
 
 export const Route = createFileRoute("/")({
@@ -71,6 +75,10 @@ export const Route = createFileRoute("/")({
   }),
   component: Index,
 });
+
+// Assessments anyone can take without signing in (config.meta.isFree) —
+// surfaced directly on the landing page so the free path is discoverable.
+const FREE_ASSESSMENTS = ASSESSMENT_LIST.filter((a) => a.meta.isFree);
 
 const ICON_MAP: Record<AssessmentIcon, React.ComponentType<{ className?: string }>> = {
   flame: Flame,
@@ -277,6 +285,41 @@ function Index() {
               </div>
             </article>
           ))}
+        </div>
+      </Section>
+
+      {/* ═══════════════════════════════════════════════
+          FREE ASSESSMENTS — no sign-up needed, straight into the runner
+         ═══════════════════════════════════════════════ */}
+      <Section
+        eyebrow="Try It Free"
+        title="Take these assessments right now — no sign-up needed."
+        action={{ to: "/assessments", label: "See all assessments" }}
+      >
+        <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-5">
+          {FREE_ASSESSMENTS.slice(0, 10).map((a) => {
+            const Icon = ICON_MAP[a.meta.icon] ?? ClipboardCheck;
+            return (
+              <Link
+                key={a.slug}
+                to="/assessments/$slug"
+                params={{ slug: a.slug }}
+                className="group rounded-2xl border border-border bg-card p-5 text-center hover:shadow-[var(--shadow-soft)] hover:border-primary/30 transition-all duration-300 hover:-translate-y-0.5"
+              >
+                <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-0.5 text-[11px] font-medium text-primary mb-2">
+                  Free
+                </span>
+                <Icon className="h-6 w-6 text-primary mx-auto" />
+                <h3 className="mt-3 text-sm font-semibold group-hover:text-primary transition-colors">
+                  {a.meta.title}
+                </h3>
+                <div className="mt-2 flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
+                  <Timer className="h-3 w-3" />
+                  {a.meta.duration}
+                </div>
+              </Link>
+            );
+          })}
         </div>
       </Section>
 

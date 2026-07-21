@@ -9,12 +9,12 @@ export const Route = createFileRoute("/terms")({
       {
         name: "description",
         content:
-          "Terms and conditions for using CalmTree's psychology education platform, including disclaimers, intellectual property, and user responsibilities.",
+          "Terms and conditions for using Calmtree's psychology education platform, including disclaimers, intellectual property, and user responsibilities.",
       },
       { property: "og:title", content: `Terms of Use | ${SITE.name}` },
       {
         property: "og:description",
-        content: "The rules and responsibilities for using CalmTree's platform and content.",
+        content: "The rules and responsibilities for using Calmtree's platform and content.",
       },
     ],
   }),
@@ -36,12 +36,12 @@ function Page() {
       <PageHeader
         eyebrow="Legal"
         title="Terms of Use"
-        description="By using CalmTree, you agree to these terms. Please read them carefully."
+        description="By using Calmtree, you agree to these terms. Please read them carefully."
       />
       <article className="mx-auto max-w-3xl px-5 py-12 md:py-16">
         <Section title="1. Acceptance of Terms">
           <p>
-            By accessing or using the CalmTree website, mobile content, newsletters, courses,
+            By accessing or using the Calmtree website, mobile content, newsletters, courses,
             assessments, and any other services (collectively, the "Services"), you agree to be
             bound by these Terms of Use. If you do not agree, please do not use the Services.
           </p>
@@ -49,13 +49,13 @@ function Page() {
 
         <Section title="2. Nature of Our Services">
           <p>
-            CalmTree is a <strong>psychology education and self-discovery platform</strong>. Our
+            Calmtree is a <strong>psychology education and self-discovery platform</strong>. Our
             content, including videos, articles, courses, assessments, and workbooks, is designed
             for educational and informational purposes only.
           </p>
           <p>
             <strong className="text-foreground">
-              CalmTree is not a medical or mental health service provider.
+              Calmtree is not a medical or mental health service provider.
             </strong>{" "}
             We do not diagnose, treat, or provide therapy for any mental health condition. If you
             are experiencing a mental health crisis or need professional support, please contact a
@@ -65,7 +65,7 @@ function Page() {
 
         <Section title="3. No Medical or Counselling Advice">
           <p>
-            Nothing on CalmTree constitutes medical, psychological, or professional counselling
+            Nothing on Calmtree constitutes medical, psychological, or professional counselling
             advice. The information provided is general in nature and may not apply to your specific
             situation. Always seek the advice of a qualified professional regarding any mental
             health concerns.
@@ -94,8 +94,8 @@ function Page() {
 
         <Section title="5. Intellectual Property">
           <p>
-            All content on CalmTree, including text, graphics, logos, videos, courses, assessments,
-            workbooks, and software, is the property of CalmTree or its content creators and is
+            All content on Calmtree, including text, graphics, logos, videos, courses, assessments,
+            workbooks, and software, is the property of Calmtree or its content creators and is
             protected by copyright, trademark, and other intellectual property laws.
           </p>
           <p>
@@ -116,20 +116,20 @@ function Page() {
 
         <Section title="7. Limitation of Liability">
           <p>
-            To the fullest extent permitted by law, CalmTree and its founders, employees, and
+            To the fullest extent permitted by law, Calmtree and its founders, employees, and
             affiliates shall not be liable for any indirect, incidental, special, consequential, or
             punitive damages arising out of or related to your use of the Services, even if advised
             of the possibility of such damages.
           </p>
           <p>
             Our total liability to you for any claim arising from these Terms shall not exceed the
-            amount you paid to CalmTree, if any, in the twelve (12) months preceding the claim.
+            amount you paid to Calmtree, if any, in the twelve (12) months preceding the claim.
           </p>
         </Section>
 
         <Section title="8. Indemnification">
           <p>
-            You agree to indemnify and hold harmless CalmTree and its team from any claims, damages,
+            You agree to indemnify and hold harmless Calmtree and its team from any claims, damages,
             losses, or expenses (including legal fees) arising out of your use of the Services or
             violation of these Terms.
           </p>

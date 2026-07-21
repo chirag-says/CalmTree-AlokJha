@@ -49,7 +49,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import type { TimelineEvent } from "@/server/functions/analytics.functions";
 
 export const Route = createFileRoute("/admin/analytics")({
-  head: () => ({ meta: [{ title: "Analytics — CalmTree Admin" }] }),
+  head: () => ({ meta: [{ title: "Analytics — Calmtree Admin" }] }),
   component: AdminAnalyticsPage,
 });
 

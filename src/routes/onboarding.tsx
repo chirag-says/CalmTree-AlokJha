@@ -51,7 +51,7 @@ const searchSchema = z.object({
 export const Route = createFileRoute("/onboarding")({
   validateSearch: searchSchema,
   head: () => ({
-    meta: [{ title: "Welcome to CalmTree | Personalize Your Experience" }],
+    meta: [{ title: "Welcome to Calmtree | Personalize Your Experience" }],
   }),
   component: OnboardingPage,
 });
@@ -128,7 +128,7 @@ function NameStep({
     <div className="space-y-6">
       <div>
         <p className="text-xs font-medium tracking-[0.15em] uppercase text-primary mb-2">
-          Welcome to CalmTree
+          Welcome to Calmtree
         </p>
         <h2 className="text-2xl font-semibold">Let's personalize your experience</h2>
         <p className="mt-2 text-sm text-muted-foreground">

@@ -58,7 +58,7 @@ import {
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
 
 export const Route = createFileRoute("/admin/orgs/$orgId")({
-  head: () => ({ meta: [{ title: "Organization Detail — CalmTree Admin" }] }),
+  head: () => ({ meta: [{ title: "Organization Detail — Calmtree Admin" }] }),
   component: OrgDetailPage,
 });
 
@@ -483,7 +483,7 @@ function AddMemberDialog({ orgId, onClose }: { orgId: string; onClose: () => voi
         <DialogHeader>
           <DialogTitle>Add Member</DialogTitle>
           <DialogDescription>
-            Add a CalmTree user to this organization by their email address.
+            Add a Calmtree user to this organization by their email address.
             They must have an existing account.
           </DialogDescription>
         </DialogHeader>

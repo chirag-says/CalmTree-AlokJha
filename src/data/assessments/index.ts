@@ -286,30 +286,29 @@ export function getAssessmentsByPack(pack: number): AnyAssessmentConfig[] {
   return ASSESSMENT_LIST.filter((a) => a.order >= range[0] && a.order <= range[1]);
 }
 
-/** Tier metadata for display */
+/**
+ * Tier metadata for display — a depth/positioning label, not a price.
+ * Individuals don't buy a tier directly: Discovery is free, and Growth/
+ * Professional assessments are unlocked a whole product category at a time.
+ * See category-pricing.ts for actual prices.
+ */
 export const TIER_INFO: Record<
   AssessmentTier,
-  { label: string; description: string; price: string; priceInr: number | null; color: string }
+  { label: string; description: string; color: string }
 > = {
   discovery: {
     label: "Discovery",
     description: "Free self-checks to understand where you are today.",
-    price: "Free",
-    priceInr: null,
     color: "green",
   },
   growth: {
     label: "Growth",
     description: "Deeper assessments with detailed reports and insights.",
-    price: "₹99",
-    priceInr: 99,
     color: "blue",
   },
   professional: {
     label: "Professional",
     description: "Premium assessments for leaders, teams, and career growth.",
-    price: "₹299",
-    priceInr: 299,
     color: "purple",
   },
 };

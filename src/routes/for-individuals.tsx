@@ -41,7 +41,8 @@ import {
 } from "@/components/ui/accordion";
 import { SiteLayout } from "@/components/SiteLayout";
 import { SITE } from "@/data/constants";
-import { ASSESSMENT_LIST, TIER_INFO } from "@/data/assessments";
+import { ASSESSMENT_LIST } from "@/data/assessments";
+import { getCategoryPrice } from "@/data/category-pricing";
 import { ScoreGauge } from "@/components/assessment/ScoreGauge";
 import { Reveal, Stagger, RevealItem, Float } from "@/components/org/marketing/motion-primitives";
 import type { ProductCategory } from "@/data/assessments/types";
@@ -100,7 +101,12 @@ const CATEGORY_META: { value: ProductCategory; label: string; icon: typeof User 
 const CATEGORY_COUNTS = CATEGORY_META.map((c) => ({
   ...c,
   count: ASSESSMENT_LIST.filter((a) => a.meta.productCategory === c.value).length,
+  price: getCategoryPrice(c.value),
 }));
+
+const PRICED_CATEGORIES = CATEGORY_COUNTS.filter(
+  (c): c is typeof c & { price: number } => c.price !== null,
+).sort((a, b) => a.price - b.price);
 
 const FREE_EXAMPLES = ASSESSMENT_LIST.filter((a) => a.meta.isFree)
   .slice(0, 4)
@@ -118,7 +124,7 @@ const FAQS = [
   },
   {
     q: "What's actually free?",
-    a: `Every Discovery-tier assessment is completely free, no card required — things like ${FREE_EXAMPLES}. Growth (₹99) and Professional (₹299) assessments unlock a deeper dimension breakdown and a more specific next step.`,
+    a: `Every Discovery-tier assessment is completely free, no card required — things like ${FREE_EXAMPLES}. The full dimension breakdown on deeper assessments unlocks by category (see pricing below) — you're never charged per assessment.`,
   },
   {
     q: "Can I retake an assessment?",
@@ -626,7 +632,9 @@ function Categories() {
                 <h3 className="mt-4 text-[15px] font-medium text-foreground group-hover:text-primary">
                   {c.label}
                 </h3>
-                <p className="mt-1 text-xs text-muted-foreground">{c.count} assessments</p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  {c.count} assessments · {c.price !== null ? `From ₹${c.price}` : "Free"}
+                </p>
               </Link>
             </RevealItem>
           ))}
@@ -637,80 +645,52 @@ function Categories() {
 }
 
 /* ─────────────────────────────────────────────────────────────
-   PRICING
+   PRICING — buy a whole category at once, not per assessment
    ───────────────────────────────────────────────────────────── */
 function Pricing() {
-  const tiers = Object.entries(TIER_INFO) as [
-    keyof typeof TIER_INFO,
-    (typeof TIER_INFO)[keyof typeof TIER_INFO],
-  ][];
   return (
     <section className="mx-auto max-w-6xl px-5 py-24 md:py-32">
       <Reveal className="mx-auto max-w-2xl text-center">
         <p className="text-xs font-medium uppercase tracking-[0.2em] text-primary">Pricing</p>
         <h2 className="mt-4 text-3xl tracking-[-0.01em] text-foreground md:text-5xl">
-          Free to start. Honest about the rest.
+          Free to start. One price per category after that.
         </h2>
         <p className="mt-4 text-lg leading-relaxed text-muted-foreground">
-          Every assessment sits on one of three tiers. No subscription — pay once, per assessment,
-          only for the depth you want.
+          No per-assessment charges, no subscription. One purchase unlocks every deeper assessment
+          in a category — current and future — for as long as you have access.
         </p>
       </Reveal>
 
-      <div className="mt-16 grid gap-5 md:grid-cols-3 md:items-center">
-        {tiers.map(([key, tier]) => {
-          const featured = key === "growth";
-          const count = ASSESSMENT_LIST.filter((a) => a.tier === key).length;
-          return (
-            <Reveal key={key} delay={featured ? 0.06 : 0} y={featured ? 20 : 28}>
-              <div
-                className={
-                  "relative flex flex-col rounded-[28px] border p-8 " +
-                  (featured
-                    ? "border-primary/30 bg-card shadow-[0_40px_90px_-50px_rgba(30,42,34,0.5)] md:scale-[1.04]"
-                    : "border-border bg-card/70")
-                }
-              >
-                {featured && (
-                  <span className="absolute -top-3 left-8 inline-flex items-center rounded-full bg-primary px-3.5 py-1 text-xs font-medium text-primary-foreground">
-                    Most popular
-                  </span>
-                )}
-                <p className="text-sm font-medium text-muted-foreground">{tier.label}</p>
-                <div className="mt-5 flex items-baseline gap-1.5">
-                  <span style={serif} className="text-5xl text-foreground">
-                    {tier.price}
-                  </span>
-                  {tier.priceInr && (
-                    <span className="text-sm text-muted-foreground">per assessment</span>
-                  )}
-                </div>
-                <p className="mt-3 text-lg text-foreground">
-                  {count} assessment{count === 1 ? "" : "s"}
-                </p>
-                <p className="mt-4 flex-1 text-sm leading-relaxed text-muted-foreground">
-                  {tier.description}
-                </p>
-                <Button
-                  asChild
-                  size="lg"
-                  variant={featured ? "default" : "outline"}
-                  className={"mt-7 h-12 rounded-full " + (featured ? "" : "border-border bg-card")}
-                >
-                  <Link to="/assessments">
-                    Browse assessments
-                    <ArrowRight className="h-4 w-4" />
-                  </Link>
-                </Button>
+      <Stagger className="mt-16 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {PRICED_CATEGORIES.map((c) => (
+          <RevealItem key={c.value}>
+            <div className="flex h-full flex-col rounded-[24px] border border-border bg-card p-6">
+              <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                <c.icon className="h-5 w-5" />
+              </span>
+              <h3 className="mt-4 text-[15px] font-medium text-foreground">{c.label}</h3>
+              <p className="mt-1 text-xs text-muted-foreground">{c.count} assessments</p>
+              <div className="mt-4 flex items-baseline gap-1.5">
+                <span style={serif} className="text-3xl text-foreground">
+                  ₹{c.price}
+                </span>
+                <span className="text-xs text-muted-foreground">one-time, whole category</span>
               </div>
-            </Reveal>
-          );
-        })}
-      </div>
+              <Button asChild variant="outline" className="mt-5 rounded-full border-border bg-card">
+                <Link to="/assessments" search={{ category: c.value }}>
+                  Browse category
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </Button>
+            </div>
+          </RevealItem>
+        ))}
+      </Stagger>
 
       <Reveal delay={0.1}>
         <p className="mt-10 text-center text-sm text-muted-foreground">
-          Secure checkout via Razorpay. Sending assessments to a whole team instead?{" "}
+          Gen Z & Digital Life is entirely free — nothing to unlock. Secure checkout via Razorpay.
+          Sending assessments to a whole team instead?{" "}
           <Link to="/for-organizations" className="text-primary underline-offset-4 hover:underline">
             See Calmtree for organizations
           </Link>

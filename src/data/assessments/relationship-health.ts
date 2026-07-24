@@ -26,7 +26,7 @@ export const relationshipHealth: AssessmentConfig = {
     questionCount: 10,
     icon: "heart",
     productCategory: "Relationships & Emotional Connection",
-    isFree: true,
+    isFree: false,
   },
   instructions:
     "Rate each statement according to your typical experience during the past four weeks. 1 = Almost Never; 2 = Rarely; 3 = Sometimes; 4 = Often; 5 = Almost Always.",

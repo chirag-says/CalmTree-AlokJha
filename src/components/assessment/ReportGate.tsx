@@ -5,12 +5,15 @@
  *
  * States:
  *   1. No user → inline EmailGateForm ("Enter email to see your full breakdown")
- *   2. Logged in, assessment tier not unlocked → upsell card + Razorpay button
+ *   2. Logged in, assessment tier not unlocked → CategoryUnlockCard (defensive —
+ *      AssessmentRunner already blocks starting a paid assessment before purchase,
+ *      so this normally only matters for free-tier's post-completion email gate)
  *   3. Unlocked → renders {children} (existing breakdown UI unchanged)
  *
  * After OTP verification a useEffect claims any stashed result.
  * The free teaser (archetype label + one-line interpretation + gauge) is always
- * visible — that lives *above* this gate in the result view, not inside it.
+ * visible for Discovery-tier assessments — that lives *above* this gate in the
+ * result view, not inside it.
  */
 
 import { useEffect, useState } from "react";
@@ -18,8 +21,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useEntitlement } from "@/hooks/useEntitlement";
 import { useResultPersistence } from "@/hooks/useResultPersistence";
 import { EmailGateForm } from "@/components/auth/EmailGateForm";
-import { Lock, ArrowRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { CategoryUnlockCard } from "./CategoryUnlockCard";
 import type { AnyAssessmentConfig } from "@/data/assessments";
 
 interface ReportGateProps {
@@ -77,56 +79,14 @@ export function ReportGate({ config, children }: ReportGateProps) {
     );
   }
 
-  // Logged in, but needs an upgrade (paid tier)
+  // Logged in, but needs an upgrade (paid tier). In normal use AssessmentRunner
+  // already blocks starting a paid assessment before an entitlement exists, so
+  // this is a defensive fallback (e.g. an entitlement lost between start and
+  // finish) rather than the primary gate.
   if (reason === "upgrade-required") {
-    return <UpgradeGate config={config} />;
+    return <CategoryUnlockCard config={config} reason="upgrade-required" />;
   }
 
   // Fallback — should not be reached, but render nothing rather than crashing
   return null;
-}
-
-// ─── Upsell card ─────────────────────────────────────────────────────────────
-
-import { TIER_INFO } from "@/data/assessments";
-import { RazorpayCheckoutButton } from "@/components/payments/RazorpayCheckoutButton";
-
-function UpgradeGate({ config }: { config: AnyAssessmentConfig }) {
-  const tier = config.tier;
-  const tierInfo = TIER_INFO[tier];
-
-  return (
-    <div className="rounded-2xl border-2 border-primary/20 bg-primary/[0.03] p-6 md:p-8 text-center">
-      <div className="flex justify-center mb-4">
-        <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-          <Lock className="h-5 w-5 text-primary" />
-        </div>
-      </div>
-      <h3 className="text-xl font-semibold mb-2">Unlock the Full Report</h3>
-      <p className="text-sm text-muted-foreground mb-1">
-        The dimension breakdown is part of the <strong>{tierInfo.label}</strong> tier.
-      </p>
-      <p className="text-sm text-muted-foreground mb-6">
-        One purchase unlocks all <strong>{config.meta.productCategory}</strong> assessments.
-      </p>
-
-      <RazorpayCheckoutButton
-        productType="assessment_category"
-        tier={tier as "growth" | "professional"}
-        productCategory={config.meta.productCategory}
-        label={`Unlock for ${tierInfo.price}`}
-        size="lg"
-        className="gap-2"
-        onSuccess={() => {
-          // No-op: RazorpayCheckoutButton verifies the payment synchronously,
-          // writes the entitlement, then calls invalidateEntitlementCache(),
-          // which notifies this mounted gate to refetch and unlock in place.
-        }}
-      />
-
-      <p className="text-xs text-muted-foreground mt-4">
-        Secure payment via Razorpay · Instant access · No subscription
-      </p>
-    </div>
-  );
 }

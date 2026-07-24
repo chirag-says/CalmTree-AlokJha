@@ -24,7 +24,9 @@ import {
 import { scoreAssessment } from "@/lib/assessment-engine";
 import { ArrowLeft, ArrowRight, Clock, Lock, Sparkles, Check } from "lucide-react";
 import { TIER_BADGE } from "./TierBadge";
+import { CategoryUnlockCard } from "./CategoryUnlockCard";
 import { useAuth } from "@/hooks/useAuth";
+import { useEntitlement } from "@/hooks/useEntitlement";
 import { useResultPersistence } from "@/hooks/useResultPersistence";
 import { haptic } from "@/lib/haptics";
 import { project, CARD_SPRING, CARD_SLIDE, SWIPE_COMMIT } from "@/lib/fluid";
@@ -77,6 +79,11 @@ export function ProfileRunner({ config, onComplete, initialAnswers }: ProfileRun
   const { saveIfAuthed, claimStashed } = useResultPersistence();
   const posthog = usePostHog();
   const [showSignupPrompt, setShowSignupPrompt] = useState(false);
+
+  // See AssessmentRunner — same category-purchase gate, same B2B exemption.
+  const isIndividualFlow = !onComplete;
+  const entitlement = useEntitlement(config);
+  const gated = isIndividualFlow && !config.meta.isFree && !entitlement.hasAccess;
 
   const { profileQuestions } = config;
   const currentQ = profileQuestions[currentIndex];
@@ -244,10 +251,20 @@ export function ProfileRunner({ config, onComplete, initialAnswers }: ProfileRun
           <p className="text-sm text-muted-foreground">{config.instructions}</p>
         </div>
 
-        <Button size="lg" className="h-12 px-8" onClick={handleStart}>
-          Start Assessment
-          <ArrowRight className="h-4 w-4" />
-        </Button>
+        {gated ? (
+          entitlement.loading ? (
+            <div className="h-12 flex items-center justify-center text-sm text-muted-foreground animate-pulse">
+              Checking access…
+            </div>
+          ) : (
+            <CategoryUnlockCard config={config} reason={entitlement.reason} />
+          )
+        ) : (
+          <Button size="lg" className="h-12 px-8" onClick={handleStart}>
+            Start Assessment
+            <ArrowRight className="h-4 w-4" />
+          </Button>
+        )}
 
         <p className="text-xs text-muted-foreground mt-4">
           Calmtree Original Assessment™ · Non-clinical · For self-awareness only

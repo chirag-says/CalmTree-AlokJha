@@ -4,7 +4,8 @@
  * One credit = one assessment invitation sent to one employee. Packs are the
  * self-serve purchase unit. Price is authoritative HERE and on the server —
  * the client never sends an amount; the order handler looks the price up by id
- * (mirrors how TIER_INFO prices assessment tiers in payments.functions.ts).
+ * (mirrors how category-pricing.ts prices individual category purchases in
+ * payments.functions.ts).
  *
  * Prices are placeholders for the demo — adjust freely; nothing else changes.
  */

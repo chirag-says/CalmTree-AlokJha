@@ -8,9 +8,9 @@
  * "payment processing" state. Real entitlement/purchase rows are written by the webhook.
  * After the callback, we invalidate the entitlement cache so the UI re-checks.
  *
- * Two product shapes (see payments.functions.ts's CreateOrderSchema for why they're
- * kept separate): assessment_category needs both `tier` (prices it) and
- * `productCategory` (what it unlocks); ebook just needs its id.
+ * Product shapes (see payments.functions.ts's CreateOrderSchema for why they're
+ * kept separate): assessment_category is priced per category (category-pricing.ts)
+ * and unlocks every Growth/Professional assessment in it; ebook just needs its id.
  */
 
 import { useState, useCallback } from "react";
@@ -69,7 +69,7 @@ function loadRazorpayScript(): Promise<boolean> {
 }
 
 type RazorpayCheckoutButtonProps = (
-  | { productType: "assessment_category"; tier: "growth" | "professional"; productCategory: string }
+  | { productType: "assessment_category"; productCategory: string }
   | { productType: "ebook"; productRef: string }
   | { productType: "credit_pack"; packId: string; orgId: string }
 ) & {
@@ -121,7 +121,6 @@ export function RazorpayCheckoutButton(props: RazorpayCheckoutButtonProps) {
               : {
                   accessToken: session.access_token,
                   productType: "assessment_category",
-                  tier: props.tier,
                   productCategory: props.productCategory,
                 },
       });
@@ -152,7 +151,7 @@ export function RazorpayCheckoutButton(props: RazorpayCheckoutButtonProps) {
             ? "Ebook Purchase"
             : props.productType === "credit_pack"
               ? "Assessment Credits"
-              : "Assessment Tier Access",
+              : "Assessment Category Access",
         prefill: { email: user.email },
         theme: { color: "#166534" }, // matches Calmtree primary green
         handler: async (response) => {

@@ -9,7 +9,7 @@
  */
 
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   ArrowLeft,
@@ -19,6 +19,8 @@ import {
   Copy,
   Check,
   ExternalLink,
+  Upload,
+  Download,
 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { useAuth } from "@/hooks/useAuth";
@@ -35,6 +37,22 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { extractOrg, type GetMyOrgsResult } from "@/types/org-types";
+
+/** Keep in sync with DEMO_MAX_INVITES in campaigns.functions.ts. */
+const MAX_INVITES = 100;
+
+/**
+ * Emails never contain whitespace, commas, semicolons, or quotes, so one regex
+ * sweep over the raw file text pulls them out regardless of column order,
+ * header row, quoting, or delimiter — CSV, TSV, and pasted text all work.
+ */
+const EMAIL_TOKEN_RE = /[^\s,;"'<>()]+@[^\s,;"'<>()]+\.[^\s,;"'<>()]+/g;
+
+function extractEmailsFromText(raw: string): string[] {
+  return (raw.match(EMAIL_TOKEN_RE) ?? []).map((e) => e.trim().toLowerCase());
+}
+
+const SAMPLE_CSV = "email\nfirst.person@company.com\nsecond.person@company.com\n";
 
 export const Route = createFileRoute("/org/campaigns/new")({
   component: NewCampaignPage,
@@ -70,6 +88,71 @@ function NewCampaignPage() {
     setTimeout(() => setCopiedIdx(null), 2000);
   }, []);
 
+  // ─── CSV / file import ─────────────────────────────────────────────────────
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Merge emails parsed from a file into the textarea, skipping ones already
+  // present. Everything downstream (validation, dedupe, credit check) is reused.
+  const importEmails = useCallback(
+    (raw: string, sourceLabel: string) => {
+      const found = extractEmailsFromText(raw);
+      if (found.length === 0) {
+        toast.error("No email addresses found in that file.");
+        return;
+      }
+      const existing = new Set(
+        emailsText
+          .split(/[\n,;]+/)
+          .map((e) => e.trim().toLowerCase())
+          .filter(Boolean),
+      );
+      const fresh = Array.from(new Set(found)).filter((e) => !existing.has(e));
+      if (fresh.length === 0) {
+        toast.info(`All ${found.length} emails in ${sourceLabel} were already added.`);
+        return;
+      }
+      const skipped = found.length - fresh.length;
+      const base = emailsText.trim();
+      setEmailsText((base ? base + "\n" : "") + fresh.join("\n"));
+      toast.success(
+        `${fresh.length} email${fresh.length !== 1 ? "s" : ""} added from ${sourceLabel}` +
+          (skipped > 0 ? ` · ${skipped} duplicate${skipped !== 1 ? "s" : ""} skipped` : ""),
+      );
+    },
+    [emailsText],
+  );
+
+  const onFileChange = useCallback(
+    async (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      e.target.value = ""; // allow re-selecting the same file
+      if (!file) return;
+      const name = file.name.toLowerCase();
+      if (name.endsWith(".xlsx") || name.endsWith(".xls")) {
+        toast.error(
+          "Excel files aren't read directly. In Excel: File → Save As → CSV, then import that.",
+        );
+        return;
+      }
+      try {
+        importEmails(await file.text(), file.name);
+      } catch {
+        toast.error("Couldn't read that file.");
+      }
+    },
+    [importEmails],
+  );
+
+  const downloadSampleCsv = useCallback(() => {
+    const blob = new Blob([SAMPLE_CSV], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "calmtree-invite-template.csv";
+    a.click();
+    URL.revokeObjectURL(url);
+  }, []);
+
   // Group assessments by category for the picker
   const grouped = useMemo(() => {
     const groups: Record<string, { slug: string; title: string }[]> = {};
@@ -96,6 +179,7 @@ function NewCampaignPage() {
   const creditsNeeded = uniqueEmails.length;
   const creditsAvailable = org?.creditBalance ?? 0;
   const hasEnoughCredits = creditsAvailable >= creditsNeeded;
+  const overLimit = uniqueEmails.length > MAX_INVITES;
 
   // Create draft mutation
   const createMutation = useMutation({
@@ -368,21 +452,54 @@ function NewCampaignPage() {
 
           {/* Email input */}
           <div>
-            <label className="block text-sm font-medium text-foreground mb-1.5">
-              Employee Emails *
-            </label>
+            <div className="flex items-center justify-between gap-3 flex-wrap mb-1.5">
+              <label htmlFor="campaign-emails" className="text-sm font-medium text-foreground">
+                Employee Emails *
+              </label>
+              <div className="flex items-center gap-3">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".csv,.tsv,.txt,text/csv,text/plain"
+                  className="sr-only"
+                  onChange={onFileChange}
+                />
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="inline-flex items-center gap-1.5 text-xs font-medium text-primary hover:text-primary/80 transition-colors"
+                >
+                  <Upload className="h-3.5 w-3.5" />
+                  Import CSV
+                </button>
+                <button
+                  type="button"
+                  onClick={downloadSampleCsv}
+                  className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <Download className="h-3.5 w-3.5" />
+                  Sample
+                </button>
+              </div>
+            </div>
             <textarea
               id="campaign-emails"
               value={emailsText}
               onChange={(e) => setEmailsText(e.target.value)}
               rows={6}
-              placeholder="Paste email addresses, one per line (or comma/semicolon separated)"
+              placeholder="Paste email addresses, one per line (or comma/semicolon separated) — or import a CSV"
               className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring font-mono"
             />
             <p className="mt-1 text-xs text-muted-foreground">
               {uniqueEmails.length} unique valid email{uniqueEmails.length !== 1 ? "s" : ""}{" "}
               detected
             </p>
+            {overLimit && (
+              <p className="mt-1 text-xs text-amber-700">
+                Up to {MAX_INVITES} invites per campaign. Remove{" "}
+                {uniqueEmails.length - MAX_INVITES} to launch.
+              </p>
+            )}
           </div>
 
           {/* Credit check */}
@@ -426,7 +543,12 @@ function NewCampaignPage() {
             </button>
             <button
               onClick={() => launchMutation.mutate()}
-              disabled={uniqueEmails.length === 0 || !hasEnoughCredits || launchMutation.isPending}
+              disabled={
+                uniqueEmails.length === 0 ||
+                !hasEnoughCredits ||
+                overLimit ||
+                launchMutation.isPending
+              }
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {launchMutation.isPending ? (

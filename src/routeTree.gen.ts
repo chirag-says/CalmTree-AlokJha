@@ -25,10 +25,12 @@ import { Route as AuthedRouteRouteImport } from './routes/_authed/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as OrgIndexRouteImport } from './routes/org/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
+import { Route as BlogIndexRouteImport } from './routes/blog/index'
 import { Route as OrgCreditsRouteImport } from './routes/org/credits'
 import { Route as DashboardSettingsRouteImport } from './routes/dashboard/settings'
 import { Route as DashboardResultsRouteImport } from './routes/dashboard/results'
 import { Route as DashboardEbooksRouteImport } from './routes/dashboard/ebooks'
+import { Route as BlogSlugRouteImport } from './routes/blog/$slug'
 import { Route as ATokenRouteImport } from './routes/a.$token'
 import { Route as AuthedResourcesRouteImport } from './routes/_authed/resources'
 import { Route as AuthedAcademyRouteImport } from './routes/_authed/academy'
@@ -119,6 +121,11 @@ const DashboardIndexRoute = DashboardIndexRouteImport.update({
   path: '/',
   getParentRoute: () => DashboardRouteRoute,
 } as any)
+const BlogIndexRoute = BlogIndexRouteImport.update({
+  id: '/blog/',
+  path: '/blog/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const OrgCreditsRoute = OrgCreditsRouteImport.update({
   id: '/credits',
   path: '/credits',
@@ -138,6 +145,11 @@ const DashboardEbooksRoute = DashboardEbooksRouteImport.update({
   id: '/ebooks',
   path: '/ebooks',
   getParentRoute: () => DashboardRouteRoute,
+} as any)
+const BlogSlugRoute = BlogSlugRouteImport.update({
+  id: '/blog/$slug',
+  path: '/blog/$slug',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ATokenRoute = ATokenRouteImport.update({
   id: '/a/$token',
@@ -207,10 +219,12 @@ export interface FileRoutesByFullPath {
   '/academy': typeof AuthedAcademyRoute
   '/resources': typeof AuthedResourcesRoute
   '/a/$token': typeof ATokenRoute
+  '/blog/$slug': typeof BlogSlugRoute
   '/dashboard/ebooks': typeof DashboardEbooksRoute
   '/dashboard/results': typeof DashboardResultsRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/org/credits': typeof OrgCreditsRoute
+  '/blog/': typeof BlogIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/org/': typeof OrgIndexRoute
   '/assessments/$slug': typeof AuthedAssessmentsSlugRoute
@@ -236,10 +250,12 @@ export interface FileRoutesByTo {
   '/academy': typeof AuthedAcademyRoute
   '/resources': typeof AuthedResourcesRoute
   '/a/$token': typeof ATokenRoute
+  '/blog/$slug': typeof BlogSlugRoute
   '/dashboard/ebooks': typeof DashboardEbooksRoute
   '/dashboard/results': typeof DashboardResultsRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/org/credits': typeof OrgCreditsRoute
+  '/blog': typeof BlogIndexRoute
   '/dashboard': typeof DashboardIndexRoute
   '/org': typeof OrgIndexRoute
   '/assessments/$slug': typeof AuthedAssessmentsSlugRoute
@@ -269,10 +285,12 @@ export interface FileRoutesById {
   '/_authed/academy': typeof AuthedAcademyRoute
   '/_authed/resources': typeof AuthedResourcesRoute
   '/a/$token': typeof ATokenRoute
+  '/blog/$slug': typeof BlogSlugRoute
   '/dashboard/ebooks': typeof DashboardEbooksRoute
   '/dashboard/results': typeof DashboardResultsRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/org/credits': typeof OrgCreditsRoute
+  '/blog/': typeof BlogIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/org/': typeof OrgIndexRoute
   '/_authed/assessments/$slug': typeof AuthedAssessmentsSlugRoute
@@ -302,10 +320,12 @@ export interface FileRouteTypes {
     | '/academy'
     | '/resources'
     | '/a/$token'
+    | '/blog/$slug'
     | '/dashboard/ebooks'
     | '/dashboard/results'
     | '/dashboard/settings'
     | '/org/credits'
+    | '/blog/'
     | '/dashboard/'
     | '/org/'
     | '/assessments/$slug'
@@ -331,10 +351,12 @@ export interface FileRouteTypes {
     | '/academy'
     | '/resources'
     | '/a/$token'
+    | '/blog/$slug'
     | '/dashboard/ebooks'
     | '/dashboard/results'
     | '/dashboard/settings'
     | '/org/credits'
+    | '/blog'
     | '/dashboard'
     | '/org'
     | '/assessments/$slug'
@@ -363,10 +385,12 @@ export interface FileRouteTypes {
     | '/_authed/academy'
     | '/_authed/resources'
     | '/a/$token'
+    | '/blog/$slug'
     | '/dashboard/ebooks'
     | '/dashboard/results'
     | '/dashboard/settings'
     | '/org/credits'
+    | '/blog/'
     | '/dashboard/'
     | '/org/'
     | '/_authed/assessments/$slug'
@@ -394,6 +418,8 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermsRoute: typeof TermsRoute
   ATokenRoute: typeof ATokenRoute
+  BlogSlugRoute: typeof BlogSlugRoute
+  BlogIndexRoute: typeof BlogIndexRoute
   ApiWebhooksRazorpayRoute: typeof ApiWebhooksRazorpayRoute
   ApiEbooksEbookIdPdfRoute: typeof ApiEbooksEbookIdPdfRoute
 }
@@ -512,6 +538,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardIndexRouteImport
       parentRoute: typeof DashboardRouteRoute
     }
+    '/blog/': {
+      id: '/blog/'
+      path: '/blog'
+      fullPath: '/blog/'
+      preLoaderRoute: typeof BlogIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/org/credits': {
       id: '/org/credits'
       path: '/credits'
@@ -539,6 +572,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/dashboard/ebooks'
       preLoaderRoute: typeof DashboardEbooksRouteImport
       parentRoute: typeof DashboardRouteRoute
+    }
+    '/blog/$slug': {
+      id: '/blog/$slug'
+      path: '/blog/$slug'
+      fullPath: '/blog/$slug'
+      preLoaderRoute: typeof BlogSlugRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/a/$token': {
       id: '/a/$token'
@@ -685,6 +725,8 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermsRoute: TermsRoute,
   ATokenRoute: ATokenRoute,
+  BlogSlugRoute: BlogSlugRoute,
+  BlogIndexRoute: BlogIndexRoute,
   ApiWebhooksRazorpayRoute: ApiWebhooksRazorpayRoute,
   ApiEbooksEbookIdPdfRoute: ApiEbooksEbookIdPdfRoute,
 }

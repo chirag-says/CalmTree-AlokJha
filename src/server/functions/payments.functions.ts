@@ -7,7 +7,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import crypto from "crypto";
-import { TIER_INFO } from "@/data/assessments";
+import { getCategoryPrice } from "@/data/category-pricing";
 import { getCreditPack } from "@/data/credit-packs";
 import { getAdminClient } from "../supabase-admin";
 import { requireUser } from "../require-user";
@@ -26,17 +26,10 @@ async function getEbookPrice(ebookId: string): Promise<number> {
   return data.price_inr as number;
 }
 
-function getTierPrice(tier: "growth" | "professional"): number {
-  const price = TIER_INFO[tier].priceInr;
-  if (!price) throw new Error(`Tier "${tier}" has no purchasable price.`);
-  return price;
-}
-
 const CreateOrderSchema = z.discriminatedUnion("productType", [
   z.object({
     accessToken: z.string(),
     productType: z.literal("assessment_category"),
-    tier: z.enum(["growth", "professional"]),
     productCategory: z.string(),
   }),
   z.object({
@@ -97,10 +90,13 @@ export const createRazorpayOrder = createServerFn({ method: "POST" })
           userId,
         };
       } else {
-        amountInr = getTierPrice(data.tier);
+        const price = getCategoryPrice(data.productCategory);
+        if (price === null) {
+          throw new Error(`"${data.productCategory}" has no purchasable price.`);
+        }
+        amountInr = price;
         notes = {
           productType: "assessment_category",
-          tier: data.tier,
           productCategory: data.productCategory,
           userId,
         };

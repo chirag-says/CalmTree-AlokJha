@@ -24,7 +24,7 @@ export const communicationStyle: ProfileAssessmentConfig = {
     questionCount: 10,
     icon: "message-circle",
     productCategory: "Self-Awareness & Personality",
-    isFree: true,
+    isFree: false,
   },
   instructions:
     "Select the option that most closely reflects what you would usually do, not what you believe is the ideal answer.",

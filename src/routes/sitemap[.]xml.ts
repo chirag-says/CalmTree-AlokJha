@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { SITE } from "@/data/constants";
 import { ASSESSMENT_LIST } from "@/data/assessments";
+import { BLOG_POSTS } from "@/data/blog";
 import type {} from "@tanstack/react-start";
 
 interface SitemapEntry {
@@ -38,6 +39,15 @@ export const Route = createFileRoute("/sitemap.xml")({
           ),
           { path: "/resources", changefreq: "weekly", priority: "0.8" },
           { path: "/academy", changefreq: "monthly", priority: "0.5" },
+          { path: "/blog", changefreq: "weekly", priority: "0.8" },
+          ...BLOG_POSTS.map(
+            (p): SitemapEntry => ({
+              path: `/blog/${p.slug}`,
+              lastmod: p.publishedAt,
+              changefreq: "monthly",
+              priority: "0.6",
+            }),
+          ),
         ];
 
         const today = new Date().toISOString().split("T")[0];

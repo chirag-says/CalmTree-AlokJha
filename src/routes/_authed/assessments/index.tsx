@@ -4,6 +4,7 @@ import { PageHeader } from "@/components/SiteLayout";
 import { Button } from "@/components/ui/button";
 import { SITE } from "@/data/constants";
 import { ASSESSMENT_LIST, getAssessmentsByTier, TIER_INFO } from "@/data/assessments";
+import { getCategoryPrice } from "@/data/category-pricing";
 import { TierBadge } from "@/components/assessment/TierBadge";
 import type { AssessmentTier, AssessmentIcon, ProductCategory } from "@/data/assessments/types";
 import type { AnyAssessmentConfig } from "@/data/assessments";
@@ -108,6 +109,7 @@ const ICON_MAP: Record<AssessmentIcon, React.ComponentType<{ className?: string 
 
 function AssessmentCard({ assessment }: { assessment: AnyAssessmentConfig }) {
   const Icon = ICON_MAP[assessment.meta.icon] ?? ClipboardCheck;
+  const price = assessment.meta.isFree ? null : getCategoryPrice(assessment.meta.productCategory);
   return (
     <article className="rounded-2xl border border-border bg-card p-6 flex flex-col hover:shadow-[var(--shadow-soft)] transition-all duration-300 hover:-translate-y-0.5">
       <div className="flex items-start justify-between mb-3">
@@ -126,9 +128,15 @@ function AssessmentCard({ assessment }: { assessment: AnyAssessmentConfig }) {
           Private
         </span>
       </div>
+      {price !== null && (
+        <p className="mt-3 text-xs text-muted-foreground">
+          ₹{price} unlocks all{" "}
+          <span className="text-foreground">{assessment.meta.productCategory}</span> assessments
+        </p>
+      )}
       <Button asChild className="mt-5">
         <Link to="/assessments/$slug" params={{ slug: assessment.slug }}>
-          Start assessment
+          {price !== null ? "View assessment" : "Start assessment"}
           <ArrowRight className="h-4 w-4" />
         </Link>
       </Button>
@@ -145,13 +153,8 @@ function TierSection({ tier }: { tier: AssessmentTier }) {
   return (
     <div className="mb-16">
       <div className="mb-6">
-        <div className="flex items-center gap-3 mb-2">
-          <h2 className="text-2xl font-semibold">{info.label}</h2>
-          <span className="text-sm text-muted-foreground px-3 py-0.5 rounded-full bg-muted">
-            {info.price}
-          </span>
-        </div>
-        <p className="text-muted-foreground">{info.description}</p>
+        <h2 className="text-2xl font-semibold">{info.label}</h2>
+        <p className="mt-1 text-muted-foreground">{info.description}</p>
       </div>
       <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
         {assessments.map((a) => (

@@ -66,7 +66,7 @@ export function CategoryUnlockCard({ config, reason }: CategoryUnlockCardProps) 
           productCategory={category}
           label={`Unlock ${category} — ₹${price}`}
           size="lg"
-          className="gap-2"
+          className="w-full h-auto min-h-12 py-3 gap-2 whitespace-normal text-center leading-snug"
         />
       ) : (
         <p className="text-sm text-muted-foreground">
